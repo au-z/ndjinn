@@ -186,8 +186,8 @@ export function create(fn: Function, defaults: any[], options?: {
 	 * @param pipe map from outputs to inputs
 	 * @return the destination node
 	 */
-	const defaultPipe = (...args: any[]) => [...args]
-	function pipe(node: Node, pipe: Piper = defaultPipe): Node {
+	const PiedPiper = (...args: any[]) => [...args]
+	function pipe(node: Node, pipe: Piper = PiedPiper): Node {
 		piped[node.id] = {node, pipe}
 
 		_node.outputs.forEach((o, j) => o.connected.push({id: node.id, idx: j}))

@@ -1,5 +1,7 @@
 {
   "name": "@ndjinn/core",
+  "version": "0.1.0",
+  "description": "Function composition for the ndjinn node editor. Generally useful for geeking out.",
   "main": "./dist/core.es.js",
   "module": "./dist/core.es.js",
   "exports": {
@@ -7,7 +9,8 @@
   },
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
@@ -17,6 +20,15 @@
     "typescript": "^4.2.3",
     "vite": "^2.0.5"
   },
+  "keywords": [
+    "function",
+    "composition",
+    "ndjinn",
+    "node",
+    "editor"
+  ],
+  "author": "Austin Martin (auz.martin@gmail.com)",
+  "license": "ISC",
   "jest": {
     "moduleFileExtensions": [
       "ts",
