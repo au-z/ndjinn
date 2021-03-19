@@ -1,0 +1,51 @@
+:host {
+	display: inline-block;
+	--node-port-size: 8px;
+	--node-port-border-w: 4px;
+}
+
+.node {
+	@apply absolute rounded-md;
+	font-family: var(--cam-font, sans-serif);
+	margin: 4px;
+	position: relative;
+	display: inline-grid;
+	grid-template-columns: 8px 1fr 8px;
+	grid-template-areas: 'i h o' 'i c o';
+
+	min-width: 8em;
+	min-height: 4em;
+
+	background-color: var(--node-background-color, #666);
+	color: var(--node-color, #fff);
+}
+
+.header {
+	@apply p-1;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	grid-area: h;
+	cursor: pointer;
+}
+
+.content {
+	@apply p-2;
+	grid-area: c;
+}
+
+.inputs {
+	grid-area: i;
+}
+
+.outputs {
+	grid-area: o;
+}
+
+cam-input::part(input) {
+	background: rgba(0, 0, 0, 0.2);
+	color: var(--node-color, #fff);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+cam-input:disabled::part(input) {
+	background: none;
+	opacity: 0.6;
+}

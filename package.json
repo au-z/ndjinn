@@ -1,0 +1,10 @@
+{
+  "name": "ndjinn",
+  "version": "0.1.0",
+  "description": "ndjinn - Compose, chain and visualize your functions.",
+  "author": "Austin Martin (auz.martin@gmail.com)",
+  "license": "ISC",
+  "scripts": {
+    "preinstall": "node ./ops/npm_each.js i"
+  }
+}

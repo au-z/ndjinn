@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"module": "esnext",
+		"target": "esnext",
+		"moduleResolution": "node",
+		"noImplicitUseStrict": true,
+		"experimentalDecorators": true,
+		"allowSyntheticDefaultImports": true,
+		"types": ["vite/client", "node", "@types/jest"],
+	}
+}

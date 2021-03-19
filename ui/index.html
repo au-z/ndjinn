@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="module" src="/src/index.ts"></script>
+	<title>Node Editor</title>
+	<style>
+		body {
+			margin: 0;
+			--cam-font: Consolas, sans-serif;
+			--node-editor-bg: #333;
+		}
+	</style>
+</head>
+<body>
+	<node-editor>
+		<node-number min="0" max="359" wrap></node-number>
+		<node-hsl></node-hsl>
+		<node-swatch></node-swatch>
+	</node-editor>
+</body>
+</html>
