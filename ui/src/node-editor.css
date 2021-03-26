@@ -3,8 +3,15 @@
 }
 
 .node-editor {
-	padding: 32px;
+	@apply relative;
 	width: 100vw;
 	height: 100vh;
 	background: var(--node-editor-bg, black);
+}
+
+.grid {
+	--grid-color: rgba(255, 255, 255, 0.05);
+	--grid-size: 1rem;
+	background-image: radial-gradient(circle, var(--grid-color, black) 1px, rgba(0, 0, 0, 0) 1px), radial-gradient(circle, var(--grid-color, black) 1px, rgba(0, 0, 0, 0) 1px);
+	background-size: var(--grid-size, 1rem) var(--grid-size, 1rem);
 }

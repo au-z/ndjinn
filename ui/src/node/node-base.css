@@ -1,4 +1,5 @@
 :host {
+	@apply absolute;
 	display: inline-block;
 	--node-port-size: 8px;
 	--node-port-border-w: 4px;
@@ -6,6 +7,7 @@
 
 .node {
 	@apply absolute rounded-md;
+	border: 2px solid var(--ndjinn-node-border, var(--ndjinn-node-bg, #666));
 	font-family: var(--cam-font, sans-serif);
 	margin: 4px;
 	position: relative;
@@ -16,8 +18,15 @@
 	min-width: 8em;
 	min-height: 4em;
 
-	background-color: var(--node-background-color, #666);
-	color: var(--node-color, #fff);
+	background-color: var(--ndjinn-node-bg, #666);
+	color: var(--ndjinn-node-color, #fff);
+	opacity: var(--ndjinn-debug-node-opacity, 1.0);
+	user-select: none;
+	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+
+	&.selected {
+		border: 2px solid var(--ndjinn-node-accent, white);
+	}
 }
 
 .header {

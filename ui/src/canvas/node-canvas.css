@@ -1,0 +1,15 @@
+:host {
+	position: absolute;
+	@apply w-full h-full;
+}
+
+canvas {
+	@apply w-full h-full;
+	background: transparent;
+}
+
+.nodes {
+	@apply absolute w-full h-full;
+	left: 0;
+	top: 0;
+}

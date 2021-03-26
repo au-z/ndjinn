@@ -1,0 +1,8 @@
+.ports {
+	@apply flex flex-col justify-evenly;
+	height: 100%;
+
+	&.left {
+		margin-left: -8px;
+	}
+}

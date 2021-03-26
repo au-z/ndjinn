@@ -4,21 +4,26 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<script type="module" src="/src/index.ts"></script>
 	<title>Node Editor</title>
 	<style>
 		body {
 			margin: 0;
+			color: #888;
+
 			--cam-font: Consolas, sans-serif;
 			--node-editor-bg: #333;
+
+			--ndjinn-node-bg: #666;
+			--ndjinn-node-color: #d6d7da;
+			--ndjinn-node-accent: rgba(243, 205, 149, 1);
+
+			/* --ndjinn-debug-node-opacity: 0.4; */
 		}
 	</style>
 </head>
 <body>
-	<node-editor>
-		<node-number min="0" max="359" wrap></node-number>
-		<node-hsl></node-hsl>
-		<node-swatch></node-swatch>
-	</node-editor>
+	<node-editor></node-editor>
 </body>
 </html>

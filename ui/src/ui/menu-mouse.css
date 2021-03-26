@@ -1,0 +1,74 @@
+* {
+	box-sizing: border-box;
+}
+:host {
+	font-family: var(--ndjinn-font, monospace);
+}
+
+nav {
+	@apply absolute flex flex-col rounded-md;
+	font-size: 1rem;
+	min-width: 6rem;
+	background-color: var(--ndjinn-node-bg, #666);
+	color: var(--ndjinn-node-color, #fff);
+
+	.header {
+		@apply p-2 rounded-sm;
+		border-bottom: 1px solid var(--ndjinn-node-med, #777);
+	}
+
+	.content {
+	}
+
+	ul {
+		@apply m-0 p-0;
+		list-style: none;
+
+		li {
+			@apply relative flex flex-col;
+			cursor: pointer;
+
+			&:hover > .nodes {
+				opacity: 1;
+				pointer-events: initial;
+			}
+
+			& > .nodes {
+				@apply absolute;
+				top: 0;
+				left: 100%;
+				opacity: 0;
+				transition: 0.33 opacity ease;
+				pointer-events: none;
+				&:hover {
+					opacity: 1;
+					pointer-events: initial;
+				}
+			}
+		}
+
+		li, button {
+			@apply flex w-full justify-start items-start pt-1 pb-1 pr-2 pl-2 border-none;
+			cursor: pointer;
+			text-align: left;
+			border-bottom: 2px solid var(--ndjinn-node-med, #777);
+			background: var(--ndjinn-node-bg, #666);
+			color: var(--ndjinn-node-color, white);
+			white-space: nowrap;
+			transition: 0.25s all ease;
+			&:hover {
+				filter: brightness(85%);
+			}
+			&:last-child {
+				border-bottom: none;
+			}
+			cam-icon {
+				@apply mr-2;
+			}
+		}
+
+		button {
+			@apply items-center pr-2;
+		}
+	}
+}

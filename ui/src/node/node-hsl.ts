@@ -1,8 +1,11 @@
-import { create, DT } from '@ndjinn/core'
+import { DT } from '@ndjinn/core'
 import { define, html } from 'hybrids'
-import {Node} from './node-base'
+import {NodeUI} from './node-base'
 
-const node = create((h, s, l) => [{h, s, l}], [0, 1, 0.5], {
+const fn = (h, s, l) => [{h, s, l}]
+
+const NodeHsl = NodeUI(fn, [0, 1, 0.5], {
+	name: 'HSL',
 	in: [
 		{type: DT.num, name: 'hue'},
 		{type: DT.num, name: 'sat'},
@@ -11,10 +14,6 @@ const node = create((h, s, l) => [{h, s, l}], [0, 1, 0.5], {
 	out: [
 		{type: DT.rgb, name: 'color'},
 	],
-})
-
-const NodeHsl = Node(node, {
-	name: 'HSL',
 	fields: [
 		{name: 'hue', mode: 'EDIT'},
 		{name: 'sat', mode: 'EDIT'},

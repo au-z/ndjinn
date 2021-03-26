@@ -8,13 +8,14 @@
     "@types/node": "^14.14.32",
     "autoprefixer": "^10.2.5",
     "hybrids": "^4.3.4",
+    "mousetrap": "^1.6.5",
     "postcss": "^8.2.7",
     "postcss-nested": "^5.0.5",
     "tailwindcss": "^2.0.3",
     "vite": "^2.0.5"
   },
   "dependencies": {
-    "@auzmartist/cam-el": "^0.5.1",
+    "@auzmartist/cam-el": "../../cam-el",
     "@ndjinn/core": "../core"
   }
 }

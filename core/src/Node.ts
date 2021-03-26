@@ -22,8 +22,9 @@ export interface Node {
 	outputs: Put[],
 	run: Function,
 	set: Function,
-	pipe: Function,
-	connect: Function,
+	pipe: (node: Node, piper?: Piper) => Node,
+	connect: (outputIdx: number, node: Node, inputIdx: number) => Node,
+	disconnect: (outputIdx: number, node: Node, inputIdx: number) => Node,
 	subscribe: (fn: (node: Node) => void) => number,
 	unsubscribe: (number) => boolean,
 }
@@ -106,6 +107,7 @@ export function create(fn: Function, defaults: any[], options?: {
 		set,
 		pipe,
 		connect,
+		disconnect,
 		subscribe,
 		unsubscribe,
 	}
@@ -169,17 +171,6 @@ export function create(fn: Function, defaults: any[], options?: {
 		return _node
 	}
 
-	function subscribe(fn: (node) => void): number {
-		subscriptions.push(fn)
-		return subscriptions.length - 1
-	}
-
-	function unsubscribe(id: number): boolean {
-		if(id > subscriptions.length) return false
-		subscriptions.splice(id, 1)
-		return true
-	}
-
 	/**
 	 * Pipes outputs to the inputs of a destination node
 	 * @param node destination node
@@ -196,6 +187,31 @@ export function create(fn: Function, defaults: any[], options?: {
 		_node.run()
 
 		return node
+	}
+
+	/**
+	 * Disconnects an output from a specific node input.
+	 * @param outputIdx source output index
+	 * @param node destination node
+	 * @param inputIdx destination node input
+	 */
+	function disconnect(outputIdx: number, node: Node, inputIdx: number) {
+		const edge = _node.outputs[outputIdx].connected.findIndex(({id, idx}) => id === node.id && idx === inputIdx)
+		_node.outputs[outputIdx].connected.splice(edge, 1)
+		node.inputs[inputIdx].connected = []
+
+		return _node
+	}
+
+	function subscribe(fn: (node) => void): number {
+		subscriptions.push(fn)
+		return subscriptions.length - 1
+	}
+
+	function unsubscribe(id: number): boolean {
+		if(id > subscriptions.length) return false
+		subscriptions.splice(id, 1)
+		return true
 	}
 
 	return _node
