@@ -1,13 +1,14 @@
 import {define, html, Hybrids} from 'hybrids'
 import Mousetrap from 'mousetrap'
 
-import store, {createNode, connectNode, deleteSelected, selectNode, selectAll, redux, saveNodeContainer, reduxTrack, disconnectNode} from './store/store'
-import {saveNodeEditor, loadNodeEditor, persist} from './store/localStorage'
-const {save, load} = persist(store, 'node-editor', saveNodeEditor, loadNodeEditor)
+import store, {createNode, connectNode, deleteSelected, selectNode, selectAll, redux, saveNodeContainer, reduxTrack, disconnectNode} from '../store/store'
+import {serializeNodeGraph, deserializeNodeGraph, persist} from '../store/localStorage'
+const {save, load} = persist(store, 'ndjinn-project', serializeNodeGraph, deserializeNodeGraph)
 
-import styles from './node-editor.css'
-import { NodeElement } from './node/node-base'
-import { debounce } from './utils'
+import { NodeElement } from '../node/base/node-base'
+import { debounce } from '../utils'
+
+import styles from './ndjinn-editor.css'
 
 const catalog = [
 	{
@@ -83,7 +84,7 @@ export function createNodeElement(tag, id?, pos = {x: 0, y: 0}): NodeElement {
 	return nodeEl
 }
 
-export interface NodeEditor extends HTMLElement {
+export interface NdjinnEditor extends HTMLElement {
 	[key: string]: any
 }
 
@@ -109,7 +110,7 @@ function deleteNodes(host, e) {
 	})
 }
 
-const NodeEditor: Hybrids<NodeEditor> = {
+const NdjinnEditor: Hybrids<NdjinnEditor> = {
 	...useMouse,
 	actionMousePos: {
 		get: (host, val = {x: 0, y: 0}) => val,
@@ -128,7 +129,7 @@ const NodeEditor: Hybrids<NodeEditor> = {
 		},
 	},
 	container: reduxTrack(store, {
-		get: ({render}) => render().querySelector('node-canvas'),
+		get: ({render}) => render().querySelector('ndjinn-canvas'),
 		observe: (host, container, last) => {
 			if(!!last || !container) return
 			if(host.load) {
@@ -142,8 +143,8 @@ const NodeEditor: Hybrids<NodeEditor> = {
 	}},
 
 	render: ({debug, registry, onmousemove, actionMousePos}) => html`
-	<section tabindex="0" class="node-editor grid" onmousemove="${onmousemove}">
-		<node-canvas nodes="${registry}" debug=${debug}
+	<section tabindex="0" class="ndjinn-editor grid" onmousemove="${onmousemove}">
+		<ndjinn-canvas nodes="${registry}" debug=${debug}
 			onselect=${onselect}
 			oncreated="${oncreated}"
 			onconnect="${onconnect}"
@@ -151,7 +152,7 @@ const NodeEditor: Hybrids<NodeEditor> = {
 			onconnect-to="${onconnectTo}"
 			ondisconnect="${ondisconnect}"
 			onsave="${onsave}"
-		></node-canvas>
+		></ndjinn-canvas>
 		<cam-hotkey-toggle id="add-node" keys="Shift+A" onchange="${saveMousePos}">
 			<menu-mouse slot="on" x="${actionMousePos.x}" y="${actionMousePos.y}"
 				catalog="${catalog}"
@@ -160,5 +161,5 @@ const NodeEditor: Hybrids<NodeEditor> = {
 	</section>`.style(styles),
 }
 
-define('node-editor', NodeEditor)
-export default NodeEditor
+define('ndjinn-editor', NdjinnEditor)
+export default NdjinnEditor

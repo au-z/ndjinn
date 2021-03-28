@@ -3,7 +3,7 @@ import {Node, create} from '@ndjinn/core'
 import {Draggable} from '@auzmartist/cam-el'
 import NodePorts from './node-ports'
 import styles from './node-base.css'
-import NodeEditor, {NodeEditor as INodeEditor} from '../node-editor'
+import NdjinnEditor, {NdjinnEditor as INdjinnEditor} from '../../ui/ndjinn-editor'
 
 export interface NodeTemplate {
 	name: string,
@@ -15,7 +15,7 @@ export interface NodeTemplate {
 
 export interface NodeElement extends HTMLElement {
 	id: string,
-	parent: INodeEditor,
+	parent: INdjinnEditor,
 	name: string,
 	inputs: any[],
 	outputs: any[],
@@ -44,8 +44,8 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 			const input = f.name ? node.inputs.find((i) => i.name === f.name) : node.inputs[f.id]
 			if(!input) throw new Error(`Cannot query input`);
 	
-			if(input.connected.length > 0) f.mode = 'OPAQUE'
-	
+			f.mode = input.connected.length > 0 ? 'OPAQUE' : 'EDIT'
+
 			return {
 				...input,
 				mode: f.mode || 'SOURCE',
@@ -80,7 +80,7 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 
 	return {
 		// Parent
-		parent: parent(NodeEditor),
+		parent: parent(NdjinnEditor),
 		selected: ({id, parent}) => parent.selected.includes(id),
 		// Custom Properties
 		...template,

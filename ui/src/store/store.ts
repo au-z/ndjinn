@@ -2,42 +2,42 @@ import {createStore} from 'redux'
 import {Node} from '@ndjinn/core'
 const devtools = (<any>window).__REDUX_DEVTOOLS_EXTENSION__ && (<any>window).__REDUX_DEVTOOLS_EXTENSION__()
 
-interface NodeEditorState {
+interface NdjinnState {
 	container: HTMLElement,
-	registry: Map<string, Node>,
+registry: Map<string, Node>,
 	selected: string[],
 }
 
-const STATE: NodeEditorState = {
+const STATE: NdjinnState = {
 	container: null,
 	registry: new Map(),
 	selected: [],
 }
 
 const reducers = {
-	SAVE_CONTAINER: (state: NodeEditorState, el: HTMLElement) => {
+	SAVE_CONTAINER: (state: NdjinnState, el: HTMLElement) => {
 		state.container = el
 		return state
 	},
-	CREATE_NODE: (state: NodeEditorState, node: Node) => {
+	CREATE_NODE: (state: NdjinnState, node: Node) => {
 		state.registry.set(node.id, node)
 		return state
 	},
-	CONNECT_NODE: (state: NodeEditorState, {from, to}) => {
+	CONNECT_NODE: (state: NdjinnState, {from, to}) => {
 		const fromNode = state.registry.get(from.id)
 		const toNode = state.registry.get(to.id)
 		if(fromNode && toNode) fromNode.connect(from.port, toNode, to.port)
 		else console.debug('[store][connect] cant connect two nodes which do not exist')
 		return state
 	},
-	DISCONNECT_NODE: (state: NodeEditorState, {from, to}) => {
+	DISCONNECT_NODE: (state: NdjinnState, {from, to}) => {
 		const fromNode = state.registry.get(from.id)
 		const toNode = state.registry.get(to.id)
 		if(fromNode && toNode) fromNode.disconnect(from.port, toNode, to.port)
 		else console.debug('[store][disconnect] failed to disconnect two nodes')
 		return state
 	},
-	DELETE_NODE: (state: NodeEditorState, node: Node) => {
+	DELETE_NODE: (state: NdjinnState, node: Node) => {
 		node.inputs.forEach((input, toPort) => {
 			input.connected.forEach((from) => {
 				const fromNode = state.registry.get(from.id)
@@ -60,7 +60,7 @@ const reducers = {
 		})
 		return state
 	},
-	SELECT_NODE: (state: NodeEditorState, {id, add}) => {
+	SELECT_NODE: (state: NdjinnState, {id, add}) => {
 		state.selected = add ? [...state.selected, id] : [id]
 		return state
 	},

@@ -1,6 +1,6 @@
 import { DT } from "@ndjinn/core";
 import { define, html } from "hybrids";
-import {NodeUI} from './node-base'
+import {NodeUI} from './base/node-base'
 
 const fn = (hsl) => []
 

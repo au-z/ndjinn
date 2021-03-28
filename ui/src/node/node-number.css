@@ -1,5 +1,0 @@
-@import './node-base.css';
-
-cam-input::part(input) {
-	width: 5rem;
-}

@@ -1,8 +1,8 @@
-import {children, define, html, Hybrids, parent} from 'hybrids'
+import {children, define, html, Hybrids} from 'hybrids'
 import { Node, Port } from '@ndjinn/core'
-import { NodeElement } from '../node/node-base'
-import styles from './node-canvas.css'
-import {NodePort} from '../node/node-port'
+import { NodeElement } from '../node/base/node-base'
+import styles from './ndjinn-canvas.css'
+import {NodePort} from '../node/base/node-port'
 
 function drawGraph({debug, nodeElements, ctx, container, nodes}) {
 	nodes.forEach((n) => {
@@ -82,7 +82,7 @@ function drawPort(ctx, portEl: NodePort, {debug, inputMargin, nodeId}) {
 	}
 }
 
-export interface NodeCanvas extends HTMLElement {
+export interface NdjinnCanvas extends HTMLElement {
 	nodeElements: any,
 	nodes: any[],
 	debug: boolean,
@@ -95,7 +95,7 @@ export interface NodeCanvas extends HTMLElement {
 	render: Function,
 }
 
-const NodeCanvas: Hybrids<NodeCanvas> = {
+const NdjinnCanvas: Hybrids<NdjinnCanvas> = {
 	nodeElements: children((hy) => hy.hasOwnProperty('fields')),
 	nodes: [],
 	debug: false,
@@ -136,5 +136,5 @@ const NodeCanvas: Hybrids<NodeCanvas> = {
 	`.style(styles),
 }
 
-define('node-canvas', NodeCanvas)
-export default NodeCanvas
+define('ndjinn-canvas', NdjinnCanvas)
+export default NdjinnCanvas

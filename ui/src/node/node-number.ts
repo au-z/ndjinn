@@ -1,7 +1,6 @@
 import {define, html} from 'hybrids'
 import {DT} from '@ndjinn/core'
-import {NodeUI} from './node-base'
-import styles from './node-number.css'
+import {NodeUI} from './base/node-base'
 
 const fn = (x) => [x]
 
@@ -19,7 +18,12 @@ const NodeNumber = NodeUI(fn, [0], {
 				></cam-input>
 			</div>` : html`<small>?</small>`)}
 		</form>
-	`.style(styles),
+		<style>
+			cam-input::part(input) {
+				width: 5rem;
+			}
+		</style>
+	`,
 })
 
 define('node-number', NodeNumber)

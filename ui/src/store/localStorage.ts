@@ -1,6 +1,6 @@
 import {Node} from '@ndjinn/core'
-import { createNodeElement } from '../node-editor'
-import { NodeElement } from "../node/node-base"
+import { createNodeElement } from '../ui/ndjinn-editor'
+import { NodeElement } from "../node/base/node-base"
 
 export function persist(store, storageKey, saveTransform = (state) => state, loadTransform = (state) => state) {
 	const load = () => {
@@ -14,7 +14,7 @@ export function persist(store, storageKey, saveTransform = (state) => state, loa
 		}
 	}
 
-	const exportAs = (filename = 'node_editor') => {
+	const exportAs = (filename = 'ndjinn-graph') => {
 		
 	}
 	
@@ -38,7 +38,7 @@ export function persist(store, storageKey, saveTransform = (state) => state, loa
 	}
 }
 
-function jsonNode(node: Node, nodeUI: NodeElement) {
+function serializeNode(node: Node, nodeUI: NodeElement) {
 	return {
 		tag: nodeUI.tagName,
 		id: node.id,
@@ -52,11 +52,11 @@ function jsonNode(node: Node, nodeUI: NodeElement) {
 	}
 }
 
-export function saveNodeEditor(state) {
+export function serializeNodeGraph(state) {
 	const nodes = Array.from(state.registry).map(([id, node]) => {
 		const nodeUI = state.container?.children[id]
 		if(!nodeUI) throw new Error(`No matching HTMLElement for node ${node.id}`)
-		return jsonNode(node, nodeUI)
+		return serializeNode(node, nodeUI)
 	})
 
 	return {
@@ -65,7 +65,7 @@ export function saveNodeEditor(state) {
 	}
 }
 
-export function loadNodeEditor(json) {
+export function deserializeNodeGraph(json) {
 	const graph = {
 		nodes: json.nodes.map((n) => {
 			const nodeUI = createNodeElement(n.tag, n.id, n.pos)

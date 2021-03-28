@@ -1,5 +1,5 @@
 import {html, property, parent, define, Hybrids, dispatch} from 'hybrids'
-import NodeEditor from '../node-editor'
+import NdjinnEditor from './ndjinn-editor'
 import {Draggable} from '@auzmartist/cam-el'
 import styles from './menu-mouse.css'
 
@@ -8,7 +8,7 @@ function onclick(tag, host, e) {
 }
 
 const MenuMouse: Hybrids<any> = {
-	parent: parent(NodeEditor),
+	parent: parent(NdjinnEditor),
 	x: 0,
 	y: 0,
 	absPos: ({x, y}) => ({left: `${x}px`, top: `${y}px`}),
