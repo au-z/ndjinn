@@ -1,6 +1,6 @@
-import { DT } from "@ndjinn/core";
-import { define, html } from "hybrids";
-import {NodeUI} from './base/node-base';
+import { DT } from "@ndjinn/core"
+import { define, html } from "hybrids"
+import {NodeUI} from './base/node-base'
 
 const fn = ({r, g, b, h, s, l, a}) => {
 	if([r, g, b].every((c) => c != null)) return [{r, g, b, a: a != null ? a : 1}]
