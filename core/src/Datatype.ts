@@ -1,16 +1,18 @@
 export enum Datatype {
 	any = 'any',
-
 	str = 'string',
 	num = 'number',
 	obj = 'object',
 
+	uint8 = 'uint8',
+
 	vec2 = 'vec2',
 	vec3 = 'vec3',
 	rgb = 'rgb',
-	hsl = 'hsl',
-	vec4 = 'vec4',
 	rgba = 'rgba',
+	hsl = 'hsl',
+	hsla = 'hsla',
+	vec4 = 'vec4',
 	mat2 = 'mat2',
 	mat3 = 'mat3',
 	mat4 = 'mat4',

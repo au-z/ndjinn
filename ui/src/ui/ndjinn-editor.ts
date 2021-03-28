@@ -7,24 +7,10 @@ const {save, load} = persist(store, 'ndjinn-project', serializeNodeGraph, deseri
 
 import { NodeElement } from '../node/base/node-base'
 import { debounce } from '../utils'
+import {CATALOG} from '../node'
 
 import styles from './ndjinn-editor.css'
-
-const catalog = [
-	{
-		name: 'color',
-		nodes: [
-			{name: 'HSL', tag: 'node-hsl', icon: 'invert_colors'},
-			{name: 'Swatch', tag: 'node-swatch', icon: 'preview'},
-		],
-	},
-	{
-		name: 'math',
-		nodes: [
-			{name: 'Number', tag: 'node-number'},
-		],
-	},
-]
+import { useMouse } from '../hooks'
 
 function oncreated(host, {detail: {node}}) {
 	store.dispatch(createNode(node))
@@ -84,21 +70,6 @@ export function createNodeElement(tag, id?, pos = {x: 0, y: 0}): NodeElement {
 	return nodeEl
 }
 
-export interface NdjinnEditor extends HTMLElement {
-	[key: string]: any
-}
-
-const useMouse = {
-	mousePos: {
-		connect: (host, key) => {
-			host[key] = {x: 0, y: 0}
-			document.addEventListener('mousemove', (e) => {
-				host[key] = {x: e.clientX, y: e.clientY}
-			})
-		},
-	},
-}
-
 function saveMousePos(host, e) {
 	host.actionMousePos = {...host.mousePos}
 }
@@ -110,6 +81,9 @@ function deleteNodes(host, e) {
 	})
 }
 
+export interface NdjinnEditor extends HTMLElement {
+	[key: string]: any
+}
 const NdjinnEditor: Hybrids<NdjinnEditor> = {
 	...useMouse,
 	actionMousePos: {
@@ -117,8 +91,8 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 		set: (host, val) => val,
 	},
 	debug: false,
-	selected: redux(store, (state) => state.selected),
-	registry: redux(store, (state) => state.registry),
+	selected: redux(store, (host, state) => state.selected),
+	registry: redux(store, (host, state) => state.registry),
 	onmousemove: () => (host, e) => {
 		host.mouse = {x: e.pageX, y: e.pageY}
 	},
@@ -155,7 +129,7 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 		></ndjinn-canvas>
 		<cam-hotkey-toggle id="add-node" keys="Shift+A" onchange="${saveMousePos}">
 			<menu-mouse slot="on" x="${actionMousePos.x}" y="${actionMousePos.y}"
-				catalog="${catalog}"
+				catalog="${CATALOG}"
 				onselect="${addNode}"></menu-mouse>
 		</cam-hotkey-toggle>
 	</section>`.style(styles),

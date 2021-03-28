@@ -87,12 +87,12 @@ export const selectNode = (id, add = false) => ({type: 'SELECT_NODE', value: {id
 export const selectAll = () => ({type: 'SELECT_ALL', value: null})
 
 export function redux(store, mapState) {
-	const get = mapState ? () => mapState(store.getState()) : () => store.getState()
+	const get = mapState ? (host) => mapState(host, store.getState()) : () => store.getState()
 
 	return {
 		get,
 		connect: (host, key, invalidate) => store.subscribe(() => {
-			if(host[key] !== get()) invalidate()
+			if(host[key] !== get(host)) invalidate()
 		})
 	}
 }

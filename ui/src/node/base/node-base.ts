@@ -1,9 +1,9 @@
-import {html, render, parent, Hybrids, RenderFunction, dispatch} from 'hybrids'
+import {html, render, Hybrids, RenderFunction, dispatch} from 'hybrids'
 import {Node, create} from '@ndjinn/core'
 import {Draggable} from '@auzmartist/cam-el'
 import NodePorts from './node-ports'
 import styles from './node-base.css'
-import NdjinnEditor, {NdjinnEditor as INdjinnEditor} from '../../ui/ndjinn-editor'
+import store, { redux } from '../../store/store'
 
 export interface NodeTemplate {
 	name: string,
@@ -15,11 +15,11 @@ export interface NodeTemplate {
 
 export interface NodeElement extends HTMLElement {
 	id: string,
-	parent: INdjinnEditor,
 	name: string,
 	inputs: any[],
 	outputs: any[],
 	fields: any[],
+	allSelected: string[],
 	selected: boolean,
 	incoming: any[],
 	outgoing: any[],
@@ -79,9 +79,8 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 	}
 
 	return {
-		// Parent
-		parent: parent(NdjinnEditor),
-		selected: ({id, parent}) => parent.selected.includes(id),
+		selected: redux(store, ({id}, state) => state.selected.includes(id)),
+
 		// Custom Properties
 		...template,
 

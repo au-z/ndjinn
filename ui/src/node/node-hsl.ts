@@ -7,12 +7,12 @@ const fn = (h, s, l) => [{h, s, l}]
 const NodeHsl = NodeUI(fn, [0, 1, 0.5], {
 	name: 'HSL',
 	in: [
-		{type: DT.num, name: 'hue'},
-		{type: DT.num, name: 'sat'},
-		{type: DT.num, name: 'lum'},
+		{type: DT.uint8, name: 'hue'},
+		{type: DT.uint8, name: 'sat'},
+		{type: DT.uint8, name: 'lum'},
 	],
 	out: [
-		{type: DT.rgb, name: 'color'},
+		{type: DT.hsl, name: 'color'},
 	],
 	fields: [
 		{name: 'hue', mode: 'EDIT'},
@@ -28,7 +28,6 @@ const NodeHsl = NodeUI(fn, [0, 1, 0.5], {
 				step="${f.name !== 'hue' ? 0.01 : 1}"
 				wrap="${f.name === 'hue'}"
 				oninput="${(host, e) => host.set({[f.name]: parseFloat(e.detail)})}"
-				title="${f.mode}"
 				disabled="${f.mode !== 'EDIT'}"
 			></cam-input>
 		</div>`)}
