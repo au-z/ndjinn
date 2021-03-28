@@ -1,15 +1,19 @@
 {
   "name": "@ndjinn/core",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Function composition for the ndjinn node editor. Generally useful for geeking out.",
   "main": "./dist/core.es.js",
   "module": "./dist/core.es.js",
   "exports": {
     ".": "./dist/core.es.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build",
     "dev": "vite",
+    "test": "jest --watch",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {

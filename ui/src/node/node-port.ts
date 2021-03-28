@@ -1,4 +1,5 @@
 import { html, Hybrids, property } from "hybrids";
+import styles from './node-port.css'
 
 export interface NodePort extends HTMLElement {
 	type: string,
@@ -18,19 +19,9 @@ const NodePort: Hybrids<NodePort> = {
 		input,
 		type,
 		connected,
-	}}"></div>
-	<style>
-		.port {
-			width: 8px;
-			height: 8px;
-			border-radius: 8px;
-			background: white;
-			border: 4px solid var(--node-editor-bg, black);
-		}
-		.port.connected {
-			background: orange;
-		}
-	</style>`
+	}}">
+		<cam-icon>highlight_off</cam-icon>
+	</div>`.style(styles)
 }
 
 export default NodePort

@@ -1,4 +1,4 @@
-import { create, DT } from '../Node'
+import { create, DT } from '../src/Node'
 
 export function num(defaults = [0]) {
 	return create((x) => [x], defaults, {

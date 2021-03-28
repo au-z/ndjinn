@@ -28,6 +28,7 @@ const NodeHsl = NodeUI(fn, [0, 1, 0.5], {
 				step="${f.name !== 'hue' ? 0.01 : 1}"
 				wrap="${f.name === 'hue'}"
 				oninput="${(host, e) => host.set({[f.name]: parseFloat(e.detail)})}"
+				title="${f.mode}"
 				disabled="${f.mode !== 'EDIT'}"
 			></cam-input>
 		</div>`)}

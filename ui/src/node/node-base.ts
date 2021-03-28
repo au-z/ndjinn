@@ -21,6 +21,10 @@ export interface NodeElement extends HTMLElement {
 	outputs: any[],
 	fields: any[],
 	selected: boolean,
+	incoming: any[],
+	outgoing: any[],
+	set: (args: any[] | object) => void,
+	run: () => void,
 	select: (host, e) => void,
 	draggableStart: (host, e) => void,
 	draggableEnd: (host, e) => void,
@@ -40,11 +44,12 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 			const input = f.name ? node.inputs.find((i) => i.name === f.name) : node.inputs[f.id]
 			if(!input) throw new Error(`Cannot query input`);
 	
-			// TODO pass through form fields
-			(input as any).mode = f.mode || 'SOURCE'
 			if(input.connected.length > 0) f.mode = 'OPAQUE'
 	
-			return {...input}
+			return {
+				...input,
+				mode: f.mode || 'SOURCE',
+			}
 		})
 	}
 
@@ -52,7 +57,10 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 		host.setAttribute('id', node.id)
 		host.id = node.id
 		host.run = node.run
-		host.set = node.set
+		host.set = (...args) => {
+			node.set(...args)
+			dispatch(host, 'save', {detail: null, bubbles: true})
+		}
 
 		node.subscribe(() => invalidate())
 		dispatch(host, 'created', {detail: {node}, bubbles: true})
@@ -60,6 +68,7 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 
 	function connectDraggable(host) {
 		const io = Draggable({absolutePositioning: true})
+		io.draggableInit(host)
 		host.draggableStart = io.draggableStart
 		host.draggableDrag = io.draggableDrag
 		host.draggableEnd = io.draggableEnd
@@ -76,14 +85,22 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 		// Custom Properties
 		...template,
 
+		// state restoration
+		incoming: [],
+		outgoing: [],
+
 		node: {
 			connect: (host, key, invalidate) => {
 				let node = create(invoker, defaults, {in: template.in, out: template.out})
+				const persistedId = host.getAttribute('id')
+				if(persistedId) node.id = persistedId
+
 				connectNode(host, node, invalidate)
 				connectDraggable(host)
 				host[key] = node
 			},
 		},
+
 		inputs: <any>nodeComputed((node) => [...node.inputs]),
 		outputs: <any>nodeComputed((node) => [...node.outputs]),
 		fields: nodeComputed(mapFields),
@@ -93,10 +110,7 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 
 	function renderNode<E extends NodeElement>(fn: RenderFunction<E>, options?: {shadowRoot?: boolean | object}) {
 		return render<E>((host) => html`
-			<div class="${{
-					node: true,
-					selected: host.selected,
-				}}"
+			<div class="${{node: true, selected: host.selected}}"
 				onclick="${onclick}"
 				onmousedown="${host.draggableStart}"
 				ontouchstart="${host.draggableStart}"
@@ -105,13 +119,17 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 				onmouseup="${host.draggableEnd}"
 				ontouchend="${host.draggableEnd}">
 				<div class="header">
-					<label>${host.name}</label>
+					<label title="${host.id}">${host.name}</label>
 				</div>
 				<div class="inputs">
-					<node-ports left id="${host.id}" ports="${host.inputs.filter((i) => i.mode !== 'SOURCE')}"></node-ports>
+					<node-ports inputs id="${host.id}"
+						edges="${host.incoming}"
+						ports="${host.inputs.filter((i) => i.mode !== 'SOURCE')}"></node-ports>
 				</div>
 				<div class="outputs">
-					<node-ports id="${host.id}" ports="${host.outputs}"></node-ports>
+					<node-ports id="${host.id}"
+						edges="${host.outgoing}"
+						ports="${host.outputs}"></node-ports>
 				</div>
 				<div class="content">
 					${fn(host)}

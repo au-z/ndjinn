@@ -1,4 +1,4 @@
-import {create, DT} from '../Node'
+import {create, DT} from '../src/Node'
 import {num, rgb} from './node-fixtures'
 
 const val = (n) => [n]
@@ -80,5 +80,27 @@ describe('node', () => {
 
 	describe('pipe', () => {
 		
+	})
+
+	describe('disconnect', () => {
+		let num = create(val, [42])
+		let add = create((a, b) => [a + b], [1, 2])
+
+		it('disconnects a node', () => {
+			num.connect(0, add, 0)
+			expect(num.outputs[0].connected.length).toBe(1)
+			expect(add.inputs[0].connected.length).toBe(1)
+			expect(add.outputs[0].value).toBe(44) // 42 + 2
+
+			num.disconnect(0, add, 0)
+			expect(num.outputs[0].connected.length).toBe(0)
+			expect(add.inputs[0].connected.length).toBe(0)
+			expect(add.outputs[0].value).toBe(3)
+		})
+
+		it('disconnected nodes are not invoked', () => {
+			num.set({0: 10})
+			expect(add.outputs[0].value).toBe(3)
+		})
 	})
 })

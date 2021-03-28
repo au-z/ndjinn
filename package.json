@@ -5,6 +5,7 @@
   "author": "Austin Martin (auz.martin@gmail.com)",
   "license": "ISC",
   "scripts": {
-    "preinstall": "node ./ops/npm_each.js i"
+    "preinstall": "node ./ops/npm_each.js i",
+    "postinstall": "node ./ops/npm_each.js run build"
   }
 }

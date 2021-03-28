@@ -6,22 +6,24 @@ type Piper = (...args: any[]) => object | any[] | ((inputValues?: any[]) => any[
 
 const range = (x) => [...Array(x).keys()]
 
-interface PutOptions {
+export interface PortOptions {
 	type?: DT,
 	name?: string,
 }
 
-export interface Put extends PutOptions {
+
+export interface Port extends PortOptions {
 	value: any,
-	connected?: {id: string, idx: number}[],
+	connected?: {id: string, port: number}[],
 }
 
 export interface Node {
 	id: string,
-	inputs: Put[],
-	outputs: Put[],
+	inputs: Port[],
+	outputs: Port[],
 	run: Function,
 	set: Function,
+	reset: (port: string | number) => void,
 	pipe: (node: Node, piper?: Piper) => Node,
 	connect: (outputIdx: number, node: Node, inputIdx: number) => Node,
 	disconnect: (outputIdx: number, node: Node, inputIdx: number) => Node,
@@ -69,8 +71,8 @@ function invoke(fn: Function, options?: {
  * @param options optional input and output types
  */
 export function create(fn: Function, defaults: any[], options?: {
-	in?: PutOptions[],
-	out?: PutOptions[],
+	in?: PortOptions[],
+	out?: PortOptions[],
 }): Node {
 	options = {in: [], out: [], ...(options || {})}
 	const invoker = invoke(fn, {
@@ -108,6 +110,7 @@ export function create(fn: Function, defaults: any[], options?: {
 		pipe,
 		connect,
 		disconnect,
+		reset,
 		subscribe,
 		unsubscribe,
 	}
@@ -153,18 +156,33 @@ export function create(fn: Function, defaults: any[], options?: {
 	}
 
 	/**
+	 * Resets a port back to its default
+	 * @param port the port to reset
+	 */
+	function reset(port: string | number) {
+		let idx = isNaN(parseInt(<string>port)) ? inputIndexByName(port) : port
+		set({[idx]: defaults[idx]})
+	}
+
+	/**
 	 * Connects an output to a specific node input.
-	 * @param outputIdx source output index
+	 * @param outputPort source output port
 	 * @param node destination node
-	 * @param inputIdx destination node input
+	 * @param inputPort destination node input
 	 * @return the source node
 	 */
-	function connect(outputIdx: number, node: Node, inputIdx: number) {
-		const pipe = (...args: any[]) => ({[inputIdx]: args[outputIdx]})
-		piped[node.id] = {node, pipe}
+	function connect(outputPort: number, node: Node, inputPort: number) {
+		const pipe = (...args: any[]) => ({[inputPort]: args[outputPort]})
+		piped[`${node.id}:${inputPort}`] = {node, pipe}
 
-		_node.outputs[outputIdx].connected.push({id: node.id, idx: inputIdx})
-		node.inputs[inputIdx].connected.push({id: _node.id, idx: outputIdx})
+		const outputEdges = _node.outputs[outputPort].connected
+		if(!outputEdges.find((c) => c.id === node.id && c.port === inputPort)) {
+			outputEdges.push({id: node.id, port: inputPort})
+		}
+		const inputEdges = node.inputs[inputPort].connected
+		if(!inputEdges.find((c) => c.id === _node.id && c.port === outputPort)) {
+			inputEdges.push({id: _node.id, port: outputPort})
+		}
 		_node.run()
 
 		subscriptions.forEach((fn) => fn(_node))
@@ -181,8 +199,16 @@ export function create(fn: Function, defaults: any[], options?: {
 	function pipe(node: Node, pipe: Piper = PiedPiper): Node {
 		piped[node.id] = {node, pipe}
 
-		_node.outputs.forEach((o, j) => o.connected.push({id: node.id, idx: j}))
-		node.inputs.forEach((i, j) => i.connected.push({id: _node.id, idx: j}))
+		_node.outputs.forEach((o, j) => {
+			if(!o.connected.find((e) => e.id === node.id && e.port === j)) {
+				o.connected.push({id: node.id, port: j})
+			}
+		})
+		node.inputs.forEach((i, j) => {
+			if(!i.connected.find((e) => e.id === _node.id && e.port === j)) {
+				i.connected.push({id: _node.id, port: j})
+			}
+		})
 
 		_node.run()
 
@@ -190,15 +216,21 @@ export function create(fn: Function, defaults: any[], options?: {
 	}
 
 	/**
-	 * Disconnects an output from a specific node input.
-	 * @param outputIdx source output index
-	 * @param node destination node
-	 * @param inputIdx destination node input
+	 * Disconnects an output from a specific input node port.
+	 * @param outputPort this input port
+	 * @param node source node
+	 * @param inputPort source node output
 	 */
-	function disconnect(outputIdx: number, node: Node, inputIdx: number) {
-		const edge = _node.outputs[outputIdx].connected.findIndex(({id, idx}) => id === node.id && idx === inputIdx)
-		_node.outputs[outputIdx].connected.splice(edge, 1)
-		node.inputs[inputIdx].connected = []
+	function disconnect(outputPort: number, node: Node, inputPort: number) {
+		delete piped[`${node.id}:${inputPort}`]
+
+		const outputEdges = _node.outputs[outputPort].connected
+		const edgeIdx = outputEdges.findIndex((c) => c.id === node.id && c.port === inputPort)
+		if(edgeIdx > -1) {
+			outputEdges.splice(edgeIdx, 1)
+			node.inputs[inputPort].connected = []
+		}
+		node.reset(inputPort)
 
 		return _node
 	}

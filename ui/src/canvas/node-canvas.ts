@@ -1,12 +1,8 @@
 import {children, define, html, Hybrids, parent} from 'hybrids'
-import { Node } from '@ndjinn/core'
-import NodeEditor from '../node-editor'
+import { Node, Port } from '@ndjinn/core'
 import { NodeElement } from '../node/node-base'
 import styles from './node-canvas.css'
-
-interface Element extends HTMLElement {
-	[key: string]: any
-}
+import {NodePort} from '../node/node-port'
 
 function drawGraph({debug, nodeElements, ctx, container, nodes}) {
 	nodes.forEach((n) => {
@@ -33,20 +29,20 @@ function drawNode(ctx, node: Node, el: NodeElement, debug = false) {
 	if(!el.shadowRoot) return
 	const portRegions: HTMLElement[] = Array.from(el.shadowRoot.querySelectorAll('node-ports'))
 	portRegions.forEach((region) => {
-		const inputMargin = region.hasAttribute('left') ? INPUT_MARGIN : 0
+		const inputMargin = region.hasAttribute('inputs') ? INPUT_MARGIN : 0
 		region.shadowRoot?.querySelectorAll('node-port')
-			?.forEach((p) => drawPort(ctx, p, {debug, inputMargin, nodeId: node.id}))
+			?.forEach((p: NodePort) => drawPort(ctx, p, {debug, inputMargin, nodeId: node.id}))
 	})
 }
 
-function drawPort(ctx, el, {debug, inputMargin, nodeId}) {
-	const {left, top, width, height} = el.getBoundingClientRect()
+function drawPort(ctx, portEl: NodePort, {debug, inputMargin, nodeId}) {
+	const {left, top, width, height} = portEl.getBoundingClientRect()
 	const pos = {
 		x: (left + width) + inputMargin,
 		y: (top + height / 2),
 	}
 	
-	portMap.set(`${nodeId}:${el.id}`, pos)
+	portMap.set(`${nodeId}:${portEl.id}`, pos)
 	
 	if(debug) {
 		ctx.beginPath()
@@ -60,13 +56,15 @@ function drawPort(ctx, el, {debug, inputMargin, nodeId}) {
 		[from.x + 0.5 * (to.x - from.x), to.y],
 	]
 
-	if(el.input && el.connected) {
+	if(portEl.input && portEl.connected) {
+		if(nodeId === '722afe6d-192b-48cd-b7ca-eb1c1966c0b4') {
+			
+		}
 		ctx.beginPath()
-		el.edges.forEach((e) => {
-			const to = portMap.get(`${e.id}:${e.idx}`)
-			if(!to) {
-				throw new Error('Cannot connect to missing node')
-			}
+		portEl.edges.forEach((e: Port) => {
+			const to = portMap.get(`${e.id}:${e.port}`)
+			if(!to) return // portMap entry may not exist in this render frame yet
+
 			const ctrls = easeControls(pos, to)
 			ctx.beginPath()
 			ctx.strokeStyle = '#d7d8da'
@@ -106,7 +104,6 @@ const NodeCanvas: Hybrids<NodeCanvas> = {
 		get: ({debug, render}) => render().querySelector('canvas'),
 		connect: (host, key, invalidate) => {
 			host.resize(host.clientWidth, host.clientHeight)
-			console.log(host)
 			host.draw(host, host.debug && 300)
 		},
 		observe: (host, canvas) => {
