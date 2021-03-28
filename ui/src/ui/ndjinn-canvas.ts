@@ -4,20 +4,19 @@ import { NodeElement } from '../node/base/node-base'
 import styles from './ndjinn-canvas.css'
 import {NodePort} from '../node/base/node-port'
 
-function drawGraph({debug, nodeElements, ctx, container, nodes}) {
+function drawGraph({debug, nodeElements, ctx, nodes}) {
 	nodes.forEach((n) => {
 		let el = nodeElements.find((el) => el.id === n.id)
 		drawNode(ctx, n, el, debug)
 	})
 }
 
-const PORT_SIZE = 8
-const INPUT_MARGIN = -1 * PORT_SIZE
 const PORT_DRAW_RAD = 12
 const portMap = new Map<string, {x: number, y: number}>()
 
 function drawNode(ctx, node: Node, el: NodeElement, debug = false) {
 	const {left, top, width, height} = el.getBoundingClientRect()
+	const selected = el.selected
 
 	if(debug) {
 		ctx.beginPath()
@@ -29,16 +28,15 @@ function drawNode(ctx, node: Node, el: NodeElement, debug = false) {
 	if(!el.shadowRoot) return
 	const portRegions: HTMLElement[] = Array.from(el.shadowRoot.querySelectorAll('node-ports'))
 	portRegions.forEach((region) => {
-		const inputMargin = region.hasAttribute('inputs') ? INPUT_MARGIN : 0
 		region.shadowRoot?.querySelectorAll('node-port')
-			?.forEach((p: NodePort) => drawPort(ctx, p, {debug, inputMargin, nodeId: node.id}))
+			?.forEach((p: NodePort) => drawPort(ctx, p, {debug, selected, nodeId: node.id}))
 	})
 }
 
-function drawPort(ctx, portEl: NodePort, {debug, inputMargin, nodeId}) {
+function drawPort(ctx, portEl: NodePort, {debug, selected, nodeId}) {
 	const {left, top, width, height} = portEl.getBoundingClientRect()
 	const pos = {
-		x: (left + width) + inputMargin,
+		x: (left + width),
 		y: (top + height / 2),
 	}
 	
@@ -57,17 +55,14 @@ function drawPort(ctx, portEl: NodePort, {debug, inputMargin, nodeId}) {
 	]
 
 	if(portEl.input && portEl.connected) {
-		if(nodeId === '722afe6d-192b-48cd-b7ca-eb1c1966c0b4') {
-			
-		}
-		ctx.beginPath()
 		portEl.edges.forEach((e: Port) => {
 			const to = portMap.get(`${e.id}:${e.port}`)
-			if(!to) return // portMap entry may not exist in this render frame yet
+			if(!to) return // OK: portMap entry may not exist in this render frame yet
 
 			const ctrls = easeControls(pos, to)
 			ctx.beginPath()
-			ctx.strokeStyle = '#d7d8da'
+			ctx.lineWidth = 2
+			ctx.strokeStyle = selected ? linearGradient(ctx, pos, to, '#8c909b', '#f3cd95') : '#8c909b'
 			ctx.moveTo(pos.x, pos.y)
 			ctx.bezierCurveTo(...ctrls[0], ...ctrls[1], to.x, to.y)
 			ctx.stroke()
@@ -80,6 +75,13 @@ function drawPort(ctx, portEl: NodePort, {debug, inputMargin, nodeId}) {
 			}
 		})
 	}
+}
+
+function linearGradient(ctx, from, to, cFrom, cTo) {
+	const grad = ctx.createLinearGradient(from.x, from.y, to.x, to.y)
+	grad.addColorStop("0", cTo)
+	grad.addColorStop("1.0", cFrom)
+	return grad
 }
 
 export interface NdjinnCanvas extends HTMLElement {

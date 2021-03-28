@@ -7,18 +7,17 @@
 
 .node {
 	@apply absolute rounded-md;
-	border: 2px solid var(--ndjinn-node-border, var(--ndjinn-node-bg, #666));
-	font-family: var(--cam-font, sans-serif);
+	border: 2px solid var(--ndjinn-node-border, transparent);
+	font-family: var(--ndjinn-font, sans-serif);
 	margin: 4px;
 	position: relative;
 	display: inline-grid;
-	grid-template-columns: 8px 1fr 8px;
-	grid-template-areas: 'i h o' 'i c o';
+	grid-template-columns: 0px 1fr 0px;
+	grid-template-areas: 'h h h' 'i c o';
 
 	min-width: 8em;
 	min-height: 4em;
 
-	background-color: var(--ndjinn-node-bg, #666);
 	color: var(--ndjinn-node-color, #fff);
 	opacity: var(--ndjinn-debug-node-opacity, 1.0);
 	user-select: none;
@@ -30,15 +29,25 @@
 }
 
 .header {
-	@apply p-1;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	@apply p-1 rounded-md;
+	padding-left: calc(var(--ndjinn-port-size, 8px) * 1.5);
+	padding-right: calc(var(--ndjinn-port-size, 8px) * 1.5);
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+	background: var(--ndjinn-node-header-bg, rgba(255, 255, 255, 0.15));
+	backdrop-filter: blur(3px);
+	font-size: 0.85rem;
 	grid-area: h;
 	cursor: pointer;
 }
 
 .content {
-	@apply p-2;
 	grid-area: c;
+	background-color: var(--ndjinn-node-bg, #666);
+	form {
+		padding: calc(var(--ndjinn-port-size, 8px) * 1.5);
+		@apply pt-2 pb-2;
+	}
 }
 
 .inputs {
@@ -49,12 +58,21 @@
 	grid-area: o;
 }
 
-cam-input::part(input) {
+.inputs, .outputs {
+	background-color: var(--ndjinn-node-bg, #666);
+	z-index: 1;
+}
+
+select {
+	@apply pl-2 pr-2 h-6 rounded-md;
+}
+cam-input::part(input),
+select {
 	background: rgba(0, 0, 0, 0.2);
 	color: var(--node-color, #fff);
 	border: 1px solid rgba(255, 255, 255, 0.3);
 }
+
 cam-input:disabled::part(input) {
 	background: none;
-	opacity: 0.6;
 }

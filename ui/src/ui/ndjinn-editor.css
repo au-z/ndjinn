@@ -7,11 +7,10 @@
 	width: 100vw;
 	height: 100vh;
 	background: var(--ndjinn-editor-bg, black);
-}
 
-.grid {
-	--grid-color: rgba(255, 255, 255, 0.05);
-	--grid-size: 1rem;
-	background-image: radial-gradient(circle, var(--grid-color, black) 1px, rgba(0, 0, 0, 0) 1px), radial-gradient(circle, var(--grid-color, black) 1px, rgba(0, 0, 0, 0) 1px);
-	background-size: var(--grid-size, 1rem) var(--grid-size, 1rem);
+	ndjinn-toolbar {
+		@apply absolute w-full;
+		border: 1px solid red;
+	}
+
 }

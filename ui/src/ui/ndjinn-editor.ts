@@ -117,7 +117,8 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 	}},
 
 	render: ({debug, registry, onmousemove, actionMousePos}) => html`
-	<section tabindex="0" class="ndjinn-editor grid" onmousemove="${onmousemove}">
+	<section tabindex="0" class="ndjinn-editor" onmousemove="${onmousemove}">
+		<ndjinn-toolbar></ndjinn-toolbar>
 		<ndjinn-canvas nodes="${registry}" debug=${debug}
 			onselect=${onselect}
 			oncreated="${oncreated}"
@@ -130,7 +131,8 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 		<cam-hotkey-toggle id="add-node" keys="Shift+A" onchange="${saveMousePos}">
 			<menu-mouse slot="on" x="${actionMousePos.x}" y="${actionMousePos.y}"
 				catalog="${CATALOG}"
-				onselect="${addNode}"></menu-mouse>
+				onselect="${addNode}"
+			></menu-mouse>
 		</cam-hotkey-toggle>
 	</section>`.style(styles),
 }
