@@ -18,9 +18,9 @@ export function persist(store, storageKey, saveTransform = (state) => state, loa
 		
 	}
 	
-	const save = (state) => {
+	const save = (state, key = storageKey) => {
 		const serializedState = JSON.stringify(saveTransform(state))
-		localStorage.setItem(storageKey, serializedState)
+		localStorage.setItem(key, serializedState)
 	}
 	
 	store.subscribe(() => {

@@ -1,5 +1,4 @@
 import {define, html, Hybrids} from 'hybrids'
-import Mousetrap from 'mousetrap'
 
 import store, {createNode, connectNode, deleteSelected, selectNode, selectAll, redux, saveNodeContainer, reduxTrack, disconnectNode} from '../store/store'
 import {serializeNodeGraph, deserializeNodeGraph, persist} from '../store/localStorage'
@@ -13,6 +12,7 @@ import styles from './ndjinn-editor.css'
 import { useMouse } from '../hooks'
 
 function oncreated(host, {detail: {node}}) {
+	console.log('creating node ', node.id)
 	store.dispatch(createNode(node))
 }
 
@@ -75,9 +75,21 @@ function saveMousePos(host, e) {
 }
 
 function deleteNodes(host, e) {
-	store.dispatch(deleteSelected())
 	host.selected.forEach((id) => {
 		host.container.removeChild(host.container.children[id])
+	})
+	store.dispatch(deleteSelected())
+}
+
+function duplicateSelected(host, e) {
+	host.selected.forEach((id) => {
+		const node = host.container.children[id]
+		const pos = {
+			x: (parseFloat(/\d+/.exec(node.style.left)[0]) || 0) + 50,
+			y: (parseFloat(/\d+/.exec(node.style.top)[0]) || 0) + 50,
+		}
+		const el = createNodeElement(node.tagName, null, pos)
+		host.container.appendChild(el)
 	})
 }
 
@@ -96,17 +108,12 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 	onmousemove: () => (host, e) => {
 		host.mouse = {x: e.pageX, y: e.pageY}
 	},
-	hotkeys: {
-		connect: (host, key, invalidate) => {
-			Mousetrap(host).bind('x', deleteNodes.bind(null, host))
-			Mousetrap(host).bind('a', () => store.dispatch(selectAll()))
-		},
-	},
 	container: reduxTrack(store, {
 		get: ({render}) => render().querySelector('ndjinn-canvas'),
 		observe: (host, container, last) => {
 			if(!!last || !container) return
 			if(host.load) {
+				console.log('Restoring state from localstorage')
 				host.load.nodes.forEach((n) => container.appendChild(n))
 			}
 		}
@@ -126,6 +133,9 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 			onconnect-from="${onconnectFrom}"
 			onconnect-to="${onconnectTo}"
 			ondisconnect="${ondisconnect}"
+			onhotkey:a="${(host, e) => store.dispatch(selectAll())}"
+			onhotkey:x="${deleteNodes}"
+			onhotkey:Shift+D="${duplicateSelected}"
 			onsave="${onsave}"
 		></ndjinn-canvas>
 		<cam-hotkey-toggle id="add-node" keys="Shift+A" onchange="${saveMousePos}">

@@ -10,7 +10,6 @@
 
 	ndjinn-toolbar {
 		@apply absolute w-full;
-		border: 1px solid red;
 	}
 
 }

@@ -1,5 +1,6 @@
 import {createStore} from 'redux'
 import {Node} from '@ndjinn/core'
+import { store } from 'hybrids'
 const devtools = (<any>window).__REDUX_DEVTOOLS_EXTENSION__ && (<any>window).__REDUX_DEVTOOLS_EXTENSION__()
 
 interface NdjinnState {
@@ -38,6 +39,7 @@ const reducers = {
 		return state
 	},
 	DELETE_NODE: (state: NdjinnState, node: Node) => {
+		console.log('deleting node ', node.id)
 		node.inputs.forEach((input, toPort) => {
 			input.connected.forEach((from) => {
 				const fromNode = state.registry.get(from.id)
@@ -51,6 +53,7 @@ const reducers = {
 			})
 		})
 		state.registry.delete(node.id)
+
 		return state
 	},
 	DELETE_SELECTED: (state) => {
@@ -58,6 +61,8 @@ const reducers = {
 			const node = state.registry.get(id)
 			node && reducers.DELETE_NODE(state, node)
 		})
+		state.selected = []
+
 		return state
 	},
 	SELECT_NODE: (state: NdjinnState, {id, add}) => {
