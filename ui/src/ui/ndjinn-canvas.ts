@@ -1,4 +1,4 @@
-import {children, define, Descriptor, dispatch, html, Hybrids} from 'hybrids'
+import {children, define, html, Hybrids} from 'hybrids'
 import styles from './ndjinn-canvas.css'
 import {drawGraph} from './canvas-draw'
 import Hotkeys from './factories/Hotkeys'

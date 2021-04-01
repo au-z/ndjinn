@@ -45,7 +45,6 @@ function onconnectTo(host, {detail: {id, port}}) {
 
 function onconnect(host, {detail: {from, to}}) {
 	store.dispatch(connectNode(from, to))
-	// fromNode.connect(from[1], toNode, to[1])
 }
 
 function ondisconnect(host, {detail: {from, to}}) {
@@ -90,6 +89,7 @@ function duplicateSelected(host, e) {
 		}
 		const el = createNodeElement(node.tagName, null, pos)
 		host.container.appendChild(el)
+		store.dispatch(selectNode(el.id))
 	})
 }
 
