@@ -12,7 +12,6 @@ import styles from './ndjinn-editor.css'
 import { useMouse } from '../hooks'
 
 function oncreated(host, {detail: {node}}) {
-	console.log('creating node ', node.id)
 	store.dispatch(createNode(node))
 }
 

@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@auzmartist/cam-el": "../../cam-el",
-    "@ndjinn/core": "../core"
+    "@ndjinn/core": "../core",
+    "code-tex": "^0.2.0"
   }
 }

@@ -1,9 +1,11 @@
 export enum Datatype {
 	any = 'any',
+	bool = 'bool',
 	str = 'string',
 	num = 'number',
 	obj = 'object',
 
+	bit = 'bit',
 	uint8 = 'uint8',
 
 	vec2 = 'vec2',

@@ -24,7 +24,12 @@
 }
 
 .port.connected {
-	&.any {background: black}
+	&.any {background: #888}
+	&.undefined {background: black}
+
+	&.bool {background: #69214f}
+	&.bit {background: #69214f}
+
 	&.str {background: #fff}
 	&.arr {background: #fff}
 	&.obj {background: #fff}

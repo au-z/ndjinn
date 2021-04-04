@@ -9,7 +9,7 @@ export interface NodeTemplate {
 	name: string,
 	in: any[],
 	out: any[],
-	fields: any[],
+	fields?: any[],
 	render: RenderFunction<any>,
 }
 
@@ -18,7 +18,7 @@ export interface NodeElement extends HTMLElement {
 	name: string,
 	inputs: any[],
 	outputs: any[],
-	fields: any[],
+	fields?: any[],
 	allSelected: string[],
 	selected: boolean,
 	incoming: any[],
@@ -40,17 +40,29 @@ export function NodeUI<T extends NodeTemplate>(invoker: (...args: any[]) => any[
 	})
 
 	const mapFields = (node: Node) => {
-		return template.fields.map((f) => {
-			const input = f.name ? node.inputs.find((i) => i.name === f.name) : node.inputs[f.id]
-			if(!input) throw new Error(`Cannot query input`);
+		// DEPRECATED
+		if(template.fields) {
+			console.log('"fields" are deprecated. Please add field: true to inputs.')
+			return template.fields.map((f) => {
+				const input = f.name ? node.inputs.find((i) => i.name === f.name) : node.inputs[f.id]
+				if(!input) throw new Error(`Cannot query input`);
+		
+				f.mode = input.connected.length > 0 ? 'OPAQUE' : 'EDIT'
 	
-			f.mode = input.connected.length > 0 ? 'OPAQUE' : 'EDIT'
-
-			return {
-				...input,
-				mode: f.mode || 'SOURCE',
-			}
-		})
+				return {
+					...input,
+					mode: f.mode || 'SOURCE',
+				}
+			})
+		} else {
+			return node.inputs.filter((i) => i.field).map((i) => {
+				const mode = i.connected.length > 0 ? 'OPAQUE' : 'EDIT'
+				return {
+					...i,
+					mode,
+				}
+			})
+		}
 	}
 
 	function connectNode(host, node: Node, invalidate) {

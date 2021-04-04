@@ -11,7 +11,6 @@ export interface PortOptions {
 	name?: string,
 }
 
-
 export interface Port extends PortOptions {
 	value: any,
 	connected?: {id: string, port: number}[],
