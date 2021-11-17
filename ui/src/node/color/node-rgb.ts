@@ -4,8 +4,9 @@ import { NodeUI } from "../base/node-base"
 
 const fn = (r, g, b) => [{r, g, b}]
 
-const NodeRgb = NodeUI(fn, [255, 255, 255], {
+const NodeRgb = NodeUI(fn, [255, 255, 255], null, {
 	name: 'RGB',
+	tag: 'node-rgb',
 	in: [
 		{type: DT.uint8, name: 'r'},
 		{type: DT.uint8, name: 'g'},
@@ -15,18 +16,18 @@ const NodeRgb = NodeUI(fn, [255, 255, 255], {
 		{type: DT.rgb, name: 'color'},
 	],
 	fields: [
-		{name: 'r', mode: 'EDIT'},
-		{name: 'g', mode: 'EDIT'},
-		{name: 'b', mode: 'EDIT'},
+		{name: 'r'},
+		{name: 'g'},
+		{name: 'b'},
 	],
 	render: ({fields}) => html`<form>
-		${fields.map((f) => html`<div class="field">
-			<label>${f.name || 'field'}</label>
+		${fields.map((f) => html`<cam-box class="field" flex="space-between center">
+			<label>${f.name || 'field'}&nbsp;</label>
 			<cam-input type="number" value="${f.value}" min="0" max="255" step="0" wrap
-				oninput="${(host, e) => host.set(({[f.name]: parseFloat(e.detail)}))}"
+				onupdate="${(host, e) => host.set(({[f.name]: parseFloat(e.detail)}))}"
 				disabled="${f.mode !== 'EDIT'}"
 			></cam-input>
-		</div>`)}
+		</cam-box>`)}
 	</form>`
 })
 

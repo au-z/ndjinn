@@ -1,9 +1,9 @@
 import { DT } from '@ndjinn/core'
 import { define, html } from 'hybrids'
 import {rgb_hsl, shiftHue, scale} from '../../math/color'
-import { NodeUI } from '../base/node-base'
+import { FieldMode, NodeUI } from '../base/node-base'
 
-const fn = ({r, g, b, h, s, l, a}, mode, deg) => {
+const fn = ({r, g, b, h, s, l, a}: any, mode, deg): any[] => {
 	let hsl
 	if([r, g, b].every((c) => c != null)) hsl = {...rgb_hsl({r, g, b}), a: a != null ? a : 1}
 	if([h, s, l].every((c) => c != null)) hsl = scale({h, s, l, a: a != null ? a : 1}, {h: 1 / 360})
@@ -22,7 +22,11 @@ const fn = ({r, g, b, h, s, l, a}, mode, deg) => {
 }
 
 const NodePolyad = NodeUI(fn, [{h: 0, s: 0, l: 0}, 2, 60], {
+	'^vec3.*': {fn: ([r, g, b], mode, deg) => fn({r, g, b}, mode, deg)},
+	'.*': {fn},
+}, {
 	name: 'Polyad',
+	tag: 'node-polyad',
 	in: [
 		{type: DT.color, name: 'color'},
 		{type: DT.num, name: 'mode'},
@@ -36,8 +40,8 @@ const NodePolyad = NodeUI(fn, [{h: 0, s: 0, l: 0}, 2, 60], {
 		{type: DT.hsl, name: 'E'},
 	],
 	fields: [
-		{name: 'mode', mode: 'EDIT'},
-		{name: 'deg', mode: 'EDIT'},
+		{name: 'mode', mode: FieldMode.EDIT},
+		{name: 'deg', mode: FieldMode.EDIT},
 	],
 	render: ({inputs, fields}) => html`<form>
 		<div class="field">
@@ -52,7 +56,7 @@ const NodePolyad = NodeUI(fn, [{h: 0, s: 0, l: 0}, 2, 60], {
 		</div>
 		<div class="field">
 			<cam-input type="number" value="${fields[1].value}" min="0" max="360" step="1" wrap
-				oninput="${(host, e) => host.set({'deg': parseFloat(e.detail)})}"
+				onupdate="${(host, e) => host.set({'deg': parseFloat(e.detail)})}"
 				disabled="${fields[1].mode !== 'EDIT'}"
 			></cam-input>
 		</div>

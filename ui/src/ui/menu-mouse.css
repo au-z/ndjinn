@@ -11,13 +11,24 @@ nav {
 	min-width: 6rem;
 	background-color: var(--ndjinn-node-bg, #666);
 	color: var(--ndjinn-node-color, #fff);
+	z-index: 999;
 
 	.header {
-		@apply p-2 rounded-sm;
-		border-bottom: 1px solid var(--ndjinn-node-med, #777);
-	}
+		@apply rounded-sm;
+		background: rgba(0, 0, 0, 0.1);
 
-	.content {
+		& cam-icon {
+			padding: 6px;
+			border-top-right-radius: 0.25rem;
+			background: var(--ndjinn-menu-close, #df5363);
+			cursor: pointer;
+		}
+		& cam-icon::part(icon) {
+			font-size: 0.7rem;
+		}
+		& cam-icon:hover::part(icon) {
+			color: var(--ndjinn-text-hover, #ddd);
+		}
 	}
 
 	ul {
@@ -31,6 +42,21 @@ nav {
 			&:hover > .nodes {
 				opacity: 1;
 				pointer-events: initial;
+			}
+
+			& > small {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+
+				cam-icon {
+					margin-right: 0;
+				}
+
+				cam-icon::part(icon) {
+					font-size: 0.8rem;
+				}
 			}
 
 			& > .nodes {
@@ -51,7 +77,7 @@ nav {
 			@apply flex w-full justify-start items-start pt-1 pb-1 pr-2 pl-2 border-none;
 			cursor: pointer;
 			text-align: left;
-			border-bottom: 2px solid var(--ndjinn-node-med, #777);
+			border-bottom: 1px solid var(--ndjinn-node-med, #777);
 			background: var(--ndjinn-node-bg, #666);
 			color: var(--ndjinn-node-color, white);
 			white-space: nowrap;
@@ -69,6 +95,7 @@ nav {
 
 		button {
 			@apply items-center pr-2;
+			padding: 1px 0.5rem;
 		}
 	}
 }

@@ -1,7 +1,8 @@
 import {html, property, parent, define, Hybrids, dispatch} from 'hybrids'
 import NdjinnEditor from './ndjinn-editor'
-import {Draggable} from '@auzmartist/cam-el'
+import {Draggable, CamIcon} from '@auzmartist/cam-el'
 import styles from './menu-mouse.css'
+const components = {CamIcon}
 
 function onclick(tag, host, e) {
 	dispatch(host, 'select', {detail: tag, bubbles: true})
@@ -18,15 +19,18 @@ const MenuMouse: Hybrids<any> = {
 	keys: 'x',
 	render: ({catalog, absPos}) => html`
 	<nav class="menu" style="${absPos}">
-		<div class="header">Add</div>
+		<cam-box class="header" flex="space-between center">
+			<span>&nbsp;Create&nbsp;&nbsp;</span>
+			<cam-icon title="close" onclick="${(host, e) => onclick(null, host, e)}">close</cam-icon>
+		</cam-box>
 		<div class="content">
 			<ul>${catalog.map((cat) => html`
 				<li>
-					${cat.name}
+					<small>${cat.name}<cam-icon>chevron_right</cam-icon></small>
 					<div class="nodes">${cat.nodes.map((n) => html`
 						<button onclick="${(host, e) => onclick(n, host, e)}">
 							<cam-icon>${n.icon || 'web_asset'}</cam-icon>
-							<label>&nbsp;${n.name}</label>
+							&nbsp;${n.name}
 						</button>`)}
 					</div>
 				</li>

@@ -1,11 +1,12 @@
 {
 	"compilerOptions": {
-		"module": "esnext",
-		"target": "esnext",
+		"module": "es2020",
+		"target": "es2020",
 		"moduleResolution": "node",
+		"noImplicitAny": false,
 		"noImplicitUseStrict": true,
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,
-		"types": ["vite/client", "node", "@types/jest"],
+		"types": ["node"],
 	}
 }

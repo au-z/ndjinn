@@ -14,6 +14,7 @@ let components = {
 // Candidate cam-el
 define('cam-hotkey-toggle', {
 	keys: 'x',
+	escape: false,
 	on: false,
 	parent: parent((hy) => hy.hasOwnProperty('tagName')),
 	value: {
@@ -23,6 +24,10 @@ define('cam-hotkey-toggle', {
 			Mousetrap(host.parent).bind(host.keys, (e) => {
 				dispatch(host, 'change', {detail: !host[key], bubbles: true})
 				host[key] = !host[key]
+			})
+			host.escape && Mousetrap(host.parent).bind('esc', (e) => {
+				host[key] = false
+				dispatch(host, 'close', {detail: host[key], bubbles: true})
 			})
 		},
 	},

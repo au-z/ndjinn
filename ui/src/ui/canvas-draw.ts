@@ -2,6 +2,16 @@ import { Node, Port } from '@ndjinn/core'
 import { NodeElement } from "../node/base/node-base"
 import {NodePort} from "../node/base/node-port"
 
+export function drawBox({ctx}, x1, y1, x2, y2) {
+	if(x1 == null || x2 == null || y1 == null || y2 == null) return
+	ctx.beginPath()
+	ctx.strokeStyle = '#89abff'
+	ctx.rect(x1, y1, x2 - x1, y2 - y1)
+	ctx.fillStyle = '#89abff22'
+	ctx.fillRect(x1, y1, x2 - x1, y2 - y1)
+	ctx.stroke()
+}
+
 export function drawGraph({debug, nodeElements, ctx, nodes}) {
 	nodes.forEach((n) => {
 		let el = nodeElements.find((el) => el.id === n.id)

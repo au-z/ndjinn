@@ -1,6 +1,5 @@
 import {createStore} from 'redux'
 import {Node} from '@ndjinn/core'
-import { store } from 'hybrids'
 const devtools = (<any>window).__REDUX_DEVTOOLS_EXTENSION__ && (<any>window).__REDUX_DEVTOOLS_EXTENSION__()
 
 interface NdjinnState {
@@ -27,7 +26,10 @@ const reducers = {
 	CONNECT_NODE: (state: NdjinnState, {from, to}) => {
 		const fromNode = state.registry.get(from.id)
 		const toNode = state.registry.get(to.id)
-		if(fromNode && toNode) fromNode.connect(from.port, toNode, to.port)
+		if(fromNode && toNode) fromNode.connect(from.port, toNode, to.port, {
+			outputType: from.type,
+			inputType: to.type,
+		})
 		else console.debug('[store][connect] cant connect two nodes which do not exist')
 		return state
 	},
@@ -65,8 +67,12 @@ const reducers = {
 
 		return state
 	},
-	SELECT_NODE: (state: NdjinnState, {id, add}) => {
-		state.selected = add ? [...state.selected, id] : [id]
+	SELECT_NODE: (state: NdjinnState, {id, append}) => {
+		state.selected = append ? [...state.selected, id] : [id]
+		return state
+	},
+	SELECT_NODES: (state: NdjinnState, {ids}) => {
+		state.selected = ids
 		return state
 	},
 	SELECT_ALL: (state) => {
@@ -88,7 +94,8 @@ export const connectNode = (from, to) => ({type: 'CONNECT_NODE', value: {from, t
 export const disconnectNode = (from, to) => ({type: 'DISCONNECT_NODE', value: {from, to}})
 export const deleteNode = (node) => ({type: 'DELETE_NODE', value: node})
 export const deleteSelected = () => ({type: 'DELETE_SELECTED', value: null})
-export const selectNode = (id, add = false) => ({type: 'SELECT_NODE', value: {id, add}})
+export const selectNode = (id, append = false) => ({type: 'SELECT_NODE', value: {id, append}})
+export const selectNodes = (ids) => ({type: 'SELECT_NODES', value: {ids}})
 export const selectAll = () => ({type: 'SELECT_ALL', value: null})
 
 export function redux(store, mapState) {

@@ -7,15 +7,14 @@
 
 .node {
 	@apply absolute rounded-md;
-	border: 2px solid var(--ndjinn-node-border, transparent);
+	border: 1px solid var(--ndjinn-node-border, transparent);
 	font-family: var(--ndjinn-font, sans-serif);
 	margin: 4px;
-	position: relative;
 	display: inline-grid;
-	grid-template-columns: 0px 1fr 0px;
+	grid-template-columns: 0 max-content 0;
 	grid-template-areas: 'h h h' 'i c o';
 
-	min-width: 8em;
+	min-width: 4em;
 	min-height: 4em;
 
 	color: var(--ndjinn-node-color, #fff);
@@ -24,7 +23,8 @@
 	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 
 	&.selected {
-		border: 2px solid var(--ndjinn-node-accent, white);
+		border: 1px solid var(--ndjinn-node-accent, white);
+		z-index: 2;
 	}
 }
 
@@ -34,16 +34,20 @@
 	padding-right: calc(var(--ndjinn-port-size, 8px) * 1.5);
 	border-bottom-right-radius: 0;
 	border-bottom-left-radius: 0;
-	background: var(--ndjinn-node-header-bg, rgba(255, 255, 255, 0.15));
-	backdrop-filter: blur(3px);
+	background: var(--ndjinn-node-header-bg, rgba(100, 100, 100, 0.15));
+	backdrop-filter: blur(2.5px);
 	font-size: 0.85rem;
 	grid-area: h;
 	cursor: pointer;
 }
 
 .content {
+	@apply rounded-md;
 	grid-area: c;
-	background-color: var(--ndjinn-node-bg, #666);
+	background: var(--ndjinn-node-bg, rgba(180, 180, 180, 0.15));
+	backdrop-filter: blur(10px);
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
 	form {
 		padding: calc(var(--ndjinn-port-size, 8px) * 1.5);
 		@apply pt-2 pb-2;

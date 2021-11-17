@@ -4,7 +4,7 @@ import {NodeUI} from '../base/node-base'
 
 const fn = (h, s, l) => [{h, s, l}]
 
-const NodeHsl = NodeUI(fn, [0, 1, 0.5], {
+const NodeHsl = NodeUI(fn, [0, 1, 0.5], null, {
 	name: 'HSL',
 	in: [
 		{type: DT.uint8, name: 'hue'},
@@ -15,9 +15,9 @@ const NodeHsl = NodeUI(fn, [0, 1, 0.5], {
 		{type: DT.hsl, name: 'color'},
 	],
 	fields: [
-		{name: 'hue', mode: 'EDIT'},
-		{name: 'sat', mode: 'EDIT'},
-		{name: 'lum', mode: 'EDIT'},
+		{name: 'hue'},
+		{name: 'sat'},
+		{name: 'lum'},
 	],
 	render: ({fields}) => html`<form>
 		${fields.map((f) => html`<div class="field">

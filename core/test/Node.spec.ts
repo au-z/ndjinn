@@ -1,4 +1,6 @@
-import {create, DT} from '../src/Node'
+
+import {Datatype as DT} from '../src/Datatype'
+import {create} from '../src/Node'
 import {num, rgb} from './node-fixtures'
 
 const val = (n) => [n]
@@ -16,10 +18,10 @@ describe('node', () => {
 			expect(num.set({0: 10}).outputs[0].value).toBe(10)
 		})
 		it('sets new value by function', () => {
-			expect(num.set((val) => [val * 2]).outputs[0].value).toBe(20)
+			expect(num.set((val: any) => [val * 2]).outputs[0].value).toBe(20)
 		})
-		it('can set the first value by value', () => {
-			expect(num.set(360).outputs[0].value).toBe(360)
+		it('can set the first value by value - not preferred', () => {
+			expect(num.set(360 as any).outputs[0].value).toBe(360)
 		})
 	})
 

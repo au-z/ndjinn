@@ -1,0 +1,41 @@
+.content {
+	display: flex;
+	justify-content: center;
+	padding: 0;
+}
+
+form.vec {
+	margin: 4px;
+	position: relative;
+	display: inline-flex;
+	flex-direction: column;
+	.field {
+		display: inline-flex;
+		justify-content: center;
+
+		cam-input::part(input) {
+			background: none;
+			border: none;
+		}
+	}
+
+	&:before, &:after {
+		content: '';
+		position: absolute;
+		top: 0;
+		width: 0.4rem;
+		height: calc(100% - 4px);
+		border-top: 2px solid var(--color-vec-border, #555);
+		border-bottom: 2px solid var(--color-vec-border, #555);
+	}
+
+	&:before {
+		border-left: 2px solid var(--color-vec-border, #555);
+		right: calc(100% - 1rem);
+	}
+	
+	&:after {
+		border-right: 2px solid var(--color-vec-border, #555);
+		left: calc(100% - 1rem);
+	}
+}

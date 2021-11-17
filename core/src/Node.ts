@@ -1,34 +1,7 @@
 import {v4 as uuid} from 'uuid'
 import {Datatype as DT} from './Datatype'
-
-// a function returning input args as an object, array, or another function
-type Piper = (...args: any[]) => object | any[] | ((inputValues?: any[]) => any[])
-
-const range = (x) => [...Array(x).keys()]
-
-export interface PortOptions {
-	type?: DT,
-	name?: string,
-}
-
-export interface Port extends PortOptions {
-	value: any,
-	connected?: {id: string, port: number}[],
-}
-
-export interface Node {
-	id: string,
-	inputs: Port[],
-	outputs: Port[],
-	run: Function,
-	set: Function,
-	reset: (port: string | number) => void,
-	pipe: (node: Node, piper?: Piper) => Node,
-	connect: (outputIdx: number, node: Node, inputIdx: number) => Node,
-	disconnect: (outputIdx: number, node: Node, inputIdx: number) => Node,
-	subscribe: (fn: (node: Node) => void) => number,
-	unsubscribe: (number) => boolean,
-}
+import { Op, Node, Piper, ConnectOptions, NodeOptions } from './models'
+import { Arr } from './utils'
 
 const setEffect = (fn) => ({
 	set: (inputs, key, value) => {
@@ -48,17 +21,19 @@ const setEffect = (fn) => ({
  * @param fn node function
  * @param options optional input and output types
  */
-function invoke(fn: Function, options?: {
+function invoke(fn: Op, options?: {
 	inputTypes?: DT[],
 	outputTypes?: DT[],
 }) {
-	const inputTypes = options?.inputTypes || range(fn.length)?.map((_) => DT.any)
+	const inputTypes = options?.inputTypes || Arr.range(fn.length)?.map((_) => DT.any)
 	const outputTypes = options?.outputTypes || []
 
 	return (...i) => {
 		let o = fn(...i) || []
-		o.__inputs__ = range(fn.length)?.map((_, j) => inputTypes[j] || typeof i[j])
-		o.__outputs__ = range(o.length)?.map((_, j) => outputTypes[j] || typeof o[j])
+		// @ts-ignore
+		o.__inputs__ = Arr.range(fn.length)?.map((_, j) => inputTypes[j] || typeof i[j])
+		// @ts-ignore
+		o.__outputs__ = Arr.range(o.length)?.map((_, j) => outputTypes[j] || typeof o[j])
 		return o
 	}
 }
@@ -69,15 +44,14 @@ function invoke(fn: Function, options?: {
  * @param defaults initial inputs
  * @param options optional input and output types
  */
-export function create(fn: Function, defaults: any[], options?: {
-	in?: PortOptions[],
-	out?: PortOptions[],
-}): Node {
-	options = {in: [], out: [], ...(options || {})}
-	const invoker = invoke(fn, {
+export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node {
+	options = {in: [], out: [], variants: {}, ...options}
+	// Reassigned if connection has different typeKey
+	let invoker = invoke(fn, {
 		inputTypes: options.in.map((i) => i.type),
 		outputTypes: options.out.map((i) => i.type),
 	})
+
 	const result = invoker(...defaults)
 
 	let inputs = defaults.map((value, i) => ({
@@ -104,6 +78,7 @@ export function create(fn: Function, defaults: any[], options?: {
 		id: uuid(),
 		inputs,
 		outputs,
+		setOp,
 		run,
 		set,
 		pipe,
@@ -117,8 +92,9 @@ export function create(fn: Function, defaults: any[], options?: {
 	/**
 	 * Manually trigger the node calculation.
 	 * @param args node function args. default: input values.
+	 * @param variant in multi-invoker node, which input variant to execute.
 	 */
-	function run(args = inputs.map((i) => i.value)): Node {
+	function run(args: any[] = inputs.map((i) => i.value)): Node {
 		const result = invoker(...args)
 		Object.assign(outputs, result.map((value, i) => ({...outputs[i], value})))
 		Object.values(piped).forEach(({node, pipe}) => node.set(pipe(...result)))
@@ -132,7 +108,7 @@ export function create(fn: Function, defaults: any[], options?: {
 	 * @param args array, object, or function defining new input values.
 	 * If a single other value type is passed, it's assigned as the first input.
 	 */
-	function set(args: object | any[] | ((inputValues?: any[]) => any[])): Node {
+	function set(args: any[] | Record<string, any> | ((inputValues?: any[]) => any[])): Node {
 		if(Array.isArray(args)) {
 			Object.assign(proxy, args.map((value, i) => ({...inputs[i], value})))
 		} else if(typeof args === 'object') {
@@ -155,6 +131,34 @@ export function create(fn: Function, defaults: any[], options?: {
 	}
 
 	/**
+	 * Only used when the node have changed type.
+	 */
+	function setOp(invokerType: string = inputs
+		.map(({connected}) => connected?.[0]?.type)
+		.filter((a) => !!a).join('&')
+	): Node {
+
+		if(!options.variants || Object.keys(options.variants).length === 0) return
+
+		const [regex, variant] = Object.entries(options.variants).find(([pattern]) => {
+			return new RegExp(pattern, 'gi').exec(invokerType)
+		}) || ['DEFAULT', {fn, out: []}]
+
+		if(variant.out) {
+			outputs.forEach((o, i) => variant.out[i] && Object.entries(variant.out[i]).forEach(([property, value]) => {
+				o[property] = value
+			}))
+		}
+
+		invoker = invoke(variant.fn, {
+			inputTypes: options.in.map((i) => i.type),
+			outputTypes: options.out.map((i) => i.type),
+		})
+
+		return _node
+	}
+
+	/**
 	 * Resets a port back to its default
 	 * @param port the port to reset
 	 */
@@ -170,18 +174,20 @@ export function create(fn: Function, defaults: any[], options?: {
 	 * @param inputPort destination node input
 	 * @return the source node
 	 */
-	function connect(outputPort: number, node: Node, inputPort: number) {
+	function connect(outputPort: number, node: Node, inputPort: number, opts: ConnectOptions) {
 		const pipe = (...args: any[]) => ({[inputPort]: args[outputPort]})
 		piped[`${node.id}:${inputPort}`] = {node, pipe}
 
 		const outputEdges = _node.outputs[outputPort].connected
 		if(!outputEdges.find((c) => c.id === node.id && c.port === inputPort)) {
-			outputEdges.push({id: node.id, port: inputPort})
+			outputEdges.push({id: node.id, port: inputPort, type: opts?.typeTo})
 		}
 		const inputEdges = node.inputs[inputPort].connected
 		if(!inputEdges.find((c) => c.id === _node.id && c.port === outputPort)) {
-			inputEdges.push({id: _node.id, port: outputPort})
+			inputEdges.push({id: _node.id, port: outputPort, type: opts?.typeFrom})
 		}
+
+		node.setOp()
 		_node.run()
 
 		subscriptions.forEach((fn) => fn(_node))
@@ -195,20 +201,21 @@ export function create(fn: Function, defaults: any[], options?: {
 	 * @return the destination node
 	 */
 	const PiedPiper = (...args: any[]) => [...args]
-	function pipe(node: Node, pipe: Piper = PiedPiper): Node {
+	function pipe(node: Node, pipe: Piper = PiedPiper, opts?: ConnectOptions): Node {
 		piped[node.id] = {node, pipe}
 
 		_node.outputs.forEach((o, j) => {
 			if(!o.connected.find((e) => e.id === node.id && e.port === j)) {
-				o.connected.push({id: node.id, port: j})
+				o.connected.push({id: node.id, port: j, type: opts?.typeTo})
 			}
 		})
 		node.inputs.forEach((i, j) => {
 			if(!i.connected.find((e) => e.id === _node.id && e.port === j)) {
-				i.connected.push({id: _node.id, port: j})
+				i.connected.push({id: _node.id, port: j, type: opts?.typeFrom})
 			}
 		})
 
+		node.setOp()
 		_node.run()
 
 		return node
@@ -246,8 +253,4 @@ export function create(fn: Function, defaults: any[], options?: {
 	}
 
 	return _node
-}
-
-export {
-	DT,
 }

@@ -24,8 +24,8 @@ const edge = {
 	to: null,
 }
 
-function onconnectFrom(host, {detail: {id, port}}) {
-	edge.from = {id, port}
+function onconnectFrom(host, {detail: {id, port, type}}) {
+	edge.from = {id, port, type}
 	if(edge.from && edge.to) {
 		store.dispatch(connectNode(edge.from, edge.to))
 		edge.from = null
@@ -33,8 +33,8 @@ function onconnectFrom(host, {detail: {id, port}}) {
 	}
 }
 
-function onconnectTo(host, {detail: {id, port}}) {
-	edge.to = {id, port}
+function onconnectTo(host, {detail: {id, port, type}}) {
+	edge.to = {id, port, type}
 	if(edge.from && edge.to) {
 		store.dispatch(connectNode(edge.from, edge.to))
 		edge.from = null
@@ -52,12 +52,14 @@ function ondisconnect(host, {detail: {from, to}}) {
 
 const onsave = debounce(() => save(store.getState()), 200)
 
-function addNode(host, {detail: {tag}}) {
-	const menu = host.render().querySelector('cam-hotkey-toggle#add-node')
+function addNode(host, {detail}) {
+	const menu = host.render().querySelector('cam-hotkey-toggle#create-node')
 	menu.value = false
 
-	const nodeEl = createNodeElement(tag, null, host.actionMousePos)
-	host.container.appendChild(nodeEl)
+	if(detail?.tag) {
+		const nodeEl = createNodeElement(detail.tag, null, host.actionMousePos)
+		host.container.appendChild(nodeEl)
+	}
 }
 
 export function createNodeElement(tag, id?, pos = {x: 0, y: 0}): NodeElement {
@@ -112,7 +114,7 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 		observe: (host, container, last) => {
 			if(!!last || !container) return
 			if(host.load) {
-				console.log('Restoring state from localstorage')
+				console.debug('Restoring state from localstorage')
 				host.load.nodes.forEach((n) => container.appendChild(n))
 			}
 		}
@@ -137,7 +139,7 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 			onhotkey:Shift+D="${duplicateSelected}"
 			onsave="${onsave}"
 		></ndjinn-canvas>
-		<cam-hotkey-toggle id="add-node" keys="Shift+A" onchange="${saveMousePos}">
+		<cam-hotkey-toggle id="create-node" keys="Shift+A" escape onchange="${saveMousePos}">
 			<menu-mouse slot="on" x="${actionMousePos.x}" y="${actionMousePos.y}"
 				catalog="${CATALOG}"
 				onselect="${addNode}"

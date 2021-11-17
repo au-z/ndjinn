@@ -29,7 +29,7 @@ const NdjinnToolbar = {
 	render: ({projectName}) => html`<header class="ndjinn-toolbar">
 		<div class="tools">
 			<cam-input value="${projectName}"
-				oninput="${(host, {detail}) => host.projectName = detail}"></cam-input>
+				onupdate="${(host, {detail}) => host.projectName = detail}"></cam-input>
 			<button onclick="${exportState}"><cam-icon>file_download</cam-icon></button>
 			<button onclick="${importState}"><cam-icon>file_upload</cam-icon></button>
 		</div>

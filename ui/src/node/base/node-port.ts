@@ -10,16 +10,21 @@ export interface NodePort extends HTMLElement {
 }
 
 const NodePort: Hybrids<NodePort> = {
+	tag: 'node-port',
 	id: 0,
 	type: '',
 	types: ({type}) => type.split(','),
 	input: false,
 	connected: false,
+	disabled: false,
+	inputType: {get: (_, val) => val, set: (_, val) => val},
 	edges: property([]),
-	classes: ({input, connected, types}) => {
+	classes: ({type, input, connected, disabled, edges, types}) => {
 		let classes = ['port', ...types]
 		if(input) classes.push('input')
 		if(connected) classes.push('connected')
+		if(connected && edges[0]?.type) classes.push(edges[0].type)
+		if(disabled) classes.push('disabled')
 		return classes
 	},
 	render: ({classes}) => html`<div

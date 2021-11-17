@@ -86,7 +86,7 @@ const halve = create((a) => [a / 2])
 divide.pipe(halve, (a) => [Math.round(a)])
 ```
 
-Avoid complicated piper functions so that your nodes most of the real work.
+Avoid complicated piper functions so that your nodes perform most of the real work.
 
 ### Subscribe
 
