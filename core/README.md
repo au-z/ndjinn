@@ -2,19 +2,19 @@
 
 ## Concepts
 
-### Invoker
-A special type of function which takes any number of arguments and returns an array of output arguments.
+### Op
+An Op desribes an atomic operation performed by a Node. An op is a special type of function which takes any number of arguments and returns an array of output arguments.
 
 ```js
-// an invoker taking two arguments and returning one
+// an op taking two arguments and returning one
 const add = (a, b) => [a + b]
 
-// an invoker taking a single argument and returning three
+// an op taking a single argument and returning three
 const channels = ({r, g, b}) => [r, g, b]
 ```
 
 ### Node
-A node wraps an invoker function. It only requires a valid invoker and default arguments. In this way, a node can be infinitely extended.
+A node wraps an op function. It only requires a valid op and default arguments. In this way, a node can be extended to many different domains with minimal overhead.
 
 ```ts
 import {Node, create} from '@ndjinn/core'
@@ -29,7 +29,7 @@ rgb.outputs // a single output for the combined rgb color
 Nodes can be run manually using the last provided input arguments:
 
 ```ts
-rgb.run() // runs the invoker function
+rgb.run() // runs the op function
 ```
 
 ### Set
@@ -97,7 +97,7 @@ node.subscribe((newState) => console.log(newState.outputs[0]))
 ```
 
 ### Metadata
-Sometimes, pure functions don't exactly do the trick and we need to annotate nodes.
+Sometimes, withing directly with function argument indices don't self-document well and we need to annotate nodes.
 
 ```ts
 // Import some standard datatypes (DT)
