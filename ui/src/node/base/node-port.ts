@@ -27,8 +27,7 @@ const NodePort: Hybrids<NodePort> = {
 		if(disabled) classes.push('disabled')
 		return classes
 	},
-	render: ({classes}) => html`<div
-		class="${classes}">
+	render: ({classes}) => html`<div class="${classes}">
 		<cam-icon>highlight_off</cam-icon>
 	</div>`.style(styles)
 }

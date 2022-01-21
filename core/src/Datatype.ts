@@ -4,7 +4,10 @@ export enum Datatype {
 	num = 'num',
 	obj = 'obj',
 
+	bit = 'bit',
 	uint8 = 'uint8',
+	deg = 'deg',
+	percent = 'percent',
 
 	vec = 'vec',
 	vec2 = 'vec2',

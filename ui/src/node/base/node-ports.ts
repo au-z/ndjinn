@@ -1,5 +1,5 @@
+import { DT, Port } from "@ndjinn/core";
 import { dispatch, html, property } from "hybrids";
-import { FieldMode } from "./node-base";
 import NodePort from './node-port'
 
 import styles from './node-ports.css'
@@ -29,14 +29,14 @@ const NodePorts = {
 	ports: property([]),
 	edges: {
 		...property([]),
-		observe: (host, edges, last) => {
-			if(last || edges.length < 1) return
-			edges?.forEach((e, i) => e.forEach((c) => {
-				const port = {id: host.id, port: i}
-				dispatch(host, 'connect', {detail: {
-					from: host.inputs ? c : port,
-					to: host.inputs ? port : c,
-				}, bubbles: true, composed: true})
+		observe: (host, edgesInAndOut, last) => {
+			if(last || edgesInAndOut.length < 1) return
+			edgesInAndOut?.forEach((edges, i) => edges.forEach((edge) => {
+				const port = {id: host.id, port: i, type: host.ports[i].type};
+
+				const detail = host.inputs ?
+					({from: edge, to: port}) : ({from: port, to: edge})
+				dispatch(host, 'connect', {detail, bubbles: true, composed: true})
 			}))
 		},
 	},
@@ -48,7 +48,6 @@ const NodePorts = {
 			type="${type}"
 			connected="${connected.length > 0}"
 			edges="${[...connected]}"
-			disabled="${mode === FieldMode.SOURCE}"
 			onclick="${(host, e) => onclick(host, e, i, type, inputs, connected)}"></node-port>
 		`)}
 	</div>`.define(NodePort).style(styles),

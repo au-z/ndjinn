@@ -54,6 +54,7 @@ const NdjinnCanvas: Hybrids<NdjinnCanvas> = {
 	},
 	mouseIO: ({onMouseSelect}) => {
 		let down = false
+		let dragging = false
 		let selection: [number, number, number, number] = [null, null, null, null]
 
 		function onmousedown(e: MouseEvent) {
@@ -63,15 +64,17 @@ const NdjinnCanvas: Hybrids<NdjinnCanvas> = {
 
 		function onmousemove(e: MouseEvent) {
 			if(down) {
+				dragging = true
 				selection[2] = e.clientX
 				selection[3] = e.clientY
 			}
 		}
 
 		function onmouseup(e: MouseEvent) {
-			onMouseSelect(selection)
+			dragging && onMouseSelect(selection)
 			selection = [null, null, null, null]
 			down = false
+			dragging = false
 		}
 
 		return {

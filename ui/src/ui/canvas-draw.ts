@@ -70,7 +70,8 @@ function drawPort(ctx, portEl: NodePort, {debug, selected, nodeId}) {
 			const ctrls = easeControls(pos, to)
 			ctx.beginPath()
 			ctx.lineWidth = 2
-			ctx.strokeStyle = selected ? linearGradient(ctx, pos, to, '#8c909b', '#f3cd95') : '#8c909b'
+			// ctx.strokeStyle = selected ? linearGradient(ctx, pos, to, '#8c909b', '#f3cd95') : '#8c909b'
+			ctx.strokeStyle = '#8c909b'
 			ctx.moveTo(pos.x, pos.y)
 			ctx.bezierCurveTo(...ctrls[0], ...ctrls[1], to.x, to.y)
 			ctx.stroke()

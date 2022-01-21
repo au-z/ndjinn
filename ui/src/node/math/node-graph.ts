@@ -5,14 +5,10 @@ import { NodeUI } from '../base/node-base'
 const fn = (a, b) => [[a, b]]
 
 const NodeGraph = NodeUI(fn, [0, 0], null, {
-	name: 'vec2',
-	tag: 'node-vec3',
-	in: [{type: DT.num, name: 'a'}, {type: DT.num, name: 'b'}],
+	name: 'graph',
+	tag: 'node-graph',
+	in: [{type: DT.num, name: 'a', field: true}, {type: DT.num, name: 'b', field: true}],
 	out: [{type: DT.vec2, name: 'vec2'}],
-	fields: [
-		{name: 'a'},
-		{name: 'b'},
-	],
 	render: ({fields}) => html`<form class="vec">
 		${fields.map((f) => html`<div class="field vec">
 			<cam-input type="number" value="${f.value}"

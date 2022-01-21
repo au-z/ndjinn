@@ -20,10 +20,18 @@ export interface ConnectedPort {
 	type?: DT,
 }
 
-export interface PortOptions { name?: string, type?: DT }
+export interface PortOptions { name?: string, type?: DT, field?: boolean }
+
 export interface Port extends PortOptions {
 	value: any,
 	connected: ConnectedPort[],
+}
+
+export interface HubTrigger extends Port {
+	receive: (val) => void;
+}
+export interface HubEmitter extends Port {
+	emit: (val) => void;
 }
 
 export interface ConnectOptions { typeFrom?: DT, typeTo?: DT }
@@ -31,7 +39,7 @@ export interface ConnectOptions { typeFrom?: DT, typeTo?: DT }
 export interface NodeOptions {
 	in?: PortOptions[],
 	out?: PortOptions[],
-	variants?: Record<string, {fn: Op, out: PortOptions[]}>,
+	variants?: Record<string, {fn: Op, out?: PortOptions[]}>,
 }
 
 export interface Node {

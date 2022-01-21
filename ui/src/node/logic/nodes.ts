@@ -13,8 +13,9 @@ const bitMash = {
 	render: ({}) => html`<form></form>`
 }
 
-const NodeBit = NodeUI((bit) => [bit], [false], {
+const NodeBit = NodeUI((bit) => [bit], [false], null, {
 	name: 'BIT',
+	tag: 'node-bit',
 	in: [{type: DT.bit, name: 'val', field: true}],
 	out: [{type: DT.bit, name: 'val'}],
 	render: ({fields: [bit]}) => html`<form>
@@ -28,34 +29,39 @@ const NodeBit = NodeUI((bit) => [bit], [false], {
 })
 define('node-bit', NodeBit)
 
-const NodeNot = NodeUI((a) => [!a], [false], {
+const NodeNot = NodeUI((a) => [!a], [false], null, {
 	name: 'NOT',
+	tag: 'node-not',
 	in: [{type: DT.bit, name: 'val'}],
 	out: [{type: DT.bit, name: 'not'}],
 	render: ({}) => html`<form></form>` 
 })
 define('node-not', NodeNot)
 
-const NodeAnd = NodeUI((a, b) => [a && b], [false, false], {
+const NodeAnd = NodeUI((a, b) => [a && b], [false, false], null, {
 	name: 'AND',
+	tag: 'node-and',
 	...bitMash,
 })
 define('node-and', NodeAnd)
 
-const NodeNand = NodeUI((a, b) => [!(a && b)], [false, false], {
+const NodeNand = NodeUI((a, b) => [!(a && b)], [false, false], null, {
 	name: 'NAND',
+	tag: 'node-nand',
 	...bitMash,
 })
 define('node-nand', NodeNand)
 
-const NodeOr = NodeUI((a, b) => [a && b], [false, false], {
+const NodeOr = NodeUI((a, b) => [a && b], [false, false], null, {
 	name: 'OR',
+	tag: 'node-or',
 	...bitMash,
 })
 define('node-or', NodeOr)
 
-const NodeXor = NodeUI((a, b) => [!a === b], [false, false], {
+const NodeXor = NodeUI((a, b) => [!a === b], [false, false], null, {
 	name: 'XOR',
+	tag: 'node-xor',
 	...bitMash,
 })
 define('node-xor', NodeXor)

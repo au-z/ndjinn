@@ -9,13 +9,9 @@
 	@apply absolute rounded-md;
 	border: 1px solid var(--ndjinn-node-border, transparent);
 	font-family: var(--ndjinn-font, sans-serif);
-	margin: 4px;
 	display: inline-grid;
 	grid-template-columns: 0 max-content 0;
 	grid-template-areas: 'h h h' 'i c o';
-
-	min-width: 4em;
-	min-height: 4em;
 
 	color: var(--ndjinn-node-color, #fff);
 	opacity: var(--ndjinn-debug-node-opacity, 1.0);
@@ -72,9 +68,14 @@ select {
 }
 cam-input::part(input),
 select {
-	background: rgba(0, 0, 0, 0.2);
+	background: var(--ndjinn-input-bg, rgba(0, 0, 0, 0.2));
 	color: var(--node-color, #fff);
 	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+option {
+	background: var(--ndjinn-input-bg, rgba(0, 0, 0, 0.2));
+	line-height: 0.4rem;
 }
 
 cam-input:disabled::part(input) {

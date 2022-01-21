@@ -42,11 +42,8 @@ const fn = (a) => [a]
 export const NodeMat2 = NodeUI(fn, [[1, 0, 0, 1]], null, {
 	name: 'mat2',
 	tag: 'node-mat2',
-	in: [{type: DT.mat2, name: 'in'}],
+	in: [{type: DT.mat2, name: 'in', field: true}],
 	out: [{type: DT.mat2, name: 'out'}],
-	fields: [
-		{name: 'in'},
-	],
 	rowMajor: false,
 	len: () => 2,
 	updateMat: ({set, fields, len}) => (i, detail) => {
@@ -62,11 +59,8 @@ define('node-mat2', NodeMat2)
 export const NodeMat3 = NodeUI(fn, [[1, 0, 0, 0, 1, 0, 0, 0, 1]], null, {
 	name: 'mat3',
 	tag: 'node-mat3',
-	in: [{type: DT.mat3, name: 'in'}],
+	in: [{type: DT.mat3, name: 'in', field: true}],
 	out: [{type: DT.mat3, name: 'out'}],
-	fields: [
-		{name: 'in'},
-	],
 	rowMajor: false,
 	len: () => 3,
 	updateMat: ({set, fields, len}) => (i, detail) => {
@@ -82,11 +76,8 @@ define('node-mat3', NodeMat3)
 export const NodeMat4 = NodeUI(fn, [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]], null, {
 	name: 'mat4',
 	tag: 'node-mat4',
-	in: [{type: DT.mat4, name: 'in'}],
+	in: [{type: DT.mat4, name: 'in', field: true}],
 	out: [{type: DT.mat4, name: 'out'}],
-	fields: [
-		{name: 'in'},
-	],
 	rowMajor: false,
 	len: () => 4,
 	updateMat: ({set, fields, len}) => (i, detail) => {

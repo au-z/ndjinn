@@ -1,22 +1,21 @@
+import CodeTex from 'code-tex'
 import { DT } from "@ndjinn/core"
-import { define, html } from "hybrids"
-import {NodeUI} from '../base/node-base'
+import { html } from "hybrids"
+import {NodeComponent} from '../base/node-base'
+const components = {CodeTex}
 
 const fn = (obj) => [JSON.stringify(obj, null, 2)]
 
-const NodeJSON = NodeUI(fn, [{}], {
-	name: 'json',
-	in: [{type: [DT.obj], name: 'json'}],
-	out: [{type: [DT.str], name: 'formatted'}],
-	render: ({outputs}) => html`<div class="json">
-		<code-tex lang="json" theme="nord" source="${outputs[0].value}"></code-tex>
-	</div>
-	<style>
-		.json {
-			min-width: 200px;
-		}
-	</style>`,
+export const NodePrint = NodeComponent(fn, [{}], {
+	in: [{type: DT.any, name: 'json'}],
+	out: [],
+	component: {
+		render: ({inputs}) => html`<div class="json" style="min-width: 240px;">
+			<code-tex lang="json" theme="nord"
+				source="${JSON.stringify(inputs[0].value)}"
+				transparent>
+			</code-tex>
+		</div>`
+	},
 })
 
-define('node-json', NodeJSON)
-export default NodeJSON

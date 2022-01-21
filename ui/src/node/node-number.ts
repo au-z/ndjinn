@@ -7,9 +7,8 @@ const fn = (x) => [x]
 const NodeNumber = NodeUI(fn, [0], null, {
 	name: 'number',
 	tag: 'node-number',
-	in: [{type: DT.num, name: 'val'}],
+	in: [{type: DT.num, name: 'val', field: true}],
 	out: [{type: DT.num, name: 'val'}],
-	fields: [{name: 'val'}],
 	render: ({maxLen, fields}) => html`
 		<form>${fields.map((f) => f.name === 'val' ? html`
 			<cam-box class="field" flex="space-between center">

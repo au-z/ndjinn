@@ -1,20 +1,7 @@
 import {v4 as uuid} from 'uuid'
 import {Datatype as DT} from './Datatype'
 import { Op, Node, Piper, ConnectOptions, NodeOptions } from './models'
-import { Arr } from './utils'
-
-const setEffect = (fn) => ({
-	set: (inputs, key, value) => {
-		try {
-			inputs[key] = value
-		} catch {
-			return false
-		} finally {
-			fn(value)
-			return true
-		}
-	},
-})
+import { Arr, setEffect } from './utils'
 
 /**
  * Creates an node function invocation context by constructing IO metadata.
@@ -47,12 +34,12 @@ function invoke(fn: Op, options?: {
 export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node {
 	options = {in: [], out: [], variants: {}, ...options}
 	// Reassigned if connection has different typeKey
-	let invoker = invoke(fn, {
+	let op = invoke(fn, {
 		inputTypes: options.in.map((i) => i.type),
 		outputTypes: options.out.map((i) => i.type),
 	})
 
-	const result = invoker(...defaults)
+	const result = op(...defaults)
 
 	let inputs = defaults.map((value, i) => ({
 		...options.in[i],
@@ -92,10 +79,10 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	/**
 	 * Manually trigger the node calculation.
 	 * @param args node function args. default: input values.
-	 * @param variant in multi-invoker node, which input variant to execute.
+	 * @param variant in multi-op node, which input variant to execute.
 	 */
 	function run(args: any[] = inputs.map((i) => i.value)): Node {
-		const result = invoker(...args)
+		const result = op(...args)
 		Object.assign(outputs, result.map((value, i) => ({...outputs[i], value})))
 		Object.values(piped).forEach(({node, pipe}) => node.set(pipe(...result)))
 
@@ -133,16 +120,18 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	/**
 	 * Only used when the node have changed type.
 	 */
-	function setOp(invokerType: string = inputs
-		.map(({connected}) => connected?.[0]?.type)
-		.filter((a) => !!a).join('&')
-	): Node {
+	function setOp(opType?: string): Node {
+		if(!opType) {
+			opType = inputs.map(({connected}) => connected?.[0]?.type).filter((a) => !!a).join('&')
+		}
 
 		if(!options.variants || Object.keys(options.variants).length === 0) return
 
 		const [regex, variant] = Object.entries(options.variants).find(([pattern]) => {
-			return new RegExp(pattern, 'gi').exec(invokerType)
+			return new RegExp(pattern, 'gi').exec(opType)
 		}) || ['DEFAULT', {fn, out: []}]
+
+		console.log(opType, '=>', variant)
 
 		if(variant.out) {
 			outputs.forEach((o, i) => variant.out[i] && Object.entries(variant.out[i]).forEach(([property, value]) => {
@@ -150,7 +139,7 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 			}))
 		}
 
-		invoker = invoke(variant.fn, {
+		op = invoke(variant.fn, {
 			inputTypes: options.in.map((i) => i.type),
 			outputTypes: options.out.map((i) => i.type),
 		})

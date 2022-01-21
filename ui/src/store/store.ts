@@ -27,8 +27,8 @@ const reducers = {
 		const fromNode = state.registry.get(from.id)
 		const toNode = state.registry.get(to.id)
 		if(fromNode && toNode) fromNode.connect(from.port, toNode, to.port, {
-			outputType: from.type,
-			inputType: to.type,
+			typeFrom: from.type,
+			typeTo: to.type,
 		})
 		else console.debug('[store][connect] cant connect two nodes which do not exist')
 		return state

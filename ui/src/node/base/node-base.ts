@@ -1,9 +1,18 @@
-import {html, render, Hybrids, RenderFunction, dispatch, property, UpdateFunctionWithMethods, define as defineHybrids} from 'hybrids'
-import {Node, NodeOptions, create, Op, PortOptions, Port, DT, Piper} from '@ndjinn/core'
+import {html, render, Hybrids, RenderFunction, dispatch, UpdateFunctionWithMethods, define as defineHybrids} from 'hybrids'
+import {Node, NodeOptions, create, Op, PortOptions} from '@ndjinn/core'
 import {Draggable} from '@auzmartist/cam-el'
 import NodePorts from './node-ports'
 import styles from './node-base.css'
 import store, { redux } from '../../store/store'
+import { Field, NodeElement, NodeTemplate } from './models'
+import { TEMPLATE_BASIC_FIELDS } from './templates'
+
+const nodeComputed = <T>(fn: (node: Node) => T) => ({
+	get: ({node}) => fn(node),
+	connect: (host, key, invalidate) => {
+		host.node?.subscribe((n) => invalidate())
+	},
+})
 
 function renderNode<E extends NodeElement>(fn: RenderFunction<E>, options?: {shadowRoot?: boolean | object}) {
 	return render<E>((host) => html`
@@ -13,186 +22,61 @@ function renderNode<E extends NodeElement>(fn: RenderFunction<E>, options?: {sha
 			<div class="header">
 				<label title="${host.id}">${host.name}</label>
 			</div>
+
 			<div class="inputs">
-				<node-ports inputs id="${host.id}"
-					edges="${host.incoming}"
+				<node-ports inputs id="${host.id}" edges="${host.incoming}"
 					ports="${host.inputs.map((i) => ({
 						...i,
 						mode: host.fields?.find((f) => f.name === i.name)?.mode,
 					}))}"></node-ports>
 			</div>
+
 			<div class="outputs">
-				<node-ports id="${host.id}"
-					edges="${host.outgoing}"
+				<node-ports id="${host.id}" edges="${host.outgoing}"
 					ports="${host.outputs}"></node-ports>
 			</div>
+
 			<div class="content">
 				${fn(host)}
 			</div>
 		</div>
-	`.define(NodePorts).style(styles), options)
+	`.define(NodePorts).style(styles),
+	options)
 }
 
-const TEMPLATE_BASIC_FIELDS = ({fields}) => html`<form>
-	${fields.map((f: Field & Port) => {
-
-		// DEPRECATED
-		let attrs: any = {}
-		try {
-			attrs = attrsFromDT(f.type)
-		} catch (ex) {
-			console.warn(ex)
-		}
-
-		const input = inputFromDT(f.type)
-
-		return html`<cam-box class="field" flex="space-between center">
-			<label>${f.name}&nbsp;</label>
-			${input ? input(f) : html`
-				<cam-input type="${f.inputType || attrs.type || 'text'}" value="${f.value}"
-					min="${attrs.min}"
-					max="${attrs.max}"
-					step="${attrs.step}"
-					wrap=${attrs.wrap}
-					onupdate="${(host, e) => host.set(({[f.name]: e.detail}))}"
-					disabled="${f.mode === FieldMode.SOURCE}"
-				></cam-input>
-			`}
-		</cam-box>`
-	})}
-</form>`
-
-function inputFromDT(dt: DT): Function | void {
-	switch(dt) {
-		case DT.uint8: return ({name, value, mode}: Field & Port) => html`<cam-input type="number" autosize
-			min="0" max="255" step="1" wrap
-			value="${value}"
-			onupdate="${(host, e) => host.set(({[name]: e.detail}))}"
-			disabled="${mode === FieldMode.OPAQUE}"
-		></cam-input>`
-
-		case DT.num: return ({name, value, mode}: Field & Port) => html`<cam-input type="number" autosize
-			value="${value}"
-			onupdate="${(host, e) => host.set(e.detail)}"
-			disabled="${mode === FieldMode.OPAQUE}"
-		></cam-input>`
-	}
+interface CustomElement extends HTMLElement {
+	[key: string]: any
 }
 
-function attrsFromDT(dt: DT) {
-	const defaults = {type: 'text', min: -Infinity, max: Infinity, step: 1, wrap: false}
-	switch (dt) {
-		case DT.uint8: return {...defaults, type: 'number', min: 0, max: 255, step: 1, wrap: true}
-		case DT.hsl: return {...defaults, type: 'number', min: 0, max: 360, step: 1, wrap: true}
-		case DT.num: return {...defaults, type: 'number', step: 'any'}
-		case DT.vec:
-		case DT.vec:
-		case DT.vec2:
-		case DT.vec3:
-		case DT.rgb:
-		case DT.rgba:
-		case DT.hsl:
-		case DT.hsla:
-		case DT.vec4:
-		case DT.mat2:
-		case DT.mat3:
-		case DT.mat4:
-		case DT.obj: throw new Error(`Cannot map ${dt} to input attributes.`)
-		case DT.str:
-		case DT.any:
-		default: return defaults
-	}
+interface NodeComponentOptions extends NodeOptions {
+	component?: Hybrids<CustomElement>
 }
 
-export enum FieldMode {
-	OPAQUE = 'OPAQUE',
-	EDIT = 'EDIT',
-	SOURCE = 'SOURCE',
-}
+export function NodeComponent<T extends NodeTemplate>(fn: Op, defaults: any[], options: NodeComponentOptions = {}) {
+	options.in = options.in ?? []
+	options.out = options.out ?? []
 
-export interface Field {
-	name: string,
-	inputType?: string,
-	mode?: FieldMode,
-}
-
-export interface NodeTemplate {
-	name: string,
-	in: any[],
-	out: any[],
-	fields: Field[],
-	render: RenderFunction<any>,
-}
-
-export interface NodeElement extends HTMLElement {
-	id: string,
-	name: string,
-	inputs: Port[],
-	outputs: Port[],
-	fields: Field[],
-	allSelected: string[],
-	selected: boolean,
-	incoming: any[],
-	outgoing: any[],
-	set: (args: any[] | object) => void,
-	run: () => void,
-	select: (host, e) => void,
-	draggableStart: (host, e) => void,
-	draggableEnd: (host, e) => void,
-	draggableDrag: (host, e) => void,
-}
-
-export interface NodeComponent extends HTMLElement {
-	in: PortOptions[],
-}
-
-const nodeComputed = <T>(fn: (node: Node) => T) => ({
-	get: ({node}) => fn(node),
-	connect: (host, key, invalidate) => {
-		host.node?.subscribe(() => invalidate())
-	},
-})
-
-export function NodeComponent<T extends NodeTemplate>(fn: Op, defaults: any[], options: NodeOptions = {}) {
 	let customTemplate = !!options.component?.render
+	const inputFields = options.in.filter((i) => i.field)
+
 	const component = NodeUI<T>(fn, defaults, options.variants, {
 		in: options.in,
 		out: options.out,
-		fields: [],
+		fields: nodeComputed((node: Node) => node.inputs.filter((i) => i.field).map((i) => {
+			const mode = i.connected.length > 0 ? 'OPAQUE' : 'EDIT'
+			return {...i, mode}
+		})),
+		render: () => html``,
+		...options.component,
 	} as any)
-	if(!component.render) component.render = renderNode(() => html``)
 
-	const api = {
-		withFields,
-		withTemplate,
-		define,
+	if(!customTemplate && inputFields.length > 0) {
+		component.render = renderNode(TEMPLATE_BASIC_FIELDS)
 	}
 
-	function withFields(fields: Field[]) {
-		if(fields.find((f) => typeof f === 'string')) {
-			fields = fields.map((name) => ({name}))
-		}
-
-		const mapFields = (node: Node) => {
-			return fields.map((f) => {
-				const input = node.inputs.find((i) => i.name === f.name)
-				if(!input) throw new Error(`Cannot find input matching field name '${f.name}'`);
-		
-				f.mode = input.connected.length > 0 ? FieldMode.OPAQUE : (f.mode ?? FieldMode.EDIT)
-	
-				return {
-					...input,
-					mode: f.mode,
-				}
-			})
-		}
-		component.fields = nodeComputed(mapFields)
-
-		if(!customTemplate) {
-			component.render = renderNode(TEMPLATE_BASIC_FIELDS)
-		}
-
-		return api
+	const api = {
+		withTemplate,
+		define,
 	}
 
 	function withTemplate<E extends NodeElement>(template: UpdateFunctionWithMethods<E>) {
@@ -217,12 +101,13 @@ export function NodeComponent<T extends NodeTemplate>(fn: Op, defaults: any[], o
 	return api
 }
 
-export function NodeUI<T extends NodeTemplate>(fn: Op, defaults: any[], variants: Record<string, {fn: Op, out?: any[]}> = {}, template: T): Hybrids<NodeElement> {
+export function NodeUI<T extends NodeTemplate>(fn: Op, defaults: any[], variants: Record<string, {fn: Op, out?: PortOptions[]}> = {}, template: T): Hybrids<NodeElement> {
 	function connectNode(host, node: Node, invalidate) {
 		host.setAttribute('id', node.id)
 		host.id = node.id
 		host.run = node.run
 		host.set = (...args) => {
+			// @ts-ignore
 			node.set(...args)
 			dispatch(host, 'save', {detail: null, bubbles: true})
 		}
@@ -264,8 +149,12 @@ export function NodeUI<T extends NodeTemplate>(fn: Op, defaults: any[], variants
 				host[key] = node
 			},
 		},
-		inputs: <any>nodeComputed((node) => [...node.inputs]),
+		inputs: <any>nodeComputed((node) => [...node.inputs].map((i: any) => ({
+			...i,
+			mode: i.connected.length > 0 ? 'OPAQUE' : 'EDIT',
+		}))),
 		outputs: <any>nodeComputed((node) => [...node.outputs]),
+		fields: ({inputs}) => inputs.filter((i) => i.field),
 		render: renderNode(template.render),
 	} as any
 }
