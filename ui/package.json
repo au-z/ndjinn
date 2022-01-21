@@ -1,27 +1,27 @@
 {
-  "name": "@ndjinn/ui",
-  "type": "module",
-  "scripts": {
-    "build": "vite build",
-    "dev": "vite"
-  },
-  "devDependencies": {
-    "@types/node": "^14.14.32",
-    "@types/three": "^0.134.0",
-    "autoprefixer": "^10.4.0",
-    "hybrids": "^6.1.0",
-    "mousetrap": "^1.6.5",
-    "postcss": "^8.2.7",
-    "postcss-mixins": "^8.1.0",
-    "postcss-nested": "^5.0.6",
-    "redux": "^4.0.5",
-    "tailwindcss": "^2.2.19",
-    "vite": "^2.0.5"
-  },
-  "dependencies": {
-    "@auzmartist/cam-el": "^1.2.3",
-    "@ndjinn/core": "../core",
-    "code-tex": "^0.2.0",
-    "three": "^0.134.0"
-  }
+	"name": "@ndjinn/ui",
+	"type": "module",
+	"scripts": {
+		"build": "vite build",
+		"dev": "vite"
+	},
+	"devDependencies": {
+		"@types/node": "^14.14.32",
+		"@types/three": "^0.134.0",
+		"autoprefixer": "^10.4.0",
+		"hybrids": "^6.1.0",
+		"mousetrap": "^1.6.5",
+		"postcss": "^8.2.7",
+		"postcss-mixins": "^8.1.0",
+		"postcss-nested": "^5.0.6",
+		"redux": "^4.0.5",
+		"tailwindcss": "^2.2.19",
+		"vite": "^2.0.5"
+	},
+	"dependencies": {
+		"@auzmartist/cam-el": "^1.2.3",
+		"@ndjinn/core": "../core",
+		"code-tex": "^0.2.0",
+		"three": "^0.134.0"
+	}
 }

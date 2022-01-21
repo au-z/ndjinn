@@ -1,5 +1,5 @@
 import {html, render, Hybrids, RenderFunction, dispatch, UpdateFunctionWithMethods, define as defineHybrids} from 'hybrids'
-import {Node, NodeOptions, create, Op, PortOptions} from '@ndjinn/core'
+import {Node, NodeOptions, create2, Op, PortOptions} from '@ndjinn/core'
 import {Draggable} from '@auzmartist/cam-el'
 import NodePorts from './node-ports'
 import styles from './node-base.css'
@@ -140,7 +140,10 @@ export function NodeUI<T extends NodeTemplate>(fn: Op, defaults: any[], variants
 		outgoing: [],
 		node: {
 			connect: (host, key, invalidate) => {
-				let node = create(fn, defaults, {in: template.in, out: template.out, variants})
+				let node = create2(fn, defaults, {
+					i: template.in,
+					o: template.out
+				})
 				const persistedId = host.getAttribute('id')
 				if(persistedId) node.id = persistedId
 
