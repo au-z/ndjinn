@@ -1,11 +1,12 @@
 import {html, render, Hybrids, RenderFunction, dispatch, UpdateFunctionWithMethods, define as defineHybrids} from 'hybrids'
-import {Node, NodeOptions, create2, Op, PortOptions} from '@ndjinn/core'
+import {Node, NodeOptions, create, Op, PortOptions} from '@ndjinn/core'
 import {Draggable} from '@auzmartist/cam-el'
 import NodePorts from './node-ports'
 import styles from './node-base.css'
 import store, { redux } from '../../store/store'
-import { Field, NodeElement, NodeTemplate } from './models'
+import { NodeElement, NodeTemplate } from './models'
 import { TEMPLATE_BASIC_FIELDS } from './templates'
+const components = {NodePorts};
 
 const nodeComputed = <T>(fn: (node: Node) => T) => ({
 	get: ({node}) => fn(node),
@@ -40,7 +41,7 @@ function renderNode<E extends NodeElement>(fn: RenderFunction<E>, options?: {sha
 				${fn(host)}
 			</div>
 		</div>
-	`.define(NodePorts).style(styles),
+	`.style(styles),
 	options)
 }
 
@@ -62,7 +63,7 @@ export function NodeComponent<T extends NodeTemplate>(fn: Op, defaults: any[], o
 	const component = NodeUI<T>(fn, defaults, options.variants, {
 		in: options.in,
 		out: options.out,
-		fields: nodeComputed((node: Node) => node.inputs.filter((i) => i.field).map((i) => {
+		fields: nodeComputed((node: Node) => node.meta.in.filter((i) => i.field).map((i) => {
 			const mode = i.connected.length > 0 ? 'OPAQUE' : 'EDIT'
 			return {...i, mode}
 		})),
@@ -140,9 +141,9 @@ export function NodeUI<T extends NodeTemplate>(fn: Op, defaults: any[], variants
 		outgoing: [],
 		node: {
 			connect: (host, key, invalidate) => {
-				let node = create2(fn, defaults, {
-					i: template.in,
-					o: template.out
+				let node = create(fn, defaults, {
+					in: template.in,
+					out: template.out,
 				})
 				const persistedId = host.getAttribute('id')
 				if(persistedId) node.id = persistedId

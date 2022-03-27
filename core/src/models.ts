@@ -1,3 +1,4 @@
+import { Subject, Subscription } from "rxjs"
 import { Datatype as DT } from "./Datatype"
 
 /**
@@ -43,25 +44,23 @@ export interface NodeOptions {
 }
 
 export interface Node {
-	id: string, // uuid
-	inputs: Port[],
+	id: string,
+	inputs: any[],
 	outputs: Port[],
-
-	// Triggers an Op execution.
-	run: (args?: any[]) => Node,
-	// Either provides or produces new inputs. Triggers an Op execution.
+	// Triggers an Op execution
+	run: (args?: any[]) => Promise<Node>,
+	run$: Subject<void>,
+	// Either provides or produces new inputs. Triggers an Op execution
 	set: (args: object | any[] | ((inputs: any[]) => any[])) => Node,
-	// chooses among regex indexed Op variants.
+	// chooses among regex indexed Op variants
 	setOp: (opSignature?: string) => Node,
-
 	// reset a port to default value 
 	reset: (port: string | number) => void,
-
 	// connect to other nodes
 	pipe: (node: Node, piper?: Piper, options?: ConnectOptions) => Node,
 	connect: (outputIdx: number, node: Node, inputIdx: number, options?: ConnectOptions) => Node,
-	disconnect: (outputIdx: number, node: Node, inputIdx: number) => Node,
-
+	edge: (idx: number, sub: Subscription) => void,
+	disconnect: (name: number | string) => Node,
 	// side-effects from node updates
 	subscribe: (fn: (node: Node) => void) => number,
 	unsubscribe: (number) => boolean,
