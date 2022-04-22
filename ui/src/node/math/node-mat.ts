@@ -54,8 +54,6 @@ export const NodeMat2 = NodeUI(fn, [[1, 0, 0, 1]], null, {
 	render: renderMat,
 })
 
-define('node-mat2', NodeMat2)
-
 export const NodeMat3 = NodeUI(fn, [[1, 0, 0, 0, 1, 0, 0, 0, 1]], null, {
 	name: 'mat3',
 	tag: 'node-mat3',
@@ -71,8 +69,6 @@ export const NodeMat3 = NodeUI(fn, [[1, 0, 0, 0, 1, 0, 0, 0, 1]], null, {
 	render: renderMat,
 })
 
-define('node-mat3', NodeMat3)
-
 export const NodeMat4 = NodeUI(fn, [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]], null, {
 	name: 'mat4',
 	tag: 'node-mat4',
@@ -87,5 +83,3 @@ export const NodeMat4 = NodeUI(fn, [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0
 	},
 	render: renderMat,
 })
-
-define('node-mat4', NodeMat4)

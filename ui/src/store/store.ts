@@ -1,10 +1,10 @@
 import {createStore} from 'redux'
-import {Node} from '@ndjinn/core'
+import {Node, NodeEdge} from '@ndjinn/core'
 const devtools = (<any>window).__REDUX_DEVTOOLS_EXTENSION__ && (<any>window).__REDUX_DEVTOOLS_EXTENSION__()
 
-interface NdjinnState {
+export interface NdjinnState {
 	container: HTMLElement,
-registry: Map<string, Node>,
+	registry: Map<string, Node>,
 	selected: string[],
 }
 
@@ -30,30 +30,18 @@ const reducers = {
 			typeFrom: from.type,
 			typeTo: to.type,
 		})
-		else console.debug('[store][connect] cant connect two nodes which do not exist')
+		else console.debug('[store][connect] cannot connect two nodes which do not exist')
 		return state
 	},
 	DISCONNECT_NODE: (state: NdjinnState, {from, to}) => {
-		const fromNode = state.registry.get(from.id)
 		const toNode = state.registry.get(to.id)
-		if(fromNode && toNode) fromNode.disconnect(from.port, toNode, to.port)
-		else console.debug('[store][disconnect] failed to disconnect two nodes')
+		if(toNode) toNode.disconnect(to.port);
+		else console.debug('[store][disconnect] node not found')
 		return state
 	},
 	DELETE_NODE: (state: NdjinnState, node: Node) => {
 		console.log('deleting node ', node.id)
-		node.inputs.forEach((input, toPort) => {
-			input.connected.forEach((from) => {
-				const fromNode = state.registry.get(from.id)
-				fromNode.disconnect(from.port, node, toPort).run()
-			})
-		})
-		node.outputs.forEach((output, outputPort) => {
-			output.connected.forEach((to) => {
-				const toNode = state.registry.get(to.id)
-				node.disconnect(outputPort, toNode, to.port).run()
-			})
-		})
+		node.connections.forEach((edge: NodeEdge) => edge?.sub?.unsubscribe())
 		state.registry.delete(node.id)
 
 		return state
@@ -98,7 +86,7 @@ export const selectNode = (id, append = false) => ({type: 'SELECT_NODE', value: 
 export const selectNodes = (ids) => ({type: 'SELECT_NODES', value: {ids}})
 export const selectAll = () => ({type: 'SELECT_ALL', value: null})
 
-export function redux(store, mapState) {
+export function redux<E, S, T>(store, mapState?: (host: E, state: S) => T) {
 	const get = mapState ? (host) => mapState(host, store.getState()) : () => store.getState()
 
 	return {

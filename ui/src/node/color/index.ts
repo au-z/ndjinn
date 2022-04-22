@@ -1,8 +1,8 @@
 import { DT } from "@ndjinn/core";
 import { html } from "hybrids";
-import { NodeComponent } from "../base/node-base";
+import { Ndjinn } from "../base/node-base";
 
-export const RGB = NodeComponent((r, g, b) => [{r, g, b}], [0, 0, 0], {
+export const RGB = Ndjinn.component((r, g, b) => [{r, g, b}], [0, 0, 0], {
 	in: [
 		{type: DT.uint8, name: 'r', field: true},
 		{type: DT.uint8, name: 'g', field: true},
@@ -11,9 +11,12 @@ export const RGB = NodeComponent((r, g, b) => [{r, g, b}], [0, 0, 0], {
 	out: [
 		{type: DT.rgb, name: 'color'},
 	],
+	component: {
+		tag: 'node-rgb',
+	}
 })
 
-export const HSL = NodeComponent((h, s, l) => [{h, s, l}], [0, 1, 0.5], {
+export const HSL = Ndjinn.component((h, s, l) => [{h, s, l}], [0, 1, 0.5], {
 	in: [
 		{type: DT.deg, name: 'hue', field: true},
 		{type: DT.percent, name: 'sat', field: true},
@@ -22,7 +25,10 @@ export const HSL = NodeComponent((h, s, l) => [{h, s, l}], [0, 1, 0.5], {
 	out: [
 		{type: DT.hsl, name: 'color'},
 	],
-})
+	component: {
+		tag: 'node-hsl',
+	}
+}, {debug: true})
 
 function swatch({r, g, b, h, s, l, a}: any) {
 	if([r, g, b].every((c) => c != null)) return [{r, g, b, a: a != null ? a : 1}]
@@ -30,7 +36,7 @@ function swatch({r, g, b, h, s, l, a}: any) {
 	else return [null]
 }
 
-export const Swatch = NodeComponent(swatch, [{h: 0, s: 0, l: 0}], {
+export const Swatch = Ndjinn.component(swatch, [{h: 0, s: 0, l: 0}], {
 	in: [
 		{type: [DT.rgb, DT.hsl, DT.rgba, DT.hsla], name: 'color'}
 	],
@@ -43,6 +49,7 @@ export const Swatch = NodeComponent(swatch, [{h: 0, s: 0, l: 0}], {
 		})}
 	},
 	component: {
+		tag: 'node-swatch',
 		render: ({outputs}) => html`<cam-swatch
 			r="${outputs[0].value.r}" g="${outputs[0].value.g}" b="${outputs[0].value.b}"
 			h="${outputs[0].value.h}" s="${outputs[0].value.s * 100}" l="${outputs[0].value.l * 100}"

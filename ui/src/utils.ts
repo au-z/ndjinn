@@ -5,3 +5,5 @@ export function debounce(fn, ms) {
 		timeout = setTimeout(() => fn(...args), ms)
 	}
 }
+
+export const kebab = (str: string): string => str.replace(/([A-Z])/g, '-$1').replace(/^-/, '');

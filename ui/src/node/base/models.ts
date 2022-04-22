@@ -1,5 +1,6 @@
 import { Port, PortOptions } from "@ndjinn/core";
 import { RenderFunction } from "hybrids";
+import {Node} from '@ndjinn/core';
 
 // TODO: maybe don't use
 export enum FieldMode {
@@ -25,6 +26,7 @@ export interface NodeTemplate {
 }
 
 export interface NodeElement extends HTMLElement {
+	tag: string,
 	id: string,
 	name: string,
 	inputs: Port[],
@@ -33,13 +35,18 @@ export interface NodeElement extends HTMLElement {
 	allSelected: string[],
 	selected: boolean,
 	incoming: any[],
-	outgoing: any[],
+	node: Node,
 	set: (args: any[] | object) => void,
 	run: () => void,
 	select: (host, e) => void,
 	draggableStart: (host, e) => void,
 	draggableEnd: (host, e) => void,
 	draggableDrag: (host, e) => void,
+	render: (host) => (host, target) => void,
+}
+
+export interface NodeElementUI extends NodeElement {
+	icon?: string,
 }
 
 export interface NodeComponent extends HTMLElement {

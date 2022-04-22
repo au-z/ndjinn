@@ -34,7 +34,6 @@ export function multiNode(chooserFn: (inputs?: Port[]) => {node: Node, options: 
 		selected: redux(store, ({id}, s) => s.selected.includes(id)),
 		// deserialization
 		incoming: [],
-		outgoing: [],
 
 		node: {
 			connect: (host, key, invalidate) => {

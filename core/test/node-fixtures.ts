@@ -5,6 +5,7 @@ export function num(defaults = [0]) {
 	return create((x) => [x], defaults, {
 		in: [{type: DT.num, name: 'num'}],
 		out: [{type: DT.num, name: 'num'}],
+		immediate: true,
 	})
 }
 

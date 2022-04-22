@@ -1,4 +1,4 @@
-import { define, dispatch, html, Hybrids, parent } from 'hybrids'
+import { define, dispatch, html, parent } from 'hybrids'
 import * as CamEl from '@auzmartist/cam-el'
 import NdjinnUI from './ui'
 import Nodes from './node'
@@ -12,7 +12,8 @@ let components = {
 }
 
 // Candidate cam-el
-define('cam-hotkey-toggle', {
+define<any>({
+	tag: 'cam-hotkey-toggle',
 	keys: 'x',
 	escape: false,
 	on: false,
@@ -34,4 +35,4 @@ define('cam-hotkey-toggle', {
 	render: ({value}) => html`<div tabindex="0">
 		${value ? html`<slot name="on"></slot>` : html`<slot name="off"></slot>`}
 	</div>`
-} as Hybrids<any>)
+})

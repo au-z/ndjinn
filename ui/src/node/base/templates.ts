@@ -27,7 +27,14 @@ export function inputFromDT(dt: DT): Function | void {
 
 		case DT.num: return ({name, value, mode}: Field & Port) => html`<cam-input type="number" autosize
 			value="${parseFloat(value)}"
-			onupdate="${(host, e) => host.set(e.detail)}"
+			onupdate="${(host, e) => host.set(({[name]: parseFloat(e.detail)}))}"
+			disabled="${mode === 'OPAQUE'}"
+		></cam-input>`
+
+		case DT.str: return ({name, value, mode}: Field & Port) => html`<cam-input autosize
+			title="${value}"
+			value="${value}"
+			onupdate="${(host, e) => host.set(({[name]: e.detail}))}"
 			disabled="${mode === 'OPAQUE'}"
 		></cam-input>`
 	}

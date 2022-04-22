@@ -1,21 +1,23 @@
-import {html, property, parent, define, Hybrids, dispatch} from 'hybrids'
+import {html, parent, define, dispatch} from 'hybrids'
 import NdjinnEditor from './ndjinn-editor'
 import {Draggable, CamIcon} from '@auzmartist/cam-el'
 import styles from './menu-mouse.css'
+import { getset } from '../utils/hybrids'
 const components = {CamIcon}
 
 function onclick(tag, host, e) {
 	dispatch(host, 'select', {detail: tag, bubbles: true})
 }
 
-const MenuMouse: Hybrids<any> = {
+export default define<any>({
+	tag: 'menu-mouse',
 	parent: parent(NdjinnEditor),
 	x: 0,
 	y: 0,
 	absPos: ({x, y}) => ({left: `${x}px`, top: `${y}px`}),
 	...Draggable({absolutePositioning: true}),
 	mousePos: ({parent}) => () => parent.mousePos,
-	catalog: property([]),
+	catalog: getset([]),
 	keys: 'x',
 	render: ({catalog, absPos}) => html`
 	<nav class="menu" style="${absPos}">
@@ -37,7 +39,4 @@ const MenuMouse: Hybrids<any> = {
 			`)}</ul>
 		</div>
 	</nav>`.style(styles),
-}
-
-define('menu-mouse', MenuMouse)
-export default MenuMouse
+})

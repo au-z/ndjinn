@@ -1,15 +1,13 @@
-import {define, html, Hybrids} from 'hybrids'
-
-import store, {createNode, connectNode, deleteSelected, selectNode, selectAll, redux, saveNodeContainer, reduxTrack, disconnectNode} from '../store/store'
-import {serializeNodeGraph, deserializeNodeGraph, persist} from '../store/localStorage'
-const {save, load} = persist(store, 'ndjinn-project', serializeNodeGraph, deserializeNodeGraph)
-
-import { NodeElement } from '../node/base/node-base'
-import { debounce } from '../utils'
-import {CATALOG} from '../node'
-
-import styles from './ndjinn-editor.css'
+import { define, html } from 'hybrids'
 import { useMouse } from '../hooks'
+import { CATALOG } from '../node'
+import { NodeElement, NodeElementUI } from '../node/base/models'
+import { deserializeNodeGraph, persist, serializeNodeGraph } from '../store/localStorage'
+import store, { connectNode, createNode, deleteSelected, disconnectNode, redux, reduxTrack, saveNodeContainer, selectAll, selectNode } from '../store/store'
+import { debounce } from '../utils'
+import { getset } from '../utils/hybrids'
+import styles from './ndjinn-editor.css'
+const {save, load} = persist(store, 'ndjinn-project', serializeNodeGraph, deserializeNodeGraph)
 
 function oncreated(host, {detail: {node}}) {
 	store.dispatch(createNode(node))
@@ -34,6 +32,7 @@ function onconnectFrom(host, {detail: {id, port, type}}) {
 }
 
 function onconnectTo(host, {detail: {id, port, type}}) {
+	console.log('onconnect', id, port, type);
 	edge.to = {id, port, type}
 	if(edge.from && edge.to) {
 		store.dispatch(connectNode(edge.from, edge.to))
@@ -97,13 +96,15 @@ function duplicateSelected(host, e) {
 export interface NdjinnEditor extends HTMLElement {
 	[key: string]: any
 }
-const NdjinnEditor: Hybrids<NdjinnEditor> = {
+export default define<NdjinnEditor>({
+	tag: 'ndjinn-editor',
 	...useMouse,
 	actionMousePos: {
 		get: (host, val = {x: 0, y: 0}) => val,
 		set: (host, val) => val,
 	},
 	debug: false,
+	throttle: 0,
 	selected: redux(store, (host, state) => state.selected),
 	registry: redux(store, (host, state) => state.registry),
 	onmousemove: () => (host, e) => {
@@ -111,20 +112,29 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 	},
 	container: reduxTrack(store, {
 		get: ({render}) => render().querySelector('ndjinn-canvas'),
-		observe: (host, container, last) => {
+		observe: (host, container: HTMLElement, last) => {
 			if(!!last || !container) return
 			if(host.load) {
 				console.debug('Restoring state from localstorage')
 				host.load.nodes.forEach((n) => container.appendChild(n))
+				Object.entries(host.load.edges).forEach(([toNodeId, connections]: [any, any]) => {
+					connections.forEach((edge, to) => {
+						// some connections are undefined
+						if(!edge) return
+						const fromNode = <NodeElementUI>container.children?.[edge.id]
+						const toNode = <NodeElementUI>container.children?.[toNodeId]
+						if(!fromNode || !toNode) return
+
+						fromNode.node.connect(edge.port, toNode.node, to);
+					})
+				})
 			}
 		}
 	}, saveNodeContainer),
 
-	load: {connect: (host, key, invalidate) => {
-		host[key] = load()
-	}},
+	load: getset({}, (host, key) => {host[key] = load()}),
 
-	render: ({debug, registry, onmousemove, actionMousePos}) => html`
+	render: ({debug, throttle, registry, onmousemove, actionMousePos}) => html`
 	<section tabindex="0" class="ndjinn-editor" onmousemove="${onmousemove}">
 		<ndjinn-toolbar></ndjinn-toolbar>
 		<ndjinn-canvas nodes="${registry}" debug=${debug}
@@ -134,10 +144,13 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 			onconnect-from="${onconnectFrom}"
 			onconnect-to="${onconnectTo}"
 			ondisconnect="${ondisconnect}"
+
 			onhotkey:a="${(host, e) => store.dispatch(selectAll())}"
 			onhotkey:x="${deleteNodes}"
 			onhotkey:Shift+D="${duplicateSelected}"
+
 			onsave="${onsave}"
+			throttle="${throttle}"
 		></ndjinn-canvas>
 		<cam-hotkey-toggle id="create-node" keys="Shift+A" escape onchange="${saveMousePos}">
 			<menu-mouse slot="on" x="${actionMousePos.x}" y="${actionMousePos.y}"
@@ -146,7 +159,4 @@ const NdjinnEditor: Hybrids<NdjinnEditor> = {
 			></menu-mouse>
 		</cam-hotkey-toggle>
 	</section>`.style(styles),
-}
-
-define('ndjinn-editor', NdjinnEditor)
-export default NdjinnEditor
+})
