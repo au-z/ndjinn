@@ -9,8 +9,8 @@ export const setEffect = (fn) => ({
 		} catch {
 			return false
 		} finally {
-			fn(value)
-			return true
+			fn(value, inputs, key)
 		}
+		return true
 	},
 })

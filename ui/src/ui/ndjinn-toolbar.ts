@@ -23,7 +23,8 @@ function importState(host, e) {
 	
 }
 
-const NdjinnToolbar = {
+export default define<any>({
+	tag: 'ndjinn-toolbar',
 	projectName: 'project-001',
 	projectFileName: ({projectName}) => projectName.toLowerCase().replace(/\s+/gim, '_'),
 	render: ({projectName}) => html`<header class="ndjinn-toolbar">
@@ -34,7 +35,4 @@ const NdjinnToolbar = {
 			<button onclick="${importState}"><cam-icon>file_upload</cam-icon></button>
 		</div>
 	</header>`.style(styles),
-}
-
-define('ndjinn-toolbar', <any>NdjinnToolbar)
-export default NdjinnToolbar
+})

@@ -6,7 +6,7 @@ import { Datatype as DT } from "./Datatype"
  * An Op always assumes an array of inputs and outputs.
  */
 export type Invoker = (...args: any[]) => any[]
-export type Op = (...args: any[]) => any[]
+export type Op = (...args: any[]) => any[] | Promise<any[]>
 
 /**
  * A Piper maps values between nodes i.e. clamping/validation.
@@ -15,17 +15,10 @@ export type Op = (...args: any[]) => any[]
 export type Piper = (...args: any[]) => object | any[] | ((inputValues?: any[]) => any[])
 export const PiedPiper: Piper = (...args: any[]) => [...args]
 
-export interface ConnectedPort {
-	id: string,
-	port: number,
-	type?: DT,
-}
-
 export interface PortOptions { name?: string, type?: DT, field?: boolean }
 
 export interface Port extends PortOptions {
 	value: any,
-	connected: ConnectedPort[],
 }
 
 export interface HubTrigger extends Port {
@@ -40,6 +33,8 @@ export interface ConnectOptions { typeFrom?: DT, typeTo?: DT }
 export interface NodeOptions {
 	in?: PortOptions[],
 	out?: PortOptions[],
+	immediate?: boolean, // run immediately
+	outputCount?: number, // number of outputs for non-immediate nodes
 	variants?: Record<string, {fn: Op, out?: PortOptions[]}>,
 }
 
@@ -47,6 +42,8 @@ export interface Node {
 	id: string,
 	inputs: any[],
 	outputs: Port[],
+	connections: {id: string, port: number, sub: Subscription}[],
+	meta: {in: any[], out: any[]},
 	// Triggers an Op execution
 	run: (args?: any[]) => Promise<Node>,
 	run$: Subject<void>,
@@ -57,9 +54,9 @@ export interface Node {
 	// reset a port to default value 
 	reset: (port: string | number) => void,
 	// connect to other nodes
-	pipe: (node: Node, piper?: Piper, options?: ConnectOptions) => Node,
-	connect: (outputIdx: number, node: Node, inputIdx: number, options?: ConnectOptions) => Node,
-	edge: (idx: number, sub: Subscription) => void,
+	pipe: (node: Node, piper?: Piper, transform?: Function) => Node,
+	connect: (outputIdx: number, node: Node, inputIdx: number, transform?: Function) => Node,
+	edge: (idx: number, node: Node, port: number, sub: Subscription) => void,
 	disconnect: (name: number | string) => Node,
 	// side-effects from node updates
 	subscribe: (fn: (node: Node) => void) => number,

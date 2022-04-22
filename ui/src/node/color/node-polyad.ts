@@ -1,8 +1,7 @@
 import { DT } from '@ndjinn/core';
-import { define, html } from 'hybrids';
+import { html } from 'hybrids';
 import { rgb_hsl, shiftHue, scale } from '../../math/color';
-import { FieldMode } from '../base/models';
-import { NodeUI } from '../base/node-base';
+import { Ndjinn } from '../base/node-base';
 
 const fn = ({ r, g, b, h, s, l, a }: any, mode, deg): any[] => {
 	let hsl;
@@ -24,16 +23,14 @@ const fn = ({ r, g, b, h, s, l, a }: any, mode, deg): any[] => {
 	return outputs;
 };
 
-const NodePolyad = NodeUI(
+export const NodePolyad = Ndjinn.component(
 	fn,
 	[{ h: 0, s: 0, l: 0 }, 2, 60],
+	// {
+	// 	'^vec3.*': { fn: ([r, g, b], mode, deg) => fn({ r, g, b }, mode, deg) },
+	// 	'.*': { fn },
+	// },
 	{
-		'^vec3.*': { fn: ([r, g, b], mode, deg) => fn({ r, g, b }, mode, deg) },
-		'.*': { fn },
-	},
-	{
-		name: 'Polyad',
-		tag: 'node-polyad',
 		in: [
 			{ type: DT.color, name: 'color' },
 			{ type: DT.num, name: 'mode', field: true },
@@ -46,33 +43,32 @@ const NodePolyad = NodeUI(
 			{ type: DT.hsl, name: 'D' },
 			{ type: DT.hsl, name: 'E' },
 		],
-		render: ({ inputs, fields }) => html`<form>
-			<div class="field">
-				<select
-					value="${fields[0].value}"
-					onchange="${(host, e) =>
-						host.set({ mode: parseInt(e.target.value) })
-					}">
-					<option value="2">Diad</option>
-					<option value="3">Triad</option>
-					<option value="4">Tetrad</option>
-					<option value="5">Pentad</option>
-				</select>
-			</div>
-			<div class="field">
-				<cam-input
-					type="number"
-					value="${fields[1].value}"
-					min="0"
-					max="360"
-					step="1"
-					wrap
-					onupdate="${(host, e) => host.set({ deg: parseFloat(e.detail) })}"
-					disabled="${fields[1].mode !== 'EDIT'}"></cam-input>
-			</div>
-		</form>`,
+		component: {
+			render: ({ inputs, fields }) => html`<form>
+				<div class="field">
+					<select
+						value="${fields[0].value}"
+						onchange="${(host, e) =>
+							host.set({ mode: parseInt(e.target.value) })
+						}">
+						<option value="2">Diad</option>
+						<option value="3">Triad</option>
+						<option value="4">Tetrad</option>
+						<option value="5">Pentad</option>
+					</select>
+				</div>
+				<div class="field">
+					<cam-input
+						type="number"
+						value="${fields[1].value}"
+						min="0"
+						max="360"
+						step="1"
+						wrap
+						onupdate="${(host, e) => host.set({ deg: parseFloat(e.detail) })}"
+						disabled="${fields[1].mode !== 'EDIT'}"></cam-input>
+				</div>
+			</form>`,
+		}
 	}
 );
-
-define('node-polyad', NodePolyad);
-export default NodePolyad;

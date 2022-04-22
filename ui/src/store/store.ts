@@ -1,84 +1,108 @@
 import {createStore} from 'redux'
-import {Node} from '@ndjinn/core'
+import {enableMapSet} from 'immer'
+import {DT, Node} from '@ndjinn/core'
 const devtools = (<any>window).__REDUX_DEVTOOLS_EXTENSION__ && (<any>window).__REDUX_DEVTOOLS_EXTENSION__()
+enableMapSet();
 
-interface NdjinnState {
-	container: HTMLElement,
-registry: Map<string, Node>,
-	selected: string[],
+export interface DatatypeConfig {
+	parent?: string,
+	color?: string;
+	min?: number;
+	max?: number;
+	step?: number;
 }
 
-const STATE: NdjinnState = {
+export type DatatypeMap = Record<string, DatatypeConfig>
+
+export interface NdjinnState {
+	container: HTMLElement,
+	registry: Map<string, Node>,
+	config: {
+		datatypes: DatatypeMap,
+		transforms: any,
+	},
+	selected: string[],
+}
+export type State = NdjinnState
+
+const STATE: State = {
 	container: null,
 	registry: new Map(),
+	config: {
+		datatypes: {} as DatatypeMap,
+		transforms: {
+			vec3: {
+				rgba: ([r, g, b, a]) => ({r: r % 256, g: g % 256, b: b % 256, a: a % 1}),
+			},
+		}
+	},
 	selected: [],
 }
 
 const reducers = {
-	SAVE_CONTAINER: (state: NdjinnState, el: HTMLElement) => {
+	SET_DATATYPES: (state: State, datatypes: DatatypeMap) => {
+		state.config.datatypes = datatypes
+		return state
+	},
+	SAVE_CONTAINER: (state: State, el: HTMLElement) => {
 		state.container = el
 		return state
 	},
-	CREATE_NODE: (state: NdjinnState, node: Node) => {
+	CREATE_NODE: (state: State, node: Node) => {
 		state.registry.set(node.id, node)
 		return state
 	},
-	CONNECT_NODE: (state: NdjinnState, {from, to}) => {
+	CONNECT_NODE: (state: State, {from, to}) => {
 		const fromNode = state.registry.get(from.id)
 		const toNode = state.registry.get(to.id)
-		if(fromNode && toNode) fromNode.connect(from.port, toNode, to.port, {
-			typeFrom: from.type,
-			typeTo: to.type,
-		})
-		else console.debug('[store][connect] cant connect two nodes which do not exist')
-		return state
-	},
-	DISCONNECT_NODE: (state: NdjinnState, {from, to}) => {
-		const fromNode = state.registry.get(from.id)
-		const toNode = state.registry.get(to.id)
-		if(fromNode && toNode) fromNode.disconnect(from.port, toNode, to.port)
-		else console.debug('[store][disconnect] failed to disconnect two nodes')
-		return state
-	},
-	DELETE_NODE: (state: NdjinnState, node: Node) => {
-		console.log('deleting node ', node.id)
-		node.inputs.forEach((input, toPort) => {
-			input.connected.forEach((from) => {
-				const fromNode = state.registry.get(from.id)
-				fromNode.disconnect(from.port, node, toPort).run()
-			})
-		})
-		node.outputs.forEach((output, outputPort) => {
-			output.connected.forEach((to) => {
-				const toNode = state.registry.get(to.id)
-				node.disconnect(outputPort, toNode, to.port).run()
-			})
-		})
-		state.registry.delete(node.id)
+		console.log(fromNode, toNode);
+		const sourceDT = from.type
+		const destDT = to.type
+		console.log(sourceDT, destDT)
+		let transform;
 
+		if(sourceDT != destDT) {
+			transform = findTransform(state, sourceDT, destDT);
+		}
+		if(fromNode && toNode) fromNode.connect(from.port, toNode, to.port, transform);
+		else console.debug('[store][connect] cannot connect two nodes which do not exist')
 		return state
 	},
-	DELETE_SELECTED: (state) => {
+	DISCONNECT_NODE: (state: State, {from, to}) => {
+		const toNode = state.registry.get(to.id)
+		if(toNode) toNode.disconnect(to.port);
+		else console.debug('[store][disconnect] node not found')
+		return state
+	},
+	DELETE_NODE: (state: State, node: Node) => {
+		node.connections.forEach((edge: any) => edge?.sub?.unsubscribe())
+		state.registry.delete(node.id)
+		return state
+	},
+	DELETE_SELECTED: (state: State) => {
 		state.selected.forEach((id) => {
 			const node = state.registry.get(id)
 			node && reducers.DELETE_NODE(state, node)
 		})
 		state.selected = []
-
 		return state
 	},
-	SELECT_NODE: (state: NdjinnState, {id, append}) => {
+	SELECT_NODE: (state: State, {id, append}) => {
 		state.selected = append ? [...state.selected, id] : [id]
 		return state
 	},
-	SELECT_NODES: (state: NdjinnState, {ids}) => {
+	SELECT_NODES: (state: State, {ids}) => {
 		state.selected = ids
 		return state
 	},
-	SELECT_ALL: (state) => {
+	SELECT_ALL: (state: State) => {
 		state.selected = state.selected.length === 0 ? Array.from(state.registry).map(([id]) => id) : []
 		return state
 	},
+}
+
+function findTransform(state: State, sourceDT: DT, destDT: DT) {
+	return state.config.transforms[sourceDT]?.[destDT]
 }
 
 const storeConfig = (state = STATE, {type, value}) => {
@@ -88,6 +112,7 @@ const storeConfig = (state = STATE, {type, value}) => {
 
 export default createStore(storeConfig, devtools)
 
+export const setDatatypes = (datatypes: DatatypeMap) => ({type: 'SET_DATATYPES', value: datatypes})
 export const saveNodeContainer = (el: HTMLElement) => ({type: 'SAVE_CONTAINER', value: el})
 export const createNode = (node) => ({type: 'CREATE_NODE', value: node})
 export const connectNode = (from, to) => ({type: 'CONNECT_NODE', value: {from, to}})
@@ -98,7 +123,7 @@ export const selectNode = (id, append = false) => ({type: 'SELECT_NODE', value: 
 export const selectNodes = (ids) => ({type: 'SELECT_NODES', value: {ids}})
 export const selectAll = () => ({type: 'SELECT_ALL', value: null})
 
-export function redux(store, mapState) {
+export function redux<E, S, T>(store, mapState?: (host: E, state: S) => T) {
 	const get = mapState ? (host) => mapState(host, store.getState()) : () => store.getState()
 
 	return {

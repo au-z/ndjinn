@@ -4,7 +4,7 @@
   "description": "Function composition for the ndjinn node editor. Generally useful for geeking out.",
   "main": "./dist/core.es.js",
   "module": "./dist/core.es.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/types/src/index.d.ts",
   "exports": {
     ".": "./dist/core.es.js"
   },

@@ -1,7 +1,13 @@
-import { BehaviorSubject, isObservable, Subject, Subscription } from 'rxjs'
+import { BehaviorSubject, Subject, Subscription } from 'rxjs'
 import {v4 as uuid} from 'uuid'
 import { Op, Node, Piper, ConnectOptions, NodeOptions } from './models'
 import { Arr, setEffect } from './utils'
+
+class OutputPort<T> extends BehaviorSubject<T> {
+	constructor(_value: T) {
+		super(_value);
+	}
+}
 
 /**
  * Creates a node wrapping a function invocation context
@@ -12,15 +18,21 @@ import { Arr, setEffect } from './utils'
 export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node {
 	options = {in: [], out: [], variants: {}, ...options}
 
-	const _inputs = Arr.range(fn.length)
-		.map((i) => ({value: defaults[i]}))
-		.map((input) => new Proxy(input, setEffect((value) => run())))
-	const _outputs: BehaviorSubject<any>[] = defaults.map((d) => new BehaviorSubject(d))
+	const result = options.immediate && (fn(...defaults) as any[])
+	const outputCount = options.out?.length || options.outputCount || result?.length
+	if(!outputCount) throw new Error('[ndjinn] Cannot create node without immediate flag or outputCount.')
+	
+	const _inputs: {value: any}[] = Arr.range(fn.length)
+	.map((i) => new Proxy({value: defaults[i]}, setEffect((value) => run())))
+	const _outputs: OutputPort<any>[] = [...Array(outputCount)]
+	.map((_, i) => new BehaviorSubject(result?.[i] ?? null))
+
 	const meta = {
-		in: options.in,
-		out: options.out,
+		in: _inputs.map((_, i) => ({...options.in?.[i]})),
+		out: _outputs.map((subject, i) => ({...options.out?.[i]})),
 	}
-	const connections = new Array<Subscription>(defaults.length)
+
+	let connections = new Array<{id: string, port: number, sub: Subscription}>(defaults.length)
 	const run$ = new Subject<void>()
 
 	const inputIndexByName = (name) => meta.in?.findIndex((i) => i.name === name)
@@ -37,6 +49,8 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 		get outputs() {
 			return _outputs.map((o) => o.value)
 		},
+		connections,
+		meta,
 		setOp,
 		run,
 		set,
@@ -56,8 +70,8 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	 * @param variant in multi-op node, which input variant to execute.
 	 */
 	async function run(args: any[] = _inputs.map((i) => i.value)): Promise<Node> {
-		let result: any = (fn as Op)(...args)
-		if(!result['then']) result = Promise.resolve(result) as Promise<any[]>
+		let result = fn(...args)
+		if(!result?.['then']) result = Promise.resolve(result ?? []) as Promise<any[]>
 
 		(await result).map((value, i) => _outputs[i].next(value))
 
@@ -100,9 +114,9 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	 * Only used when the node have changed type.
 	 */
 	function setOp(opType?: string): Node {
-		if(!opType) {
-			opType = _inputs.map(({connected}) => connected?.[0]?.type).filter((a) => !!a).join('&')
-		}
+		// if(!opType) {
+		// 	opType = _inputs.map(({connection}) => connection?.[0]?.type).filter((a) => !!a).join('&')
+		// }
 
 		if(!options.variants || Object.keys(options.variants).length === 0) return
 
@@ -137,17 +151,21 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	 * @param from source output port
 	 * @param node destination node
 	 * @param to destination node input
+	 * @param 
 	 * @return the source node
 	 */
-	function connect(from: number, node: Node, to: number) {
-		const sub = _outputs[from].subscribe((val) => node.set({[to]: val}))
-		node.edge(to, sub)
+	function connect(from: number, node: Node, to: number, transform: Function = (val) => val) {
+		if(transform) {
+			console.log(transform)
+		}
+		const sub = _outputs[from].subscribe((val) => node.set({[to]: transform(val)}))
+		node.edge(to, _node, from, sub);
 
 		return _node
 	}
 
-	function edge(idx: number, sub: Subscription) {
-		connections[idx] = sub
+	function edge(idx: number, node: Node, port: number, sub: Subscription) {
+		connections[idx] = {id: node.id, port, sub};
 	}
 
 	/**
@@ -157,10 +175,10 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	 * @return the destination node
 	 * @deprecated Use Node.connect
 	 */
-	const PiedPiper = (...args: any[]) => [...args]
 	function pipe(node: Node, pipe: Piper = PiedPiper, opts?: ConnectOptions): Node {
 		return node
 	}
+	const PiedPiper = (...args: any[]) => [...args]
 
 	/**
 	 * Disconnects an output from a specific input node port.
@@ -168,7 +186,9 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	 */
 	function disconnect(name: number | string) {
 		let idx = isNaN(parseInt(<string>name)) ? inputIndexByName(name) : name
-		connections[idx]?.unsubscribe()
+		connections[idx]?.sub.unsubscribe()
+		connections[idx] = undefined
+
 		set({[idx]: defaults[idx]})
 
 		return _node

@@ -1,21 +1,20 @@
 import CodeTex from 'code-tex'
 import { DT } from "@ndjinn/core"
 import { html } from "hybrids"
-import {NodeComponent} from '../base/node-base'
+import {Ndjinn} from '../base/node-base'
 const components = {CodeTex}
 
-const fn = (obj) => [JSON.stringify(obj, null, 2)]
+const print = (obj) => [JSON.stringify(obj, null, 2)]
 
-export const NodePrint = NodeComponent(fn, [{}], {
+export const NodePrint = Ndjinn.component(print, [{}], {
 	in: [{type: DT.any, name: 'json'}],
-	out: [],
+	immediate: true,
 	component: {
-		render: ({inputs}) => html`<div class="json" style="min-width: 240px;">
+		render: ({node}) => html`<div class="json" style="min-width: 240px;">
 			<code-tex lang="json" theme="nord"
-				source="${JSON.stringify(inputs[0].value)}"
+				source="${node.outputs[0]}"
 				transparent>
 			</code-tex>
 		</div>`
 	},
 })
-

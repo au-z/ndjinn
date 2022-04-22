@@ -14,21 +14,21 @@ const addArrays = (a, b) => {
 	return a.length >= b.length ? [[...a].map((v, i) => v + (b[i] ?? 0))] : [[...b].map((v, i) => v + (a[i] ?? 0))]
 }
 
-const NodeAdd = NodeUI(defaultFn, [0, 0], {
-	'^(rgb|vec|mat).(&(rgb|vec|mat).)?': {fn: addArrays, out: [{type: DT.vec3}]},
-	'.*': {fn: defaultFn, out: [{type: DT.vec3}]},
-}, {
-	name: 'add',
-	tag: 'node-add',
-	in: [{type: DT.any, name: 'a'}, {type: DT.any, name: 'b'}],
-	out: [{type: DT.any, name: 'sum'}],
-	render: ({outputs}) => html`<form class="vec">
-		${JSON.stringify(outputs[0]?.value)}
-	</form>`
-})
+// const NodeAdd = NodeUI(defaultFn, [0, 0], {
+// 	'^(rgb|vec|mat).(&(rgb|vec|mat).)?': {fn: addArrays, out: [{type: DT.vec3}]},
+// 	'.*': {fn: defaultFn, out: [{type: DT.vec3}]},
+// }, {
+// 	name: 'add',
+// 	tag: 'node-add',
+// 	in: [{type: DT.any, name: 'a'}, {type: DT.any, name: 'b'}],
+// 	out: [{type: DT.any, name: 'sum'}],
+// 	render: ({outputs}) => html`<form class="vec">
+// 		${JSON.stringify(outputs[0]?.value)}
+// 	</form>`
+// })
 
-define('node-add', NodeAdd)
-export default NodeAdd
+// define('node-add', NodeAdd)
+// export default NodeAdd
 
 const cross = <T>(a, b, Class = Vector2): T => {
 	if(!a || !b) return null
@@ -82,6 +82,7 @@ export const NodeArithmetic = NodeComponent(arithmeticFn, ['ADD', 0, 0], {
 		'^(vec3)(&(vec3))?': {fn: vec3vec3, out: [{type: DT.vec}]},
 	},
 	component: {
+		tag: 'node-arithmetic',
 		setOperator: (_) => (host, e) => {
 			const operator = e.target?.value || e.path?.[0].value
 			host.node.set({operator})

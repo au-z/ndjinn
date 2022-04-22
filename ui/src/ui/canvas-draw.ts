@@ -1,4 +1,4 @@
-import { Node, Port } from '@ndjinn/core'
+import { Node } from '@ndjinn/core'
 import { NodeElement } from "../node/base/node-base"
 import {NodePort} from "../node/base/node-port"
 
@@ -23,7 +23,13 @@ const PORT_DRAW_RAD = 12
 const portMap = new Map<string, {x: number, y: number}>()
 
 function drawNode(ctx, node: Node, el: NodeElement, debug = false) {
-	const {left, top, width, height} = el.getBoundingClientRect()
+	const rect = el.shadowRoot ? 
+		el.shadowRoot.querySelector('.node')?.getBoundingClientRect()
+		: el.getBoundingClientRect()
+	if(!rect) {
+		console.log(el)
+	}
+	const {left, top, width, height} = rect;
 	const selected = el.selected
 
 	if(debug) {
@@ -48,7 +54,7 @@ function drawPort(ctx, portEl: NodePort, {debug, selected, nodeId}) {
 		y: (top + height / 2),
 	}
 	
-	portMap.set(`${nodeId}:${portEl.id}`, pos)
+	portMap.set(`${nodeId}:${portEl.dataset.id}`, pos)
 	
 	if(debug) {
 		ctx.beginPath()
@@ -63,26 +69,24 @@ function drawPort(ctx, portEl: NodePort, {debug, selected, nodeId}) {
 	]
 
 	if(portEl.input && portEl.connected) {
-		portEl.edges.forEach((e: Port) => {
-			const to = portMap.get(`${e.id}:${e.port}`)
-			if(!to) return // OK: portMap entry may not exist in this render frame yet
+		const to = portMap.get(`${portEl.edge?.id}:${portEl.edge?.port}`)
+		if(!to) return // OK: portMap entry may not exist in this render frame yet
 
-			const ctrls = easeControls(pos, to)
+		const ctrls = easeControls(pos, to)
+		ctx.beginPath()
+		ctx.lineWidth = 2
+		// ctx.strokeStyle = selected ? linearGradient(ctx, pos, to, '#8c909b', '#f3cd95') : '#8c909b'
+		ctx.strokeStyle = '#8c909b'
+		ctx.moveTo(pos.x, pos.y)
+		ctx.bezierCurveTo(...ctrls[0], ...ctrls[1], to.x, to.y)
+		ctx.stroke()
+
+		if(debug) {
 			ctx.beginPath()
-			ctx.lineWidth = 2
-			// ctx.strokeStyle = selected ? linearGradient(ctx, pos, to, '#8c909b', '#f3cd95') : '#8c909b'
-			ctx.strokeStyle = '#8c909b'
-			ctx.moveTo(pos.x, pos.y)
-			ctx.bezierCurveTo(...ctrls[0], ...ctrls[1], to.x, to.y)
-			ctx.stroke()
-
-			if(debug) {
-				ctx.beginPath()
-				ctx.arc(pos.x, pos.y, 4, 0, 2 * Math.PI)
-				ctx.arc(to.x, to.y, 4, 0, 2 * Math.PI)
-				ctx.fill()
-			}
-		})
+			ctx.arc(pos.x, pos.y, 4, 0, 2 * Math.PI)
+			ctx.arc(to.x, to.y, 4, 0, 2 * Math.PI)
+			ctx.fill()
+		}
 	}
 }
 

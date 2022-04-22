@@ -1,6 +1,8 @@
-import {DT, Node} from '@ndjinn/core'
-import NdjinnEditor, { createNodeElement } from '../ui/ndjinn-editor'
+import { Node, NodeEdge } from '@ndjinn/core'
+import { NodeElementUI } from '../node/base/models'
 import { NodeElement } from "../node/base/node-base"
+import { createNodeElement } from '../ui/ndjinn-editor'
+import store, { selectAll } from './store'
 
 export function persist(store, storageKey, saveTransform = (state) => state, loadTransform = (state) => state) {
 	const load = () => {
@@ -42,16 +44,12 @@ function serializeNode(node: Node, nodeUI: NodeElement) {
 	return {
 		tag: nodeUI.tagName,
 		id: node.id,
-		inputValues: node.inputs.map((i) => i.value),
-		inputTypes: node.inputs.map((i) =>
-			(i.type !== DT.any && !!i.type) ? i.type : i.connected[0]?.type
-		),
+		connections: node.connections.map((c) => ({...c, sub: undefined})),
+		sourceValues: node.inputs,
 		pos: {
 			x: parseFloat(/\d+/.exec(nodeUI.style.left)[0]) || 0,
 			y: parseFloat(/\d+/.exec(nodeUI.style.top)[0]) || 0,
 		},
-		incoming: node.inputs.map((i) => i.connected), // incoming connections
-		outgoing: node.outputs.map((o) => o.connected), // outgoing connections
 	}
 }
 
@@ -69,17 +67,29 @@ export function serializeNodeGraph(state) {
 }
 
 export function deserializeNodeGraph(json) {
-	const graph = {
-		nodes: json.nodes.map((n) => {
-			const nodeUI = createNodeElement(n.tag, n.id, n.pos)
-			nodeUI.incoming = n.incoming
-			nodeUI.outgoing = n.outgoing
-			setTimeout(() => {
-				nodeUI.set(n.inputValues)
-			}, 0)
-			return nodeUI
-		})
-	}
+	let edges: Record<string, NodeEdge> = {}
+	const nodes: NodeElementUI[] = json.nodes.map((n) => {
+		const nodeUI: NodeElementUI = createNodeElement(n.tag, n.id, n.pos)
+		edges[n.id] = n.connections
+		setTimeout(() => {
+			if(!n.sourceValues) {
+				console.warn('No source values', n)
+			}
+			const inputs = n.sourceValues?.reduce((vals, val, i) => {
+				vals[i] = val
+				return vals
+			}, {})
+			nodeUI.node.set(inputs)
+			// HACK: ensure that the set initial values are serialized back to the store
+			store.dispatch(selectAll())
+			store.dispatch(selectAll())
+		}, 0)
 
-	return graph
+		return nodeUI
+	})
+
+	return {
+		nodes,
+		edges,
+	}
 }

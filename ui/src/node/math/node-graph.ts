@@ -1,10 +1,10 @@
 import {DT} from '@ndjinn/core'
-import { define, html } from 'hybrids'
+import { html } from 'hybrids'
 import { NodeUI } from '../base/node-base'
 
 const fn = (a, b) => [[a, b]]
 
-const NodeGraph = NodeUI(fn, [0, 0], null, {
+export default NodeUI(fn, [0, 0], null, {
 	name: 'graph',
 	tag: 'node-graph',
 	in: [{type: DT.num, name: 'a', field: true}, {type: DT.num, name: 'b', field: true}],
@@ -17,7 +17,3 @@ const NodeGraph = NodeUI(fn, [0, 0], null, {
 		</div>`)}
 	</form>`
 })
-
-define('node-graph', NodeGraph)
-export default NodeGraph
-

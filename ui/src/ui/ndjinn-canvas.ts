@@ -1,8 +1,9 @@
-import {children, define, html, Hybrids} from 'hybrids'
+import {children, define, html} from 'hybrids'
 import styles from './ndjinn-canvas.css'
 import {drawGraph, drawBox} from './canvas-draw'
 import Hotkeys from './factories/Hotkeys'
 import store, {selectNodes} from '../store/store'
+import { getset } from '../utils/hybrids'
 
 const BINDINGS = {
 	'x': () => {},
@@ -38,7 +39,8 @@ function onmouseup(host, e) {
 	host.mouseIO.onmouseup(e)
 }
 
-const NdjinnCanvas: Hybrids<NdjinnCanvas> = {
+export default define<any>({
+	tag: 'ndjinn-canvas',
 	hotkeys: Hotkeys<NdjinnCanvas>(BINDINGS),
 	nodeElements: children((hy) => hy.hasOwnProperty('fields')),
 	onMouseSelect: ({nodeElements}) => ([x1, y1, x2, y2]) => {
@@ -84,7 +86,7 @@ const NdjinnCanvas: Hybrids<NdjinnCanvas> = {
 			selection: (): [number, number, number, number] => selection,
 		}
 	},
-	nodes: [],
+	nodes: getset([]),
 	debug: false,
 	throttle: 0,
 	canvas: {
@@ -98,6 +100,10 @@ const NdjinnCanvas: Hybrids<NdjinnCanvas> = {
 			window.addEventListener('resize', () => {
 				host.resize(host.clientWidth, host.clientHeight)
 			})
+			// HACK to account for layout lag
+			setTimeout(() => {
+				host.resize(host.clientWidth, host.clientHeight)
+			}, 100)
 		},
 	},
 	resize: ({canvas}) => (width, height) => {
@@ -107,7 +113,7 @@ const NdjinnCanvas: Hybrids<NdjinnCanvas> = {
 	ctx: ({canvas}) => canvas.getContext('2d'),
 	wipe: ({canvas, ctx}) => () => ctx.clearRect(0, 0, canvas.width, canvas.height),
 	draw: (host) => () => {
-		if(host.throttle != null)  {
+		if(host.throttle != null) {
 			setTimeout(host.draw, host.throttle)
 		} else {
 			requestAnimationFrame(() => host.draw())
@@ -125,7 +131,4 @@ const NdjinnCanvas: Hybrids<NdjinnCanvas> = {
 			<slot></slot>
 		</div>
 	`.style(styles),
-}
-
-define('ndjinn-canvas', NdjinnCanvas)
-export default NdjinnCanvas
+})
