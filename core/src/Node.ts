@@ -32,7 +32,7 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 		out: _outputs.map((subject, i) => ({...options.out?.[i]})),
 	}
 
-	const connections = new Array<{id: string, port: number, sub: Subscription}>(defaults.length)
+	let connections = new Array<{id: string, port: number, sub: Subscription}>(defaults.length)
 	const run$ = new Subject<void>()
 
 	const inputIndexByName = (name) => meta.in?.findIndex((i) => i.name === name)
@@ -151,10 +151,14 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	 * @param from source output port
 	 * @param node destination node
 	 * @param to destination node input
+	 * @param 
 	 * @return the source node
 	 */
-	function connect(from: number, node: Node, to: number) {
-		const sub = _outputs[from].subscribe((val) => node.set({[to]: val}))
+	function connect(from: number, node: Node, to: number, transform: Function = (val) => val) {
+		if(transform) {
+			console.log(transform)
+		}
+		const sub = _outputs[from].subscribe((val) => node.set({[to]: transform(val)}))
 		node.edge(to, _node, from, sub);
 
 		return _node

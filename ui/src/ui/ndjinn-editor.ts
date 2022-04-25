@@ -3,9 +3,10 @@ import { useMouse } from '../hooks'
 import { CATALOG } from '../node'
 import { NodeElement, NodeElementUI } from '../node/base/models'
 import { deserializeNodeGraph, persist, serializeNodeGraph } from '../store/localStorage'
-import store, { connectNode, createNode, deleteSelected, disconnectNode, redux, reduxTrack, saveNodeContainer, selectAll, selectNode } from '../store/store'
+import store, { connectNode, createNode, deleteSelected, disconnectNode, redux, reduxTrack, saveNodeContainer, selectAll, selectNode, setDatatypes } from '../store/store'
 import { debounce } from '../utils'
 import { getset } from '../utils/hybrids'
+import { useNdjinnConfig } from './config/ndjinn-config'
 import styles from './ndjinn-editor.css'
 const {save, load} = persist(store, 'ndjinn-project', serializeNodeGraph, deserializeNodeGraph)
 
@@ -99,6 +100,9 @@ export interface NdjinnEditor extends HTMLElement {
 export default define<NdjinnEditor>({
 	tag: 'ndjinn-editor',
 	...useMouse,
+	...useNdjinnConfig((host, datatypes) => {
+		store.dispatch(setDatatypes(datatypes));
+	}),
 	actionMousePos: {
 		get: (host, val = {x: 0, y: 0}) => val,
 		set: (host, val) => val,
@@ -114,11 +118,11 @@ export default define<NdjinnEditor>({
 		get: ({render}) => render().querySelector('ndjinn-canvas'),
 		observe: (host, container: HTMLElement, last) => {
 			if(!!last || !container) return
-			if(host.load) {
-				console.debug('Restoring state from localstorage')
-				host.load.nodes.forEach((n) => container.appendChild(n))
-				Object.entries(host.load.edges).forEach(([toNodeId, connections]: [any, any]) => {
-					connections.forEach((edge, to) => {
+			if(host.load.nodes?.length) {
+				console.info('Restoring node state from localstorage')
+				host.load.nodes?.forEach((n) => container.appendChild(n))
+				Object.entries(host.load.edges)?.forEach(([toNodeId, connections]: [any, any]) => {
+					connections?.forEach((edge, to) => {
 						// some connections are undefined
 						if(!edge) return
 						const fromNode = <NodeElementUI>container.children?.[edge.id]
@@ -158,5 +162,7 @@ export default define<NdjinnEditor>({
 				onselect="${addNode}"
 			></menu-mouse>
 		</cam-hotkey-toggle>
+
+		<slot></slot>
 	</section>`.style(styles),
 })

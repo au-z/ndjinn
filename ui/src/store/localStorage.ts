@@ -72,7 +72,10 @@ export function deserializeNodeGraph(json) {
 		const nodeUI: NodeElementUI = createNodeElement(n.tag, n.id, n.pos)
 		edges[n.id] = n.connections
 		setTimeout(() => {
-			const inputs = n.sourceValues.reduce((vals, val, i) => {
+			if(!n.sourceValues) {
+				console.warn('No source values', n)
+			}
+			const inputs = n.sourceValues?.reduce((vals, val, i) => {
 				vals[i] = val
 				return vals
 			}, {})

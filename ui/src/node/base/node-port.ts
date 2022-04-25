@@ -15,20 +15,25 @@ export const NodePort = define<NodePort>({
 	tag: 'node-port',
 	type: '',
 	types: ({type}) => type.split(','),
-	input: false,
 	connected: false,
-	disabled: false,
-	inputType: {get: (_, val) => val, set: (_, val) => val},
 	edge: getset({}),
-	classes: ({type, input, connected, disabled, edge, types}) => {
-		let classes = ['port', ...types]
+	connectedType: ({connected, edge}) => connected && edge?.type,
+	displayType: ({connectedType, types}) => connectedType || types?.[0] || 'any',
+	// inputType: {get: (_, val) => val, set: (_, val) => val},
+	input: false,
+	disabled: false,
+	classes: ({type, input, connected, disabled, displayType}) => {
+		let classes = ['port', displayType]
 		if(input) classes.push('input')
 		if(connected) classes.push('connected')
-		if(connected && edge?.type) classes.push(edge.type)
 		if(disabled) classes.push('disabled')
 		return classes
 	},
-	render: ({classes}) => html`<div class="${classes}">
+	render: ({classes, displayType}) => html`<div class="${classes}">
 		<cam-icon>highlight_off</cam-icon>
-	</div>`.style(styles)
+	</div>`.css`
+		div.port.${displayType} {
+			background: var(--ndjinn-dt-${displayType}, #aaa);
+		}
+	`.style(styles)
 })

@@ -31,24 +31,5 @@
 		pointer-events: none;
 	}
 
-	&.any {background: radial-gradient(var(--ndjinn-editor-bg, black) 40%, var(--ndjinn-port-any, #aaddff))}
-	&.str {background: #fff}
-	&.arr {background: #fff}
-	&.obj {background: #fff}
-	&.num {background: var(--ndjinn-port-num, #839296)}
-	&.uint8 {background: var(--ndjinn-port-num, #839296)}
-
-	&.rgb {background: var(--ndjinn-port-color, #9ac2fa)}
-	&.rgba {background: var(--ndjinn-port-color, #9ac2fa)}
-	&.hsl {background: var(--ndjinn-port-color, #9ac2fa)}
-	&.hsla {background: var(--ndjinn-port-color, #9ac2fa)}
-
-	&.vec {background: var(--ndjinn-port-vec, #cdefd1)}
-	&.vec2 {background: var(--ndjinn-port-vec2, #abe4b2)}
-	&.vec3 {background: var(--ndjinn-port-vec3, #69c77e)}
-	&.vec4 {background: var(--ndjinn-port-vec4, #329948)}
-
-	&.mat2 {background: var(--ndjinn-port-mat2, #e4c4bb)}
-	&.mat3 {background: var(--ndjinn-port-mat3, #e4a594)}
-	&.mat4 {background: var(--ndjinn-port-mat4, #e7896e)}
+	&.any {background: var(--ndjinn-dt-any, radial-gradient(black 40%, var(--ndjinn-port-any, #aaddff)))}
 }

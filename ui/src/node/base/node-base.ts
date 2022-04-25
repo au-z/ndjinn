@@ -127,7 +127,7 @@ export function NodeComponent<T extends NodeTemplate>(fn: Op, defaults: any[], o
 					dispatch(host, 'connect', {detail, bubbles: true, composed: true})
 				})
 
-				dispatch(host, 'created', {detail: {node}, bubbles: true})
+				dispatch(host, 'created', {detail: {node, host}, bubbles: true, composed: true})
 				try {
 					connectDraggable(host)
 				} catch (ex) {
@@ -181,7 +181,7 @@ export function NodeUI<T extends NodeTemplate>(fn: Op, defaults: any[], variants
 		}
 	
 		node.subscribe(() => invalidate())
-		dispatch(host, 'created', {detail: {node}, bubbles: true})
+		dispatch(host, 'created', {detail: {node}, bubbles: true, composed: true})
 	}
 
 	return {

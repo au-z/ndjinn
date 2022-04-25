@@ -54,8 +54,8 @@ export interface Node {
 	// reset a port to default value 
 	reset: (port: string | number) => void,
 	// connect to other nodes
-	pipe: (node: Node, piper?: Piper, options?: ConnectOptions) => Node,
-	connect: (outputIdx: number, node: Node, inputIdx: number, options?: ConnectOptions) => Node,
+	pipe: (node: Node, piper?: Piper, transform?: Function) => Node,
+	connect: (outputIdx: number, node: Node, inputIdx: number, transform?: Function) => Node,
 	edge: (idx: number, node: Node, port: number, sub: Subscription) => void,
 	disconnect: (name: number | string) => Node,
 	// side-effects from node updates
