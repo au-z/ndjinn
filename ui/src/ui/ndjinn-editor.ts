@@ -32,8 +32,7 @@ function onconnectFrom(host, {detail: {id, port, type}}) {
 	}
 }
 
-function onconnectTo(host, {detail: {id, port, type}}) {
-	console.log('onconnect', id, port, type);
+function onconnectTo(host, {detail: {id, port, type, disconnected}}) {
 	edge.to = {id, port, type}
 	if(edge.from && edge.to) {
 		store.dispatch(connectNode(edge.from, edge.to))
@@ -48,6 +47,7 @@ function onconnect(host, {detail: {from, to}}) {
 
 function ondisconnect(host, {detail: {from, to}}) {
 	store.dispatch(disconnectNode(from, to))
+	edge.to = null
 }
 
 const onsave = debounce(() => save(store.getState()), 200)
@@ -148,7 +148,6 @@ export default define<NdjinnEditor>({
 
 	load: getset(false, (host, key) => {
 		const parsed = load()
-		console.log(parsed)
 		host[key] = parsed
 	}),
 

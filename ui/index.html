@@ -26,23 +26,6 @@
 			/* --ndjinn-debug-node-opacity: 0.4; */
 		}
 	</style>
-	<script>
-		window.__ndjinn_config__ = {
-			transforms: {
-				vec: {
-					rgb: ([r, g, b]) => ({r: r % 256, g: g % 256, b: b % 256}),
-					rgba: ([r, g, b, a]) => ({r: r % 256, g: g % 256, b: b % 256, a: a % 1}),
-				},
-				// vec2: {
-				// 	vec3: ([x, y]) => [x, y, 0],
-				// 	vec4: ([x, y]) => [x, y, 0, 0],
-				// },
-			},
-			nodes: {
-				
-			}
-		}
-	</script>
 </head>
 <body>
 	<ndjinn-editor>
@@ -78,5 +61,33 @@
 			</any>
 		</ndjinn-config>
 	</ndjinn-editor>
+
+	<script>
+		window.__ndjinn_config__ = {
+			transforms: {
+				vec: {
+					rgb: ([r, g, b]) => ({r: r % 256, g: g % 256, b: b % 256}),
+					rgba: ([r, g, b, a]) => ({r: r % 256, g: g % 256, b: b % 256, a: a % 1}),
+				},
+				// vec2: {
+				// 	vec3: ([x, y]) => [x, y, 0],
+				// 	vec4: ([x, y]) => [x, y, 0, 0],
+				// },
+			},
+			nodes: {
+				RGBA: [(r, g, b, a) => ({r, g, b, a}), [0, 0, 0, 1], {
+					in: [
+						{type: 'uint8', name: 'r', field: true},
+						{type: 'uint8', name: 'g', field: true},
+						{type: 'uint8', name: 'b', field: true},
+						{type: 'percent', name: 'a', field: true},
+					],
+					out: [
+						{type: 'rgba', name: 'rgba'},
+					],
+				}]
+			}
+		}
+	</script>
 </body>
 	</html>

@@ -20,7 +20,7 @@ export const CATALOG = [
 	{
 		name: '_test_',
 		nodes: [
-			Ndjinn.component((a, b) => [a + b], [0, 0], {immediate: true}).define('node-add-test'),
+			Ndjinn.component((a, b) => [a + b], [0, 0]).define('node-add-test'),
 		]
 	},
 	{
@@ -29,7 +29,6 @@ export const CATALOG = [
 			Ndjinn.component(number, [0], {
 				in: [{type: 'num', field: true}],
 				out: [{type: 'num'}],
-				immediate: true,
 			}).define(),
 			NodeVec2.define('node-vec2'),
 			NodeVec3.define('node-vec3'),

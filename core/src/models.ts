@@ -32,8 +32,8 @@ export interface ConnectOptions { typeFrom?: string, typeTo?: string }
 export interface NodeOptions {
 	in?: PortOptions[],
 	out?: PortOptions[],
-	immediate?: boolean, // run immediately
-	outputCount?: number, // number of outputs for non-immediate nodes
+	async?: boolean, // run asynchronously
+	outputCount?: number, // number of outputs for async nodes
 	variants?: Record<string, {fn: Op, out?: PortOptions[]}>,
 }
 

@@ -23,7 +23,6 @@ export const NodeVec2 = Ndjinn.component(vec2, [0, 0], {
 		{type: 'num', field: true}
 	],
 	out: [{type: 'vec2', name: 'vec2'}],
-	immediate: true,
 	component: { render: renderVec }
 })
 
@@ -34,7 +33,6 @@ export const NodeVec3 = Ndjinn.component(vec3, [0, 0, 0], {
 		{type: 'num', field: true},
 	],
 	out: [{type: 'vec3', name: 'vec3'}],
-	immediate: true,
 	component: { render: renderVec }
 })
 
@@ -46,6 +44,5 @@ export const NodeVec4 = Ndjinn.component(vec4, [0, 0, 0, 0], {
 		{type: 'num', field: true},
 	],
 	out: [{type: 'vec4', name: 'vec4'}],
-	immediate: true,
 	component: { render: renderVec }
 })

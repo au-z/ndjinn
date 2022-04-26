@@ -16,11 +16,11 @@ class OutputPort<T> extends BehaviorSubject<T> {
  * @param options optional input and output types
  */
 export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node {
-	options = {in: [], out: [], variants: {}, ...options}
+	options = {in: [], out: [], variants: {}, async: false, ...options}
 
-	const result = options.immediate && (fn(...defaults) as any[])
+	const result = !options.async && (fn(...defaults) as any[])
 	const outputCount = options.out?.length || options.outputCount || result?.length
-	if(!outputCount) throw new Error('[ndjinn] Cannot create node without immediate flag or outputCount.')
+	if(!outputCount) throw new Error('[ndjinn] Cannot create node. Missing either async flag, output metadata, or an outputCount.')
 	
 	const _inputs: {value: any}[] = Arr.range(fn.length)
 	.map((i) => new Proxy({value: defaults[i]}, setEffect((value) => run())))
@@ -127,9 +127,6 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	 * @return the source node
 	 */
 	function connect(from: number, node: Node, to: number, transform: Function = (val) => val) {
-		if(transform) {
-			console.log(transform)
-		}
 		const sub = _outputs[from].subscribe((val) => node.set({[to]: transform(val)}))
 		node.edge(to, _node, from, sub);
 

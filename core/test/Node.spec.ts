@@ -6,23 +6,23 @@ import {num, rgb} from './node-fixtures'
 describe('node', () => {
 	describe('create', () => {
 		it('creates a node with immediate invocation', () => {
-			const node = create((n) => [n], [99], {immediate: true})
+			const node = create((n) => [n], [99])
 			expect(node.inputs[0]).toBe(99);
 			expect(node.outputs[0]).toBe(99);
 		})
 		it('creates a node without immediate invocation', () => {
-			const node = create((n) => [n], [99], {outputCount: 1})
+			const node = create((n) => [n], [99], {outputCount: 1, async: true})
 			expect(node.inputs[0]).toBe(99);
 			expect(node.outputs[0]).toBe(null);
 		})
 		it('deduces outputs from port options', () => {
-			const node = create((n) => [n], [99], {out: [{}]})
+			const node = create((n) => [n], [99], {out: [{}], async: true})
 			expect(node.inputs[0]).toBe(99);
 			expect(node.outputs[0]).toBe(null);
 		})
 		it('throws if no output count can be determined', () => {
 			expect(() => {
-				create((n) => [n], [99])
+				create((n) => [n], [99], {async: true})
 			}).toThrow();
 		})
 
@@ -79,7 +79,7 @@ describe('node', () => {
 
 	describe('run', () => {
 		let rgbInc = (r, g, b) => [{r: ++r, g: ++g, b: ++b}]
-		let color = create(rgbInc, [0, 0, 0], {immediate: true})
+		let color = create(rgbInc, [0, 0, 0])
 
 		it('triggers the node', async () => {
 			expect((await color.run()).outputs[0])
@@ -140,7 +140,7 @@ describe('node', () => {
 
 	describe('disconnect', () => {
 		let val = num([42])
-		let add = create((a, b) => [a + b], [1, 2], {immediate: true})
+		let add = create((a, b) => [a + b], [1, 2])
 
 		it('disconnects a node', async () => {
 			val.connect(0, add, 0)

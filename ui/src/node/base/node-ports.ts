@@ -16,7 +16,7 @@ function onclick(host, e, port, type, isInput, connected) {
 		})
 	} else {
 		dispatch(host, host.inputs ? 'connect-to' : 'connect-from', {
-			detail: {id: host.node.id, port, type},
+			detail: {id: host.node.id, port, type, disconnected: connected && isInput},
 			bubbles: true,
 			composed: true,
 		})

@@ -1,5 +1,5 @@
-import {define, html} from 'hybrids'
-import {NodeComponent, NodeUI} from '../base/node-base'
+import {html} from 'hybrids'
+import {NodeComponent} from '../base/node-base'
 import {Vector2, Vector3, Vector4} from 'three'
 const vec2 = (v: Vector2) => [v.x, v.y]
 const vec3 = (v: Vector3) => [v.x, v.y, v.z]
@@ -12,22 +12,6 @@ const addArrays = (a, b) => {
 	if(!Array.isArray(b)) b = Object.values(b)
 	return a.length >= b.length ? [[...a].map((v, i) => v + (b[i] ?? 0))] : [[...b].map((v, i) => v + (a[i] ?? 0))]
 }
-
-// const NodeAdd = NodeUI(defaultFn, [0, 0], {
-// 	'^(rgb|vec|mat).(&(rgb|vec|mat).)?': {fn: addArrays, out: [{type: 'vec3'}]},
-// 	'.*': {fn: defaultFn, out: [{type: 'vec3'}]},
-// }, {
-// 	name: 'add',
-// 	tag: 'node-add',
-// 	in: [{type: 'any', name: 'a'}, {type: 'any', name: 'b'}],
-// 	out: [{type: 'any', name: 'sum'}],
-// 	render: ({outputs}) => html`<form class="vec">
-// 		${JSON.stringify(outputs[0]?.value)}
-// 	</form>`
-// })
-
-// define('node-add', NodeAdd)
-// export default NodeAdd
 
 const cross = <T>(a, b, Class = Vector2): T => {
 	if(!a || !b) return null

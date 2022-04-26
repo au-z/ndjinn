@@ -15,6 +15,7 @@ const memoFetchJson = (url, options) => {
 export const NodeHttp = Ndjinn.component(fetchJson,
   ['/api/v1/employee/1', {}],
   {
+    async: true,
     in: [
       {type: 'str', field: true},
       {name: 'options', type: 'obj'}

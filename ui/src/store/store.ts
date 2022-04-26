@@ -12,7 +12,7 @@ export interface DatatypeConfig {
 
 export type DatatypeMap = Record<string, DatatypeConfig>
 
-export interface NdjinnState {
+export interface State {
 	container: HTMLElement,
 	registry: Map<string, Node>,
 	config: {
@@ -24,7 +24,6 @@ export interface NdjinnState {
 	},
 	selected: string[],
 }
-export type State = NdjinnState
 
 const STATE: State = {
 	container: null,

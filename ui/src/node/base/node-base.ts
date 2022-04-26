@@ -3,7 +3,7 @@ import {Node, NodeOptions, create, Op, PortOptions} from '@ndjinn/core'
 import {Draggable} from '@auzmartist/cam-el'
 import NodePorts from './node-ports'
 import styles from './node-base.css'
-import store, { NdjinnState, redux, State } from '../../store/store'
+import store, { redux, State } from '../../store/store'
 import { NodeElement, NodeElementUI, NodeTemplate } from './models'
 import { TEMPLATE_BASIC_FIELDS } from './templates'
 import { render } from './node-renderer'
@@ -61,7 +61,7 @@ interface NodeComponentOptions extends NodeOptions {
 	component?: Partial<CustomElement>;
 	in?: PortOptions[];
 	out?: PortOptions[];
-	immediate?: boolean;
+	async?: boolean;
 	outputCount?: number;
 }
 
@@ -105,7 +105,7 @@ export function NodeComponent<T extends NodeTemplate>(fn: Op, defaults: any[], o
 			get: (host, val) => val ?? create(fn, defaults, {
 				in: options.in,
 				out: options.out,
-				immediate: options.immediate,
+				immediate: !options.async,
 				outputCount: options.outputCount,
 			}),
 			connect: (host, key, invalidate) => {
@@ -166,65 +166,6 @@ export function NodeComponent<T extends NodeTemplate>(fn: Op, defaults: any[], o
 	}
 
 	return api
-}
-
-/**
- * @deprecated Use Ndjinn.component()
- */
-export function NodeUI<T extends NodeTemplate>(fn: Op, defaults: any[], variants: Record<string, {fn: Op, out?: PortOptions[]}> = {}, template: T): NodeElement {
-	function connectNode(host, node: Node, invalidate) {
-		host.setAttribute('id', node.id)
-		host.id = node.id
-		host.run = node.run
-		host.set = (...args) => {
-			// @ts-ignore
-			node.set(...args)
-			dispatch(host, 'save', {detail: null, bubbles: true})
-		}
-	
-		node.subscribe(() => invalidate())
-		dispatch(host, 'created', {detail: {node}, bubbles: true, composed: true})
-	}
-
-	return {
-		selected: redux(store, ({id}, state: NdjinnState) => state.selected.includes(id)),
-		// state restoration
-		incoming: getset([]),
-
-		node: {
-			...getset({}),
-			connect: (host, key, invalidate) => {
-				let node = create(fn, defaults, {
-					in: template.in,
-					out: template.out,
-				})
-				console.log('NODE', node.meta)
-				const persistedId = host.getAttribute('id')
-				if(persistedId) node.id = persistedId
-
-				connectNode(host, node, invalidate)
-				try {
-					connectDraggable(host)
-				} catch (ex) {
-					// swallow issues with unsupported browser touch API
-				}
-
-				host[key] = node
-			},
-		},
-		inputs: <any>nodeComputed((node: Node) => {
-			if(!node?.meta?.in) return []
-			return [...node.meta.in].map((i: any) => ({
-				...i,
-				mode: !!node.connections[i] ? 'OPAQUE' : 'EDIT',
-			}))
-		}),
-		outputs: <any>nodeComputed((node: Node) => [...node.outputs]),
-		fields: ({inputs}) => inputs.filter((i) => i.field),
-
-		// Custom Properties
-		...template,
-	} as any
 }
 
 function connectDraggable(host) {

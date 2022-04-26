@@ -4,7 +4,6 @@ export function num(defaults = [0]) {
 	return create((x) => [x], defaults, {
 		in: [{type: 'num', name: 'num'}],
 		out: [{type: 'num', name: 'num'}],
-		immediate: true,
 	})
 }
 

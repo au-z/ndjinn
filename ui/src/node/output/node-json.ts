@@ -7,7 +7,6 @@ const print = (obj) => [JSON.stringify(obj, null, 2)]
 
 export const NodePrint = Ndjinn.component(print, [{}], {
 	in: [{type: 'any', name: 'json'}],
-	immediate: true,
 	component: {
 		render: ({node}) => html`<div class="json" style="min-width: 240px;">
 			<code-tex lang="json" theme="nord"

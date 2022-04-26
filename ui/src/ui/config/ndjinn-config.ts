@@ -1,4 +1,5 @@
 import {Component, define, dispatch} from 'hybrids'
+import { Ndjinn } from '../../node/base/node-base'
 import store, { DatatypeMap, setTransforms } from '../../store/store'
 import { getset } from '../../utils/hybrids'
 
@@ -10,6 +11,11 @@ export const NdjinnConfig = define<any>({
 		get: () => window['__ndjinn_config__'],
 		observe: (host, config) => {
 			config.transforms && store.dispatch(setTransforms(config.transforms));
+			config.nodes && Object.entries(config.nodes).forEach(([name, [fn, defaults, options]]) => {
+				const componentName = `node-${name.toLowerCase()}`;
+				console.log(`registering ${componentName}`)
+				Ndjinn.component(fn, defaults, options).define(componentName)
+			})
 		}
 	},
 	datatypes: {

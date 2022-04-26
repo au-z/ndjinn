@@ -11,7 +11,6 @@ export const RGB = Ndjinn.component((r, g, b) => [{r, g, b}], [0, 0, 0], {
 	out: [
 		{type: 'rgb', name: 'color'},
 	],
-	immediate: true,
 })
 
 export const HSL = Ndjinn.component((h, s, l) => [{h, s, l}], [0, 1, 0.5], {
@@ -23,7 +22,6 @@ export const HSL = Ndjinn.component((h, s, l) => [{h, s, l}], [0, 1, 0.5], {
 	out: [
 		{type: 'hsl', name: 'color'},
 	],
-	immediate: true,
 }, {debug: true})
 
 function swatch(rgba) {
@@ -37,7 +35,6 @@ export const Swatch = Ndjinn.component(swatch, [{r: 0, g: 0, b: 0, a: 1}], {
 		{type: 'rgba', name: 'color'}
 	],
 	out: [{type: 'rgba', name: 'color'}],
-	immediate: true,
 	component: {
 		render: ({node}) => html`<cam-swatch
 			r="${node.outputs[0].r}" g="${node.outputs[0].g}" b="${node.outputs[0].b}"
