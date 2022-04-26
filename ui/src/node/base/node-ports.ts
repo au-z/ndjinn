@@ -5,7 +5,7 @@ import {NodeElementUI} from '../base/models';
 const components = {NodePort}
 
 import styles from './node-ports.css'
-import { DT, NodeEdge, Port } from "@ndjinn/core";
+import { NodeEdge, Port } from "@ndjinn/core";
 
 function onclick(host, e, port, type, isInput, connected) {
 	if(connected && isInput) {
@@ -56,7 +56,7 @@ export default define<NodePorts>({
 		<node-port title="${name ? `${name ?? i}: ${JSON.stringify(value)}` : JSON.stringify(value)}"
 			data-id="${i}"
 			input="${inputs}"
-			type="${type ?? DT.any}"
+			type="${type ?? 'any'}"
 			connected="${!!edges[i]}"
 			edge="${edges[i]}"
 			onclick="${(host, e) => onclick(host, e, i, type, inputs, edges[i])}"></node-port>

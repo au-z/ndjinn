@@ -1,4 +1,3 @@
-import { DT } from '@ndjinn/core';
 import { html } from 'hybrids';
 import { rgb_hsl, shiftHue, scale } from '../../math/color';
 import { Ndjinn } from '../base/node-base';
@@ -32,16 +31,16 @@ export const NodePolyad = Ndjinn.component(
 	// },
 	{
 		in: [
-			{ type: DT.color, name: 'color' },
-			{ type: DT.num, name: 'mode', field: true },
-			{ type: DT.num, name: 'deg', field: true },
+			{ type: 'color', name: 'color' },
+			{ type: 'num', name: 'mode', field: true },
+			{ type: 'num', name: 'deg', field: true },
 		],
 		out: [
-			{ type: DT.hsl, name: 'A' },
-			{ type: DT.hsl, name: 'B' },
-			{ type: DT.hsl, name: 'C' },
-			{ type: DT.hsl, name: 'D' },
-			{ type: DT.hsl, name: 'E' },
+			{ type: 'hsl', name: 'A' },
+			{ type: 'hsl', name: 'B' },
+			{ type: 'hsl', name: 'C' },
+			{ type: 'hsl', name: 'D' },
+			{ type: 'hsl', name: 'E' },
 		],
 		component: {
 			render: ({ inputs, fields }) => html`<form>

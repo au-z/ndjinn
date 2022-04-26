@@ -1,15 +1,14 @@
-import {html, RenderFunction, dispatch, UpdateFunctionWithMethods, define as defineHybrids, Component, define} from 'hybrids'
+import {html, RenderFunction, dispatch, define as defineHybrids, Component} from 'hybrids'
 import {Node, NodeOptions, create, Op, PortOptions} from '@ndjinn/core'
 import {Draggable} from '@auzmartist/cam-el'
 import NodePorts from './node-ports'
 import styles from './node-base.css'
-import store, { NdjinnState, redux } from '../../store/store'
+import store, { NdjinnState, redux, State } from '../../store/store'
 import { NodeElement, NodeElementUI, NodeTemplate } from './models'
 import { TEMPLATE_BASIC_FIELDS } from './templates'
 import { render } from './node-renderer'
 import { getset } from '../../utils/hybrids'
 import { kebab } from '../../utils'
-import { off } from 'process'
 const components = {NodePorts};
 
 const nodeComputed = <T>(fn: (node: Node) => T) => ({
@@ -21,7 +20,7 @@ const nodeComputed = <T>(fn: (node: Node) => T) => ({
 
 function renderNode<E extends NodeElement>(fn: RenderFunction<E>, options?: {shadowRoot?: boolean | object}) {
 	return render((host) => html`
-		<div class="${{node: true, selected: host.selected}}"
+		<div class="${{node: true, selected: host.selected, ...host.config}}"
 			onmousedown="${host.draggableStart}"
 			ontouchstart="${host.draggableStart}">
 			<div class="header">
@@ -47,6 +46,8 @@ function renderNode<E extends NodeElement>(fn: RenderFunction<E>, options?: {sha
 			<div class="content">
 				${fn(host)}
 			</div>
+
+			<i class="inspector" onclick="${(host) => console.log(host.node)}"></i>
 		</div>
 	`.style(styles),
 	options)
@@ -77,7 +78,8 @@ export function NodeComponent<T extends NodeTemplate>(fn: Op, defaults: any[], o
 
 	const component: Component<NodeElementUI> = {
 		tag,
-		selected: redux(store, ({id}, state: NdjinnState) => state.selected.includes(id)),
+		config: redux(store, (_, state: State) => state.config.node),
+		selected: redux(store, ({id}, state: State) => state.selected.includes(id)),
 
 		// state restoration
 		incoming: getset([], null, () => {

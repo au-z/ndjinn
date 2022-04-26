@@ -1,3 +1,5 @@
+@import '../../css/mixins.css';
+
 :host {
 	@apply absolute;
 	display: inline-block;
@@ -21,6 +23,33 @@
 	&.selected {
 		border: 1px solid var(--ndjinn-node-accent, white);
 		z-index: 2;
+	}
+
+	& > .inspector {
+		position: absolute;
+		top: -0.5rem;
+		right: -0.5rem;
+		width: 1rem;
+		height: 1rem;
+		border-radius: 1rem;
+		border: 1px solid var(--ndjinn-node-inspect, #f3a7a3);
+		background: var(--ndjinn-node-bg, rgba(180, 180, 180, 0.15));
+		display: none;
+		justify-content: center;
+		align-items: center;
+		z-index: 1;
+		color: var(--ndjinn-node-inspect, #f3a7a3);
+		cursor: pointer;
+		&::after {
+			position: absolute;
+			content: '\e86f';
+			font-family: 'Material Icons';
+			font-style: initial;
+			font-size: 0.9rem;
+		}
+	}
+	&.inspect > .inspector {
+		display: flex;
 	}
 }
 

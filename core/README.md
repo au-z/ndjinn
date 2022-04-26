@@ -100,16 +100,15 @@ node.subscribe((newState) => console.log(newState.outputs[0]))
 Sometimes, withing directly with function argument indices don't self-document well and we need to annotate nodes.
 
 ```ts
-// Import some standard datatypes (DT)
-import {DT, create} from '@ndjinn/core'
+import {create} from '@ndjinn/core'
 
 const greeting = create((a, b) => `${a} ${b}!`, ['hello', 'world'], {
 	in: [
-		{name: 'salutation', type: DT.string},
-		{name: 'name', type: DT.string},
+		{name: 'salutation'},
+		{name: 'name'},
 	],
 	out: [
-		{name: 'greeting', type: DT.string},
+		{name: 'greeting'},
 	],
 })
 ```

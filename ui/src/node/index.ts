@@ -1,4 +1,3 @@
-import { DT } from '@ndjinn/core'
 import { Ndjinn } from './base/node-base'
 import { HSL, RGB, Swatch } from './color'
 import { NodeHttp } from './http/node-http'
@@ -28,8 +27,8 @@ export const CATALOG = [
 		name: 'math',
 		nodes: [
 			Ndjinn.component(number, [0], {
-				in: [{type: DT.num, field: true}],
-				out: [{type: DT.num}],
+				in: [{type: 'num', field: true}],
+				out: [{type: 'num'}],
 				immediate: true,
 			}).define(),
 			NodeVec2.define('node-vec2'),
@@ -55,7 +54,7 @@ export const CATALOG = [
 	// {
 	// 	name: 'math',
 	// 	nodes: [
-	// 		NodeComponent((n) => [n], [0], {in: [{name: 'n', type: DT.num, field: true}], out: [{name: 'n', type: DT.num}]})
+	// 		NodeComponent((n) => [n], [0], {in: [{name: 'n', type: 'num', field: true}], out: [{name: 'n', type: 'num'}]})
 	// 			.define('node-number', 'straighten'),
 	// 		{name: 'Graph', tag: 'node-graph'},
 	// 		{name: 'Add', tag: 'node-add', icon: 'add'},

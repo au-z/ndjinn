@@ -1,5 +1,4 @@
 import { Subject, Subscription } from "rxjs"
-import { Datatype as DT } from "./Datatype"
 
 /**
  * An Op (Invoker) describes an atomic operation performed by a Node.
@@ -15,7 +14,7 @@ export type Op = (...args: any[]) => any[] | Promise<any[]>
 export type Piper = (...args: any[]) => object | any[] | ((inputValues?: any[]) => any[])
 export const PiedPiper: Piper = (...args: any[]) => [...args]
 
-export interface PortOptions { name?: string, type?: DT, field?: boolean }
+export interface PortOptions { name?: string, type?: string, field?: boolean }
 
 export interface Port extends PortOptions {
 	value: any,
@@ -28,7 +27,7 @@ export interface HubEmitter extends Port {
 	emit: (val) => void;
 }
 
-export interface ConnectOptions { typeFrom?: DT, typeTo?: DT }
+export interface ConnectOptions { typeFrom?: string, typeTo?: string }
 
 export interface NodeOptions {
 	in?: PortOptions[],
@@ -49,8 +48,6 @@ export interface Node {
 	run$: Subject<void>,
 	// Either provides or produces new inputs. Triggers an Op execution
 	set: (args: object | any[] | ((inputs: any[]) => any[])) => Node,
-	// chooses among regex indexed Op variants
-	setOp: (opSignature?: string) => Node,
 	// reset a port to default value 
 	reset: (port: string | number) => void,
 	// connect to other nodes

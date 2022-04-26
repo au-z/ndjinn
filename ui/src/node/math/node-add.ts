@@ -1,4 +1,3 @@
-import {DT} from '@ndjinn/core'
 import {define, html} from 'hybrids'
 import {NodeComponent, NodeUI} from '../base/node-base'
 import {Vector2, Vector3, Vector4} from 'three'
@@ -15,13 +14,13 @@ const addArrays = (a, b) => {
 }
 
 // const NodeAdd = NodeUI(defaultFn, [0, 0], {
-// 	'^(rgb|vec|mat).(&(rgb|vec|mat).)?': {fn: addArrays, out: [{type: DT.vec3}]},
-// 	'.*': {fn: defaultFn, out: [{type: DT.vec3}]},
+// 	'^(rgb|vec|mat).(&(rgb|vec|mat).)?': {fn: addArrays, out: [{type: 'vec3'}]},
+// 	'.*': {fn: defaultFn, out: [{type: 'vec3'}]},
 // }, {
 // 	name: 'add',
 // 	tag: 'node-add',
-// 	in: [{type: DT.any, name: 'a'}, {type: DT.any, name: 'b'}],
-// 	out: [{type: DT.any, name: 'sum'}],
+// 	in: [{type: 'any', name: 'a'}, {type: 'any', name: 'b'}],
+// 	out: [{type: 'any', name: 'sum'}],
 // 	render: ({outputs}) => html`<form class="vec">
 // 		${JSON.stringify(outputs[0]?.value)}
 // 	</form>`
@@ -70,16 +69,16 @@ const vec3vec3 = (operator, a, b) => {
 
 export const NodeArithmetic = NodeComponent(arithmeticFn, ['ADD', 0, 0], {
 	in: [
-		{type: DT.str, name: 'operator', field: true},
-		{type: DT.any, name: 'a'},
-		{type: DT.any, name: 'b'},
+		{type: 'str', name: 'operator', field: true},
+		{type: 'any', name: 'a'},
+		{type: 'any', name: 'b'},
 	],
 	out: [
-		{type: DT.any, name: 'result'},
+		{type: 'any', name: 'result'},
 	],
 	variants: {
-		'^(vec2)(&(vec2))?': {fn: vec2vec2, out: [{type: DT.vec}]},
-		'^(vec3)(&(vec3))?': {fn: vec3vec3, out: [{type: DT.vec}]},
+		'^(vec2)(&(vec2))?': {fn: vec2vec2, out: [{type: 'vec'}]},
+		'^(vec3)(&(vec3))?': {fn: vec3vec3, out: [{type: 'vec'}]},
 	},
 	component: {
 		tag: 'node-arithmetic',

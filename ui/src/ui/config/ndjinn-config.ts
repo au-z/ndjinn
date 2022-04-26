@@ -1,11 +1,17 @@
 import {Component, define, dispatch} from 'hybrids'
-import { DatatypeMap } from '../../store/store'
+import store, { DatatypeMap, setTransforms } from '../../store/store'
 import { getset } from '../../utils/hybrids'
 
 const EVENT_SET_DATATYPES = 'set:datatypes'
 
 export const NdjinnConfig = define<any>({
 	tag: 'ndjinn-config',
+	config: {
+		get: () => window['__ndjinn_config__'],
+		observe: (host, config) => {
+			config.transforms && store.dispatch(setTransforms(config.transforms));
+		}
+	},
 	datatypes: {
 		get: (host, val) => val,
 		set: (host, val) => val,
@@ -47,9 +53,9 @@ function buildDatatypes(doc: Document) {
 
 export function useNdjinnConfig<E>(onset: (host: Component<E>, datatypes: DatatypeMap) => void) {
 
-	function setDatatypeStyles(host: HTMLElement, datatypes: DatatypeMap) {
+	function setDatatypeStyles(host, datatypes: DatatypeMap) {
 		Object.entries(datatypes).forEach(([datatype, {color}]) => {
-			color && host.style.setProperty(`--ndjinn-dt-${datatype}`, color)
+			color && host.container.style.setProperty(`--ndjinn-dt-${datatype}`, color)
 		})
 	}
 

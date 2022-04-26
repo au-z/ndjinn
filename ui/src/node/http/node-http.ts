@@ -1,4 +1,3 @@
-import { DT } from '@ndjinn/core'
 import { Ndjinn } from '../base/node-base'
 
 const fetchJson = (url, options) => fetch(url, options).then((r) => {
@@ -17,11 +16,11 @@ export const NodeHttp = Ndjinn.component(fetchJson,
   ['/api/v1/employee/1', {}],
   {
     in: [
-      {type: DT.str, field: true},
-      {name: 'options', type: DT.obj}
+      {type: 'str', field: true},
+      {name: 'options', type: 'obj'}
     ],
     out: [
-      {name: 'response', type: DT.any}
+      {name: 'response', type: 'any'}
     ],
   }
 )

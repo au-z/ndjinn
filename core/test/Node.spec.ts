@@ -1,6 +1,5 @@
 
 import { firstValueFrom } from 'rxjs'
-import {Datatype as DT} from '../src/Datatype'
 import {create} from '../src/Node'
 import {num, rgb} from './node-fixtures'
 
@@ -28,8 +27,8 @@ describe('node', () => {
 		})
 
 		it('reflects port name, type, and, field', () => {
-			const inputPorts = [{name: 'input', type: DT.any, field: true}]
-			const outputPorts = [{name: 'output', type: DT.any}]
+			const inputPorts = [{name: 'input', type: 'any', field: true}]
+			const outputPorts = [{name: 'output', type: 'any'}]
 			const node = create((n) => [n], [0], {
 				in: inputPorts,
 				out: outputPorts,
@@ -67,8 +66,8 @@ describe('node', () => {
 
 	describe('named set', () => {
 		let num = create((n) => [n], [0], {
-			in: [{type: DT.num, name: 'input'}],
-			out: [{type: DT.num, name: 'output'}],
+			in: [{type: 'num', name: 'input'}],
+			out: [{type: 'num', name: 'output'}],
 		})
 		it('sets new value by input name', () => {
 			expect(num.set({input: 10}).inputs[0]).toBe(10)

@@ -51,7 +51,6 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 		},
 		connections,
 		meta,
-		setOp,
 		run,
 		set,
 		pipe,
@@ -111,33 +110,6 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	}
 
 	/**
-	 * Only used when the node have changed type.
-	 */
-	function setOp(opType?: string): Node {
-		// if(!opType) {
-		// 	opType = _inputs.map(({connection}) => connection?.[0]?.type).filter((a) => !!a).join('&')
-		// }
-
-		if(!options.variants || Object.keys(options.variants).length === 0) return
-
-		const [regex, variant] = Object.entries(options.variants).find(([pattern]) => {
-			return new RegExp(pattern, 'gi').exec(opType)
-		}) || ['DEFAULT', {fn, out: []}]
-
-		console.log(opType, '=>', variant)
-
-		if(variant.out) {
-			_outputs.forEach((o, i) => variant.out[i] && Object.entries(variant.out[i]).forEach(([property, value]) => {
-				o[property] = value
-			}))
-		}
-
-		fn = variant.fn
-
-		return _node
-	}
-
-	/**
 	 * Resets a port back to its default
 	 * @param port the port to reset
 	 */
@@ -175,7 +147,7 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	 * @return the destination node
 	 * @deprecated Use Node.connect
 	 */
-	function pipe(node: Node, pipe: Piper = PiedPiper, opts?: ConnectOptions): Node {
+	function pipe(node: Node, pipe: Piper = PiedPiper, transform: Function = (val) => val): Node {
 		return node
 	}
 	const PiedPiper = (...args: any[]) => [...args]

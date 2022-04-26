@@ -3,7 +3,7 @@ import { useMouse } from '../hooks'
 import { CATALOG } from '../node'
 import { NodeElement, NodeElementUI } from '../node/base/models'
 import { deserializeNodeGraph, persist, serializeNodeGraph } from '../store/localStorage'
-import store, { connectNode, createNode, deleteSelected, disconnectNode, redux, reduxTrack, saveNodeContainer, selectAll, selectNode, setDatatypes } from '../store/store'
+import store, { connectNode, createNode, deleteSelected, disconnectNode, redux, reduxTrack, saveNodeContainer, selectAll, selectNode, setDatatypes, setNodeConfig, setTransform, setTransforms, State } from '../store/store'
 import { debounce } from '../utils'
 import { getset } from '../utils/hybrids'
 import { useNdjinnConfig } from './config/ndjinn-config'
@@ -99,6 +99,13 @@ export interface NdjinnEditor extends HTMLElement {
 }
 export default define<NdjinnEditor>({
 	tag: 'ndjinn-editor',
+	throttle: 0,
+	debug: false,
+	inspect: {
+		value: false,
+		observe: (host, val) => store.dispatch(setNodeConfig('inspect', val)),
+	},
+
 	...useMouse,
 	...useNdjinnConfig((host, datatypes) => {
 		store.dispatch(setDatatypes(datatypes));
@@ -107,10 +114,8 @@ export default define<NdjinnEditor>({
 		get: (host, val = {x: 0, y: 0}) => val,
 		set: (host, val) => val,
 	},
-	debug: false,
-	throttle: 0,
-	selected: redux(store, (host, state) => state.selected),
-	registry: redux(store, (host, state) => state.registry),
+	selected: redux(store, (host, state: State) => state.selected),
+	registry: redux(store, (host, state: State) => state.registry),
 	onmousemove: () => (host, e) => {
 		host.mouse = {x: e.pageX, y: e.pageY}
 	},
@@ -125,18 +130,27 @@ export default define<NdjinnEditor>({
 					connections?.forEach((edge, to) => {
 						// some connections are undefined
 						if(!edge) return
+
 						const fromNode = <NodeElementUI>container.children?.[edge.id]
 						const toNode = <NodeElementUI>container.children?.[toNodeId]
 						if(!fromNode || !toNode) return
 
-						fromNode.node.connect(edge.port, toNode.node, to);
+						// connect through redux to get auto-type conversion
+						store.dispatch(connectNode(
+							{id: edge.id, port: edge.port, type: fromNode.outputs[edge.port]?.type},
+							{id: toNode.id, port: to, type: toNode.inputs[to]?.type},
+						))
 					})
 				})
 			}
 		}
 	}, saveNodeContainer),
 
-	load: getset({}, (host, key) => {host[key] = load()}),
+	load: getset(false, (host, key) => {
+		const parsed = load()
+		console.log(parsed)
+		host[key] = parsed
+	}),
 
 	render: ({debug, throttle, registry, onmousemove, actionMousePos}) => html`
 	<section tabindex="0" class="ndjinn-editor" onmousemove="${onmousemove}">

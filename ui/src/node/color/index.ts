@@ -1,28 +1,27 @@
-import { DT } from "@ndjinn/core";
 import { html } from "hybrids";
 import { Ndjinn } from "../base/node-base";
 
 export const RGB = Ndjinn.component((r, g, b) => [{r, g, b}], [0, 0, 0], {
 	in: [
-		{type: DT.uint8, name: 'r', field: true},
-		{type: DT.uint8, name: 'g', field: true},
-		{type: DT.uint8, name: 'b', field: true},
-		// {type: DT.uint8, name: 'a', field: true, }, // options: {clamp: [0, 1]}
+		{type: 'uint8', name: 'r', field: true},
+		{type: 'uint8', name: 'g', field: true},
+		{type: 'uint8', name: 'b', field: true},
+		// {type: 'uint8', name: 'a', field: true, }, // options: {clamp: [0, 1]}
 	],
 	out: [
-		{type: DT.rgb, name: 'color'},
+		{type: 'rgb', name: 'color'},
 	],
 	immediate: true,
 })
 
 export const HSL = Ndjinn.component((h, s, l) => [{h, s, l}], [0, 1, 0.5], {
 	in: [
-		{type: DT.deg, name: 'hue', field: true},
-		{type: DT.percent, name: 'sat', field: true},
-		{type: DT.percent, name: 'lum', field: true},
+		{type: 'deg', name: 'hue', field: true},
+		{type: 'percent', name: 'sat', field: true},
+		{type: 'percent', name: 'lum', field: true},
 	],
 	out: [
-		{type: DT.hsl, name: 'color'},
+		{type: 'hsl', name: 'color'},
 	],
 	immediate: true,
 }, {debug: true})
@@ -35,9 +34,9 @@ function swatch(rgba) {
 
 export const Swatch = Ndjinn.component(swatch, [{r: 0, g: 0, b: 0, a: 1}], {
 	in: [
-		{type: DT.rgba, name: 'color'}
+		{type: 'rgba', name: 'color'}
 	],
-	out: [{type: DT.rgba, name: 'color'}],
+	out: [{type: 'rgba', name: 'color'}],
 	immediate: true,
 	component: {
 		render: ({node}) => html`<cam-swatch

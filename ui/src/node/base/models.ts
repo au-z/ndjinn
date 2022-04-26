@@ -46,6 +46,7 @@ export interface NodeElement extends HTMLElement {
 }
 
 export interface NodeElementUI extends NodeElement {
+	config?: Record<string, any>,
 	icon?: string,
 }
 
