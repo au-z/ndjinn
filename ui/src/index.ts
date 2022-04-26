@@ -1,15 +1,17 @@
 import { define, dispatch, html, parent } from 'hybrids'
 import * as CamEl from '@auzmartist/cam-el'
+import {Ndjinn} from './Ndjinn'
 import NdjinnUI from './ui'
-import Nodes from './node'
 
 import Mousetrap from 'mousetrap'
 
 let components = {
 	...CamEl,
 	...NdjinnUI,
-	...Nodes,
 }
+
+export * from './math/color'
+export {Ndjinn};
 
 // Candidate cam-el
 define<any>({

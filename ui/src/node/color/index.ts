@@ -1,5 +1,5 @@
 import { html } from "hybrids";
-import { Ndjinn } from "../base/node-base";
+import { Ndjinn } from "../..";
 
 export const RGB = Ndjinn.component((r, g, b) => [{r, g, b}], [0, 0, 0], {
 	in: [
@@ -13,14 +13,15 @@ export const RGB = Ndjinn.component((r, g, b) => [{r, g, b}], [0, 0, 0], {
 	],
 })
 
-export const HSL = Ndjinn.component((h, s, l) => [{h, s, l}], [0, 1, 0.5], {
+export const HSL = Ndjinn.component((h, s, l, a) => [{h, s, l, a}], [0, 1, 0.5, 1], {
 	in: [
 		{type: 'deg', name: 'hue', field: true},
 		{type: 'percent', name: 'sat', field: true},
 		{type: 'percent', name: 'lum', field: true},
+		{type: 'percent', name: 'alpha', field: true},
 	],
 	out: [
-		{type: 'hsl', name: 'color'},
+		{type: 'hsla', name: 'color'},
 	],
 }, {debug: true})
 
@@ -46,4 +47,3 @@ export const Swatch = Ndjinn.component(swatch, [{r: 0, g: 0, b: 0, a: 1}], {
 		`
 	}
 })
-

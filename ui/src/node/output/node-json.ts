@@ -1,6 +1,6 @@
 import CodeTex from 'code-tex'
 import { html } from "hybrids"
-import {Ndjinn} from '../base/node-base'
+import { Ndjinn } from '../..'
 const components = {CodeTex}
 
 const print = (obj) => [JSON.stringify(obj, null, 2)]

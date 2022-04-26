@@ -1,4 +1,4 @@
-import { Ndjinn } from '../base/node-base'
+import { Ndjinn } from "../..";
 
 const fetchJson = (url, options) => fetch(url, options).then((r) => {
   if(!r.ok) throw new Error(r.statusText)

@@ -1,14 +1,9 @@
 import { html } from 'hybrids';
+import { Ndjinn } from '../..';
 import { rgb_hsl, shiftHue, scale } from '../../math/color';
-import { Ndjinn } from '../base/node-base';
 
-const fn = ({ r, g, b, h, s, l, a }: any, mode, deg): any[] => {
-	let hsl;
-	if ([r, g, b].every((c) => c != null))
-		hsl = { ...rgb_hsl({ r, g, b }), a: a != null ? a : 1 };
-	if ([h, s, l].every((c) => c != null))
-		hsl = scale({ h, s, l, a: a != null ? a : 1 }, { h: 1 / 360 });
-
+const fn = ({ r, g, b, a }: any, mode, deg): any[] => {
+	const hsl = { ...rgb_hsl({ r, g, b }), a: a != null ? a : 1 };
 	mode = Math.max(2, mode % 6);
 	deg %= 360;
 
@@ -22,31 +17,30 @@ const fn = ({ r, g, b, h, s, l, a }: any, mode, deg): any[] => {
 	return outputs;
 };
 
-export const NodePolyad = Ndjinn.component(
+export const Polyad = Ndjinn.component(
 	fn,
-	[{ h: 0, s: 0, l: 0 }, 2, 60],
-	// {
-	// 	'^vec3.*': { fn: ([r, g, b], mode, deg) => fn({ r, g, b }, mode, deg) },
-	// 	'.*': { fn },
-	// },
+	[{r: 0, g: 0, b: 0, a: 0}, 2, 60],
 	{
 		in: [
-			{ type: 'color', name: 'color' },
+			{ type: 'rgba', name: 'rgba' },
 			{ type: 'num', name: 'mode', field: true },
 			{ type: 'num', name: 'deg', field: true },
 		],
 		out: [
-			{ type: 'hsl', name: 'A' },
-			{ type: 'hsl', name: 'B' },
-			{ type: 'hsl', name: 'C' },
-			{ type: 'hsl', name: 'D' },
-			{ type: 'hsl', name: 'E' },
+			{ type: 'hsla', name: 'A' },
+			{ type: 'hsla', name: 'B' },
+			{ type: 'hsla', name: 'C' },
+			{ type: 'hsla', name: 'D' },
+			{ type: 'hsla', name: 'E' },
 		],
 		component: {
-			render: ({ inputs, fields }) => html`<form>
+			render: ({ node, fields }) => html`<form>
+				<div class="field">
+					<cam-swatch r="${node.inputs[0].r}" g="${node.inputs[0].g}" b="${node.inputs[0].b}" hide-label></cam-swatch>
+				</div>
 				<div class="field">
 					<select
-						value="${fields[0].value}"
+						value="${node.inputs[1]}"
 						onchange="${(host, e) =>
 							host.set({ mode: parseInt(e.target.value) })
 						}">
@@ -67,7 +61,15 @@ export const NodePolyad = Ndjinn.component(
 						onupdate="${(host, e) => host.set({ deg: parseFloat(e.detail) })}"
 						disabled="${fields[1].mode !== 'EDIT'}"></cam-input>
 				</div>
-			</form>`,
+			</form>`.css`
+				cam-swatch::part(swatch) {
+					min-height: 1.4rem;
+					height: 1.4rem;
+				}
+				.field {
+					margin-bottom: 0.25rem;
+				}
+			`,
 		}
 	}
 );

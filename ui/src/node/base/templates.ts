@@ -1,5 +1,7 @@
 import { Port } from "@ndjinn/core"
 import { html } from "hybrids"
+import store from "../../store/store"
+import {datatypeLineage} from '../../store/selectors'
 import { Field } from "./models"
 
 export function inputFromDatatype(dt: string): Function | void {
@@ -37,16 +39,22 @@ export function inputFromDatatype(dt: string): Function | void {
 			onupdate="${(host, e) => host.set(({[name]: e.detail}))}"
 			disabled="${mode === 'OPAQUE'}"
 		></cam-input>`
+
+		default: return null
 	}
 }
 
 export const TEMPLATE_BASIC_FIELDS = ({fields}) => html`<form>
 	${fields.map((f: Field & Port) => {
-		const input = inputFromDatatype(f.type)
+		const lineage = datatypeLineage(store.getState(), f.type);
+		let input
+		for(let i = 0; i < lineage.length; i++) {
+			input = inputFromDatatype(lineage[i].type)
+			if(input) break
+		}
 
 		return html`<cam-box class="field" flex="space-between center">
-			<label>${f.name}&nbsp;</label>
-			${input ? input(f) : html`No default input for Datatype '${f.type}'`}
+			${input(f) ?? html`No default input for Datatype '${f.type}'`}
 		</cam-box>`
 	})}
 </form>`

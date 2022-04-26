@@ -1,18 +1,9 @@
-import { Ndjinn } from './base/node-base'
+import { Ndjinn } from '..'
 import { HSL, RGB, Swatch } from './color'
+import { Polyad } from './color/node-polyad'
 import { NodeHttp } from './http/node-http'
 import { NodeVec2, NodeVec3, NodeVec4 } from './math/node-vec'
 import { NodePrint } from './output/node-json'
-
-export default {
-	// NodePolyad,
-	// NodeSwatch,
-
-	// ...NodeVec,
-	// ...NodeMat,
-	// NodeGraph,
-	// NodeAdd,
-}
 
 const number = (n) => [n]
 
@@ -47,7 +38,7 @@ export const CATALOG = [
 			RGB.define('node-rgb', 'face'),
 			HSL.define('node-hsl', 'invert_colors'),
 			Swatch.define('node-swatch', 'preview'),
-			// Polyad.define('node-polyad'),
+			Polyad.define('node-polyad'),
 		],
 	},
 	// {

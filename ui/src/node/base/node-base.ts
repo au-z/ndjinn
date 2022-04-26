@@ -65,10 +65,6 @@ interface NodeComponentOptions extends NodeOptions {
 	outputCount?: number;
 }
 
-export const Ndjinn = {
-	component: NodeComponent,
-}
-
 export function NodeComponent<T extends NodeTemplate>(fn: Op, defaults: any[], options?: NodeComponentOptions, {debug}: {debug?: boolean} = {}) {
 	const nodeFnName = kebab(fn.name).toLowerCase();
 	const tag = options?.component?.tag || (nodeFnName && `node-${nodeFnName}`)

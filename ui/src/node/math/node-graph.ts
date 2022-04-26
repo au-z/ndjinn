@@ -1,5 +1,5 @@
 import { html } from 'hybrids'
-import { Ndjinn } from '../base/node-base'
+import { Ndjinn } from '../..'
 
 const fn = (a, b) => [[a, b]]
 

@@ -1,5 +1,5 @@
 import { html } from 'hybrids';
-import { Ndjinn } from '../base/node-base';
+import { Ndjinn } from '../..';
 import styles from './vec.css';
 
 export const vec2 = (a, b) => [[a, b]]

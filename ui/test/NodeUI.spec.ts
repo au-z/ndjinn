@@ -1,5 +1,5 @@
 import { beforeAll, describe, it, expect } from 'vitest'
-import { Ndjinn } from "../src/node/base/node-base"
+import {Ndjinn} from '../src/index'
 import { test } from './helpers'
 
 describe('Ndjinn UI', () => {

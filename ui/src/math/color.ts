@@ -49,10 +49,10 @@ export const rgb_hex = (rgb) => rgb.reduce((color, channel) => {
 	return color + hex
 }, '#')
 
-export const shiftHue = ({h, s, l}, additive) => {
+export const shiftHue = ({h, s, l, a}, additive) => {
 	let hue = h + additive
 	hue = (hue > 1) ? hue - 1 : (hue < 0) ? 1 - hue : hue
-	return {h: hue, s, l}
+	return {h: hue, s, l, a}
 }
 
 export function scale(color, scalars: Record<string, number>) {

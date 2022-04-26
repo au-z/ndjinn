@@ -62,13 +62,18 @@
 		</ndjinn-config>
 	</ndjinn-editor>
 
-	<script>
+	<script type="module">
+		import {hsl_rgb} from '/src/index.ts'
+
 		window.__ndjinn_config__ = {
 			transforms: {
 				vec: {
 					rgb: ([r, g, b]) => ({r: r % 256, g: g % 256, b: b % 256}),
 					rgba: ([r, g, b, a]) => ({r: r % 256, g: g % 256, b: b % 256, a: a % 1}),
 				},
+				hsla: {
+					rgba: ({h, s, l, a}) => ({...hsl_rgb({h: h / 360, s, l}), a})
+				}
 				// vec2: {
 				// 	vec3: ([x, y]) => [x, y, 0],
 				// 	vec4: ([x, y]) => [x, y, 0, 0],

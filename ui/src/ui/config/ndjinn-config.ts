@@ -1,5 +1,5 @@
 import {Component, define, dispatch} from 'hybrids'
-import { Ndjinn } from '../../node/base/node-base'
+import { Ndjinn } from '../..'
 import store, { DatatypeMap, setTransforms } from '../../store/store'
 import { getset } from '../../utils/hybrids'
 

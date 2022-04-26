@@ -1,5 +1,5 @@
 import { html } from 'hybrids'
-import { Ndjinn } from "../base/node-base"
+import { Ndjinn } from '../..'
 
 const bitMash = {
 	in: [
@@ -32,7 +32,9 @@ export const NodeBit = Ndjinn.component((bit) => [bit], [false], {
 export const NodeNot = Ndjinn.component((a) => [!a], [false], {
 	in: [{type: 'bit', name: 'val'}],
 	out: [{type: 'bit', name: 'not'}],
-	render: ({}) => html`<form></form>`
+	component: {
+		render: ({}) => html`<form></form>`
+	},
 })
 
 export const NodeAnd = Ndjinn.component((a, b) => [a && b], [false, false], {
