@@ -104,7 +104,6 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
   async function run(args: any[] = _inputs.map((i) => i.value)): Promise<Node> {
     let result = fn(...args)
     if (!result?.['then']) result = Promise.resolve(result ?? []) as Promise<any[]>
-
     ;(await result).map((value, i) => _outputs[i].next(value))
 
     subscriptions.forEach((fn) => fn(_node))
