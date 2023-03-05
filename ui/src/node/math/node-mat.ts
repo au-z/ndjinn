@@ -1,7 +1,7 @@
 import {DT} from '@ndjinn/core'
 import {define, html} from 'hybrids'
 import {NodeUI} from '../base/node-base'
-import styles from './mat.css'
+import styles from './mat.css?inline'
 import {chunk} from 'lodash'
 
 /*

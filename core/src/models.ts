@@ -1,5 +1,4 @@
-import { Subject, Subscription } from "rxjs"
-import { Datatype as DT } from "./Datatype"
+import { Datatype } from "./Datatype"
 
 /**
  * An Op (Invoker) describes an atomic operation performed by a Node.
@@ -15,7 +14,7 @@ export type Op = (...args: any[]) => any[] | Promise<any[]>
 export type Piper = (...args: any[]) => object | any[] | ((inputValues?: any[]) => any[])
 export const PiedPiper: Piper = (...args: any[]) => [...args]
 
-export interface PortOptions { name?: string, type?: DT, field?: boolean }
+export interface PortOptions { name?: string, type?: Datatype, field?: boolean }
 
 export interface Port extends PortOptions {
 	value: any,
@@ -28,7 +27,7 @@ export interface HubEmitter extends Port {
 	emit: (val) => void;
 }
 
-export interface ConnectOptions { typeFrom?: DT, typeTo?: DT }
+export interface ConnectOptions { typeFrom?: Datatype, typeTo?: Datatype }
 
 export interface NodeOptions {
 	in?: PortOptions[],
@@ -36,29 +35,4 @@ export interface NodeOptions {
 	immediate?: boolean, // run immediately
 	outputCount?: number, // number of outputs for non-immediate nodes
 	variants?: Record<string, {fn: Op, out?: PortOptions[]}>,
-}
-
-export interface Node {
-	id: string,
-	inputs: any[],
-	outputs: Port[],
-	connections: {id: string, port: number, sub: Subscription}[],
-	meta: {in: any[], out: any[]},
-	// Triggers an Op execution
-	run: (args?: any[]) => Promise<Node>,
-	run$: Subject<void>,
-	// Either provides or produces new inputs. Triggers an Op execution
-	set: (args: object | any[] | ((inputs: any[]) => any[])) => Node,
-	// chooses among regex indexed Op variants
-	setOp: (opSignature?: string) => Node,
-	// reset a port to default value 
-	reset: (port: string | number) => void,
-	// connect to other nodes
-	pipe: (node: Node, piper?: Piper, transform?: Function) => Node,
-	connect: (outputIdx: number, node: Node, inputIdx: number, transform?: Function) => Node,
-	edge: (idx: number, node: Node, port: number, sub: Subscription) => void,
-	disconnect: (name: number | string) => Node,
-	// side-effects from node updates
-	subscribe: (fn: (node: Node) => void) => number,
-	unsubscribe: (number) => boolean,
 }

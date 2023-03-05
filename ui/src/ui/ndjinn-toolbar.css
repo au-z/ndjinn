@@ -1,21 +1,17 @@
 :host {
-	font-family: var(--ndjinn-font, sans-serif);
-	z-index: 100;
+  font-family: var(--ndjinn-font, sans-serif);
+  z-index: 100;
 }
 
 .ndjinn-toolbar {
-	@apply p-2;
-	background: var(--ndjinn-node-bg, #333);
+  @apply p-2;
+  background: var(--ndjinn-node-bg, #333);
 }
 
-.tools {
-	@apply flex items-center;
-
-	cam-input::part(input) {
-		@apply h-6 p-1 rounded-md;
-		width: 14rem;
-		background: none;
-		color: var(--ndjinn-node-color, white);
-		font-size: 1.1rem;
-	}
+cam-input::part(input) {
+  @apply h-6 p-1 rounded-md;
+  width: 14rem;
+  background: none;
+  color: var(--ndjinn-node-color, white);
+  font-size: 1.1rem;
 }

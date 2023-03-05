@@ -1,29 +1,52 @@
 {
   "name": "@ndjinn/core",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Function composition for the ndjinn node editor. Generally useful for geeking out.",
-  "main": "./dist/core.es.js",
-  "module": "./dist/core.es.js",
+  "type": "module",
+  "main": "./dist/core.umd.cjs",
+  "module": "./dist/core.js",
   "types": "./dist/types/src/index.d.ts",
   "exports": {
-    ".": "./dist/core.es.js"
+    ".": {
+      "import": "./dist/core.js",
+      "require": "./dist/core.umd.cjs"
+    }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc && vite build",
-    "dev": "vite",
-    "test": "jest --watch",
-    "prepublishOnly": "npm run build"
+    "build": "wireit",
+    "dev": "wireit",
+    "tsc": "wireit",
+    "test": "vitest",
+    "prepublishOnly": "pnpm build"
+  },
+  "wireit": {
+    "dev": {
+      "command": "vite",
+      "files": ["src/**/*", "vite.config.ts"]
+    },
+    "build": {
+      "command": "vite build",
+      "dependencies": [
+        "tsc"
+      ],
+      "files": ["src/**/*", "vite.config.ts"],
+      "output": ["dist/**/*"]
+    },
+    "tsc": {
+      "command": "tsc",
+      "files": ["src/**/*.ts", "tsconfig.json"],
+      "output": ["dist/types/**/*"]
+    }
   },
   "devDependencies": {
-    "@types/jest": "^26.0.23",
     "@types/node": "^14.14.32",
-    "jest": "^26.6.3",
-    "ts-jest": "^26.5.3",
-    "typescript": "^4.2.3",
-    "vite": "^2.6.14"
+    "typescript": "^4.9.4",
+    "vite": "^4.0.3",
+    "vitest": "^0.26.2",
+    "wireit": "^0.9.2"
   },
   "keywords": [
     "function",
@@ -34,19 +57,6 @@
   ],
   "author": "Austin Martin (auz.martin@gmail.com)",
   "license": "ISC",
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": "ts-jest"
-    },
-    "testMatch": [
-      "**/test/**/*.spec.(ts|js)"
-    ],
-    "testEnvironment": "jsdom"
-  },
   "dependencies": {
     "rxjs": "^7.5.2"
   }

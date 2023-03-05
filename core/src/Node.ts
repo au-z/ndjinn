@@ -1,6 +1,6 @@
 import { BehaviorSubject, Subject, Subscription } from 'rxjs'
 import {v4 as uuid} from 'uuid'
-import { Op, Node, Piper, ConnectOptions, NodeOptions } from './models'
+import { Op, Piper, NodeOptions, Port } from './models'
 import { Arr, setEffect } from './utils'
 
 class OutputPort<T> extends BehaviorSubject<T> {
@@ -8,6 +8,34 @@ class OutputPort<T> extends BehaviorSubject<T> {
 		super(_value);
 	}
 }
+
+export interface Node {
+	id: string,
+	inputs: any[],
+	outputs: Port[],
+	connections: {id: string, port: number, sub: Subscription}[],
+	meta: {in: any[], out: any[]},
+	// Triggers an Op execution
+	run: (args?: any[]) => Promise<Node>,
+	run$: Subject<void>,
+	// Either provides or produces new inputs. Triggers an Op execution
+	set: (args: object | any[] | ((inputs: any[]) => any[])) => Node,
+	// chooses among regex indexed Op variants
+	setOp: (opSignature?: string) => Node,
+	// reset a port to default value 
+	reset: (port: string | number) => void,
+	// connect to other nodes
+	pipe: (node: Node, piper?: Piper, transform?: Function) => Node,
+	connect: (outputIdx: number, node: Node, inputIdx: number, transform?: Function) => Node,
+	edge: (idx: number, node: Node, port: number, sub: Subscription) => void,
+	disconnect: (name: number | string) => Node,
+	// side-effects from node updates
+	subscribe: (fn: (node: Node) => void) => number,
+	unsubscribe: (number) => boolean,
+}
+
+export function Node(){}
+Node.create = create
 
 /**
  * Creates a node wrapping a function invocation context
@@ -175,7 +203,7 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 	 * @return the destination node
 	 * @deprecated Use Node.connect
 	 */
-	function pipe(node: Node, pipe: Piper = PiedPiper, opts?: ConnectOptions): Node {
+	function pipe(node: Node, piper: Piper = PiedPiper, transform?: Function): Node {
 		return node
 	}
 	const PiedPiper = (...args: any[]) => [...args]

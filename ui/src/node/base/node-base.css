@@ -1,83 +1,84 @@
 :host {
-	@apply absolute;
-	display: inline-block;
-	--node-port-size: 8px;
-	--node-port-border-w: 4px;
+  @apply absolute;
+  display: inline-block;
+  --node-port-size: 8px;
+  --node-port-border-w: 4px;
 }
 
 .node {
-	@apply absolute rounded-md;
-	border: 1px solid var(--ndjinn-node-border, transparent);
-	font-family: var(--ndjinn-font, sans-serif);
-	display: inline-grid;
-	grid-template-columns: 0 max-content 0;
-	grid-template-areas: 'h h h' 'i c o';
+  @apply absolute rounded-md;
+  border: 1px solid var(--ndjinn-node-border, transparent);
+  font-family: var(--ndjinn-font, sans-serif);
+  display: inline-grid;
+  grid-template-columns: 0 max-content 0;
+  grid-template-areas: 'h h h' 'i c o';
 
-	color: var(--ndjinn-node-color, #fff);
-	opacity: var(--ndjinn-debug-node-opacity, 1.0);
-	user-select: none;
-	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+  color: var(--ndjinn-node-color, #fff);
+  opacity: var(--ndjinn-debug-node-opacity, 1);
+  user-select: none;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 
-	&.selected {
-		border: 1px solid var(--ndjinn-node-accent, white);
-		z-index: 2;
-	}
+  &.selected {
+    border: 1px solid var(--ndjinn-node-accent, white);
+    z-index: 2;
+  }
 }
 
 .header {
-	@apply p-1 rounded-md;
-	padding-left: calc(var(--ndjinn-port-size, 8px) * 1.5);
-	padding-right: calc(var(--ndjinn-port-size, 8px) * 1.5);
-	border-bottom-right-radius: 0;
-	border-bottom-left-radius: 0;
-	background: var(--ndjinn-node-header-bg, rgba(100, 100, 100, 0.15));
-	backdrop-filter: blur(2.5px);
-	font-size: 0.85rem;
-	grid-area: h;
-	cursor: pointer;
+  @apply p-1 rounded-md;
+  padding-left: calc(var(--ndjinn-port-size, 8px) * 1.5);
+  padding-right: calc(var(--ndjinn-port-size, 8px) * 1.5);
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  background: var(--ndjinn-node-header-bg, rgba(100, 100, 100, 0.15));
+  backdrop-filter: blur(2.5px);
+  font-size: 0.85rem;
+  grid-area: h;
+  cursor: pointer;
 }
 
 .content {
-	@apply rounded-md;
-	grid-area: c;
-	background: var(--ndjinn-node-bg, rgba(180, 180, 180, 0.15));
-	backdrop-filter: blur(10px);
-	border-top-right-radius: 0;
-	border-top-left-radius: 0;
-	form {
-		padding: calc(var(--ndjinn-port-size, 8px) * 1.5);
-		@apply pt-2 pb-2;
-	}
+  @apply rounded-md;
+  grid-area: c;
+  background: var(--ndjinn-node-bg, rgba(180, 180, 180, 0.15));
+  backdrop-filter: blur(10px);
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  form {
+    padding: calc(var(--ndjinn-port-size, 8px) * 1.5);
+    @apply pt-2 pb-2;
+  }
 }
 
 .inputs {
-	grid-area: i;
+  grid-area: i;
 }
 
 .outputs {
-	grid-area: o;
+  grid-area: o;
 }
 
-.inputs, .outputs {
-	background-color: var(--ndjinn-node-bg, #666);
-	z-index: 1;
+.inputs,
+.outputs {
+  background-color: var(--ndjinn-node-bg, #666);
+  z-index: 1;
 }
 
 select {
-	@apply pl-2 pr-2 h-6 rounded-md;
+  @apply pl-2 pr-2 h-6 rounded-md;
 }
 cam-input::part(input),
 select {
-	background: var(--ndjinn-input-bg, rgba(0, 0, 0, 0.2));
-	color: var(--node-color, #fff);
-	border: 1px solid rgba(255, 255, 255, 0.3);
+  background: var(--ndjinn-input-bg, rgba(0, 0, 0, 0.2));
+  color: var(--node-color, #fff);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 option {
-	background: var(--ndjinn-input-bg, rgba(0, 0, 0, 0.2));
-	line-height: 0.4rem;
+  background: var(--ndjinn-input-bg, rgba(0, 0, 0, 0.2));
+  line-height: 0.4rem;
 }
 
 cam-input:disabled::part(input) {
-	background: none;
+  background: none;
 }

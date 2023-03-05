@@ -1,7 +1,7 @@
 import { DT } from '@ndjinn/core';
 import { html } from 'hybrids';
 import { Ndjinn } from '../base/node-base';
-import styles from './vec.css';
+import styles from './vec.css?inline';
 
 export const vec2 = (a, b) => [[a, b]]
 export const vec3 = (a, b, c) => [[a, b, c]]

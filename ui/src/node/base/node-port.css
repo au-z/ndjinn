@@ -1,35 +1,37 @@
 .port {
-	@apply flex justify-center items-center;
-	width: 8px;
-	height: 8px;
-	border-radius: 8px;
-	background: white;
-	border: 4px solid var(--ndjinn-editor-bg, black);
-	cursor: pointer;
-	transition: 0.22s all ease-out;
-	cam-icon {
-		opacity: 0;
-		transition: 0.22s all ease-out;
-	}
+  @apply flex justify-center items-center;
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  background: white;
+  border: 4px solid var(--ndjinn-editor-bg, black);
+  cursor: pointer;
+  transition: 0.22s all ease-out;
+  cam-icon {
+    opacity: 0;
+    transition: 0.22s all ease-out;
+  }
 }
 .port.connected {
-	&.input:hover {
-		background: var(--njdinn-port-delete, #df5363);
-		border: 4px solid var(--njdinn-port-delete, #df5363);
-		cam-icon {
-			opacity: 1;
-			font-size: 0.4rem;
-			color: var(--njdinn-port-delete, #df5363);
-			filter: brightness(2.5);
-		}
-	}
+  &.input:hover {
+    background: var(--njdinn-port-delete, #df5363);
+    border: 4px solid var(--njdinn-port-delete, #df5363);
+    cam-icon {
+      opacity: 1;
+      font-size: 0.4rem;
+      color: var(--njdinn-port-delete, #df5363);
+      filter: brightness(2.5);
+    }
+  }
 }
 
 .port {
-	&.disabled {
-		opacity: 0;
-		pointer-events: none;
-	}
+  &.disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
 
-	&.any {background: var(--ndjinn-dt-any, radial-gradient(black 40%, var(--ndjinn-port-any, #aaddff)))}
+  &.any {
+    background: var(--ndjinn-dt-any, radial-gradient(black 40%, var(--ndjinn-port-any, #aaddff)));
+  }
 }

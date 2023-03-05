@@ -1,6 +1,0 @@
-useTabs: true
-singleQuote: true
-quoteProps: "consistent"
-trailingCommas: "all"
-bracketSameLine: true
-arrowParens: "always"
