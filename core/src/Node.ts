@@ -20,8 +20,6 @@ export interface Node {
   run$: Subject<void>
   // Either provides or produces new inputs. Triggers an Op execution
   set: (args: object | any[] | ((inputs: any[]) => any[])) => Node
-  // chooses among regex indexed Op variants
-  setOp: (opSignature?: string) => Node
   // reset a port to default value
   reset: (port: string | number) => void
   // connect to other nodes

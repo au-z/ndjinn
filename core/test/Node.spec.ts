@@ -4,7 +4,7 @@ import { create } from '../src/Node'
 import { num, rgb } from './node-fixtures'
 
 describe('Node', () => {
-  describe('create', () => {
+  describe('create()', () => {
     test('creates a node with immediate invocation', () => {
       const node = create((n) => [n], [99])
       expect(node.inputs[0]).toBe(99)
@@ -43,7 +43,7 @@ describe('Node', () => {
     })
   })
 
-  describe('set', () => {
+  describe('set()', () => {
     let val = num([0])
     test('sets default number', () => {
       expect(val.inputs[0]).toBe(0)
@@ -64,7 +64,7 @@ describe('Node', () => {
     })
   })
 
-  describe('named set', () => {
+  describe('named set()', () => {
     let num = create((n) => [n], [0], {
       in: [{ type: 'num', name: 'input' }],
       out: [{ type: 'num', name: 'output' }],
@@ -77,7 +77,7 @@ describe('Node', () => {
     })
   })
 
-  describe('run', () => {
+  describe('run()', () => {
     let rgbInc = (r, g, b) => [{ r: ++r, g: ++g, b: ++b }]
     let color = create(rgbInc, [0, 0, 0])
 
@@ -92,7 +92,7 @@ describe('Node', () => {
     })
   })
 
-  describe('connect', () => {
+  describe('connect()', () => {
     let val = num([1])
     let color = rgb([0, 0, 0])
 
@@ -133,7 +133,7 @@ describe('Node', () => {
 
   // })
 
-  describe('disconnect', () => {
+  describe('disconnect()', () => {
     let val = num([42])
     let add = create((a, b) => [a + b], [1, 2])
 

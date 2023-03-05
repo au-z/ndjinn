@@ -1,4 +1,4 @@
-lockfileVersion: 5.4
+lockfileVersion: 5.3
 
 importers:
 
@@ -24,7 +24,7 @@ importers:
 
   ui:
     specifiers:
-      '@auzmartist/cam-el': ../../cam-el
+      '@auzmartist/cam-el': ^3.0.0-alpha.4
       '@auzmartist/hybrids-helpers': ^0.3.4
       '@ndjinn/core': workspace:*
       '@types/node': ^17.0.23
@@ -46,7 +46,7 @@ importers:
       vitest: ^0.26.2
       wireit: ^0.9.2
     dependencies:
-      '@auzmartist/cam-el': link:../../cam-el
+      '@auzmartist/cam-el': 3.0.0-alpha.4
       '@auzmartist/hybrids-helpers': 0.3.4
       '@ndjinn/core': link:../core
       code-tex: 1.1.0
@@ -70,6 +70,15 @@ importers:
       wireit: 0.9.2
 
 packages:
+
+  /@auzmartist/cam-el/3.0.0-alpha.4:
+    resolution: {integrity: sha512-K7lOW/ayPO3VFK4mRL1UWbwrS7kD2MtWh39a2mei1PMYYKyixj1/c9/fOSgxNv1TbtK+Avs6vmMX4Y3IVIe7Gw==}
+    dependencies:
+      '@auzmartist/hybrids-helpers': 0.3.4
+      hybrids: 8.1.12
+      mousetrap: 1.6.5
+      three: 0.149.0
+    dev: false
 
   /@auzmartist/hybrids-helpers/0.2.1:
     resolution: {integrity: sha512-wWWXU2wT44LDmCQAPZAPCc6O3RBYOXNt0PbjlXDZyfhsLeEsUfPskreR6E7qha10CB2Q0otkv03xtQAkisgB0Q==}
@@ -745,7 +754,6 @@ packages:
 
   /mousetrap/1.6.5:
     resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
-    dev: true
 
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
@@ -1080,6 +1088,10 @@ packages:
 
   /three/0.148.0:
     resolution: {integrity: sha512-8uzVV+qhTPi0bOFs/3te3RW6hb3urL8jYEl6irjCWo/l6sr8MPNMcClFev/MMYeIxr0gmDcoXTy/8LXh/LXkfw==}
+    dev: false
+
+  /three/0.149.0:
+    resolution: {integrity: sha512-tohpUxPDht0qExRLDTM8sjRLc5d9STURNrdnK3w9A+V4pxaTBfKWWT/IqtiLfg23Vfc3Z+ImNfvRw1/0CtxrkQ==}
     dev: false
 
   /tinybench/2.3.1:
