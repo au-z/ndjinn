@@ -6,7 +6,7 @@ describe('Ndjinn UI', () => {
   describe('component API', () => {
     beforeAll(() => {
       const number = (n) => [n]
-      const nodeNumber = Ndjinn.component(number, [0], {immediate: true}).define();
+      const nodeNumber = Ndjinn.component(number, [0]).define();
 
       const nodeNumberEdit = Ndjinn.component(number, [0], {
         in: [{field: true}],

@@ -1,75 +1,52 @@
-import { DT } from '@ndjinn/core'
-import { define, html } from 'hybrids'
-import { Ndjinn, NodeUI } from '../base/node-base'
+import { html } from 'hybrids'
+import { Ndjinn } from "../base/node-base"
 
 const bitMash = {
-  in: [
-    { type: DT.bit, name: 'a' },
-    { type: DT.bit, name: 'b' },
-  ],
-  out: [{ type: DT.bit, name: 'out' }],
-  render: ({}) => html`<form></form>`,
+	in: [
+		{type: 'bit', name: 'a'},
+		{type: 'bit', name: 'b'},
+	],
+	out: [
+		{type: 'bit', name: 'out'},
+	],
+	component: {
+		render: ({}) => html`<form></form>`
+	},
 }
 
 export const NodeBit = Ndjinn.component((bit) => [bit], [false], {
-  in: [{ type: DT.bit, name: 'i', field: true }],
-  out: [{ type: DT.bit, name: 'o' }],
-  immediate: true,
+	in: [{type: 'bit', name: 'val', field: true}],
+	out: [{type: 'bit', name: 'val'}],
+	component: {
+		render: ({fields: [bit]}) => html`<form>
+			<div class="field">
+				<label>${bit.name}</label>
+				<cam-input type="checkbox" toggle
+					value="${bit.value}"
+					oninput="${(host, e) => host.set({0: e.detail})}"></cam-input>
+			</div>
+		</form>`
+	}
 })
 
-// const NodeBit = NodeUI((bit) => [bit], [false], null, {
-//   name: 'BIT',
-//   tag: 'node-bit',
-//   in: [{ type: DT.bit, name: 'val', field: true }],
-//   out: [{ type: DT.bit, name: 'val' }],
-//   render: ({ fields: [bit] }) => html`<form>
-//     <div class="field">
-//       <label>${bit.name}</label>
-//       <cam-input
-//         type="checkbox"
-//         toggle
-//         value="${bit.value}"
-//         oninput="${(host, e) => host.set({ 0: e.detail })}"
-//       ></cam-input>
-//     </div>
-//   </form>`,
-// })
+export const NodeNot = Ndjinn.component((a) => [!a], [false], {
+	in: [{type: 'bit', name: 'val'}],
+	out: [{type: 'bit', name: 'not'}],
+	render: ({}) => html`<form></form>`
+})
 
-// const NodeNot = NodeUI((a) => [!a], [false], null, {
-//   name: 'NOT',
-//   tag: 'node-not',
-//   in: [{ type: DT.bit, name: 'val' }],
-//   out: [{ type: DT.bit, name: 'not' }],
-//   render: ({}) => html`<form></form>`,
-// })
-// define('node-not', NodeNot)
+export const NodeAnd = Ndjinn.component((a, b) => [a && b], [false, false], {
+	...bitMash,
+})
 
-// const NodeAnd = NodeUI((a, b) => [a && b], [false, false], null, {
-//   name: 'AND',
-//   tag: 'node-and',
-//   ...bitMash,
-// })
-// define('node-and', NodeAnd)
+export const NodeNand = Ndjinn.component((a, b) => [!(a && b)], [false, false], {
+	...bitMash,
+})
 
-// const NodeNand = NodeUI((a, b) => [!(a && b)], [false, false], null, {
-//   name: 'NAND',
-//   tag: 'node-nand',
-//   ...bitMash,
-// })
-// define('node-nand', NodeNand)
+export const NodeOr = Ndjinn.component((a, b) => [a && b], [false, false], {
+	...bitMash,
+})
 
-// const NodeOr = NodeUI((a, b) => [a && b], [false, false], null, {
-//   name: 'OR',
-//   tag: 'node-or',
-//   ...bitMash,
-// })
-// define('node-or', NodeOr)
-
-// const NodeXor = NodeUI((a, b) => [!a === b], [false, false], null, {
-//   name: 'XOR',
-//   tag: 'node-xor',
-//   ...bitMash,
-// })
-// define('node-xor', NodeXor)
-
-// export { NodeNot, NodeAnd, NodeNand, NodeOr, NodeXor }
+export const NodeXor = Ndjinn.component((a, b) => [!a === b], [false, false], {
+	...bitMash,
+})

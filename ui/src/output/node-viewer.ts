@@ -1,7 +1,5 @@
-import { DT } from "@ndjinn/core";
 import { html } from "hybrids";
 import * as THREE from "three";
-import { Scene } from "three";
 import { NodeComponent } from "../node/base/node-base";
 
 function initialize({inputs}, canvas: HTMLCanvasElement) {
@@ -42,8 +40,8 @@ export const Viewer = NodeComponent((camera, scene) => [], [
 	new THREE.Scene(),
 ], {
 	in: [
-		{name: 'cam', type: DT.any},
-		{name: 'scene', type: DT.any},
+		{name: 'cam', type: 'any'},
+		{name: 'scene', type: 'any'},
 	],
 	component: {
 		canvas: {

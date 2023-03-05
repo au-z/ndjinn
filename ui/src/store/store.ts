@@ -1,8 +1,6 @@
 import {createStore} from 'redux'
-import {enableMapSet} from 'immer'
-import {DT, Node} from '@ndjinn/core'
+import {Node} from '@ndjinn/core'
 const devtools = (<any>window).__REDUX_DEVTOOLS_EXTENSION__ && (<any>window).__REDUX_DEVTOOLS_EXTENSION__()
-enableMapSet();
 
 export interface DatatypeConfig {
 	parent?: string,
@@ -14,27 +12,28 @@ export interface DatatypeConfig {
 
 export type DatatypeMap = Record<string, DatatypeConfig>
 
-export interface NdjinnState {
+export interface State {
 	container: HTMLElement,
 	registry: Map<string, Node>,
 	config: {
+		node: {
+			inspect: boolean,
+		},
 		datatypes: DatatypeMap,
 		transforms: any,
 	},
 	selected: string[],
 }
-export type State = NdjinnState
 
 const STATE: State = {
 	container: null,
 	registry: new Map(),
 	config: {
+		node: {
+			inspect: false,
+		},
 		datatypes: {} as DatatypeMap,
-		transforms: {
-			vec3: {
-				rgba: ([r, g, b, a]) => ({r: r % 256, g: g % 256, b: b % 256, a: a % 1}),
-			},
-		}
+		transforms: {}
 	},
 	selected: [],
 }
@@ -43,6 +42,13 @@ const reducers = {
 	SET_DATATYPES: (state: State, datatypes: DatatypeMap) => {
 		state.config.datatypes = datatypes
 		return state
+	},
+	SET_TRANSFORMS: (state: State, transforms) => {
+		state.config.transforms = transforms
+		return state
+	},
+	SET_NODE_CONFIG: (state: State, {property, value}) => {
+		state.config.node[property] = value;
 	},
 	SAVE_CONTAINER: (state: State, el: HTMLElement) => {
 		state.container = el
@@ -55,14 +61,10 @@ const reducers = {
 	CONNECT_NODE: (state: State, {from, to}) => {
 		const fromNode = state.registry.get(from.id)
 		const toNode = state.registry.get(to.id)
-		console.log(fromNode, toNode);
-		const sourceDT = from.type
-		const destDT = to.type
-		console.log(sourceDT, destDT)
-		let transform;
 
-		if(sourceDT != destDT) {
-			transform = findTransform(state, sourceDT, destDT);
+		let transform
+		if(from.type != to.type) {
+			transform = findTransform(state, from.type, to.type);
 		}
 		if(fromNode && toNode) fromNode.connect(from.port, toNode, to.port, transform);
 		else console.debug('[store][connect] cannot connect two nodes which do not exist')
@@ -101,8 +103,14 @@ const reducers = {
 	},
 }
 
-function findTransform(state: State, sourceDT: DT, destDT: DT) {
-	return state.config.transforms[sourceDT]?.[destDT]
+function findTransform(state: State, sourceDT: string, destDT: string) {
+	let source = sourceDT
+	let config = state.config.datatypes[source]
+	while(!state.config.transforms[source]?.[destDT] && config.parent) {
+			source = config.parent
+			config = state.config.datatypes[source]
+	}
+	return state.config.transforms[source]?.[destDT]
 }
 
 const storeConfig = (state = STATE, {type, value}) => {
@@ -113,6 +121,8 @@ const storeConfig = (state = STATE, {type, value}) => {
 export default createStore(storeConfig, devtools)
 
 export const setDatatypes = (datatypes: DatatypeMap) => ({type: 'SET_DATATYPES', value: datatypes})
+export const setTransforms = (transforms: Record<string, Record<string, Function>>) => ({type: 'SET_TRANSFORMS', value: transforms})
+export const setNodeConfig = (property, value) => ({type: 'SET_NODE_CONFIG', value: {property, value}})
 export const saveNodeContainer = (el: HTMLElement) => ({type: 'SAVE_CONTAINER', value: el})
 export const createNode = (node) => ({type: 'CREATE_NODE', value: node})
 export const connectNode = (from, to) => ({type: 'CONNECT_NODE', value: {from, to}})

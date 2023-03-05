@@ -3,19 +3,7 @@ import { useMouse } from '../hooks'
 import { CATALOG } from '../node'
 import { NodeElement, NodeElementUI } from '../node/base/models'
 import { deserializeNodeGraph, persist, serializeNodeGraph } from '../store/localStorage'
-import store, {
-  connectNode,
-  createNode,
-  deleteSelected,
-  disconnectNode,
-  redux,
-  reduxTrack,
-  saveNodeContainer,
-  selectAll,
-  selectNode,
-  setDatatypes,
-  State,
-} from '../store/store'
+import store, { connectNode, createNode, deleteSelected, disconnectNode, redux, reduxTrack, saveNodeContainer, selectAll, selectNode, setDatatypes, setNodeConfig, setTransform, setTransforms, State } from '../store/store'
 import { debounce } from '../utils'
 import { getset } from '../utils/hybrids'
 import { useNdjinnConfig } from './config/ndjinn-config'
@@ -128,7 +116,6 @@ function onconnectFrom(host, { detail: { id, port, type } }) {
 }
 
 function onconnectTo(host, { detail: { id, port, type } }) {
-  console.log('onconnect', id, port, type)
   edge.to = { id, port, type }
   if (edge.from && edge.to) {
     store.dispatch(connectNode(edge.from, edge.to))
@@ -141,8 +128,9 @@ function onconnect(host, { detail: { from, to } }) {
   store.dispatch(connectNode(from, to))
 }
 
-function ondisconnect(host, { detail: { from, to } }) {
-  store.dispatch(disconnectNode(from, to))
+function ondisconnect(host, {detail: {from, to}}) {
+	store.dispatch(disconnectNode(from, to))
+	edge.to = null
 }
 
 const onsave = debounce(() => save(store.getState()), 200)
