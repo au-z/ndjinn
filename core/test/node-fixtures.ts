@@ -1,4 +1,4 @@
-import { create } from '../src/Node'
+import { create } from '../src/Node.js'
 
 export function num(defaults = [0]) {
   return create((x) => [x], defaults, {

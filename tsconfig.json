@@ -1,11 +1,10 @@
 {
-	"compilerOptions": {
-		"module": "es2020",
-		"target": "es2020",
-		"moduleResolution": "node",
-		"noImplicitAny": false,
-		"noImplicitUseStrict": true,
-		"experimentalDecorators": true,
-		"allowSyntheticDefaultImports": true,
-	}
+  "compilerOptions": {
+    "module": "NodeNext",
+    "target": "ESNext",
+    "moduleResolution": "NodeNext",
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true
+  }
 }

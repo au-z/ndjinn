@@ -1,6 +1,6 @@
 import { NodeEdge } from '@ndjinn/core'
 import { define, html } from 'hybrids'
-import { getset } from '../../utils/hybrids'
+import { getset } from '../../utils/hybrids.js'
 import styles from './node-port.css?inline'
 
 export interface NodePort extends HTMLElement {

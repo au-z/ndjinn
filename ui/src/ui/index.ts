@@ -1,13 +1,13 @@
-import NdjinnEditor from './ndjinn-editor'
-import {NdjinnConfig} from './config/ndjinn-config'
-import NdjinnToolbar from './ndjinn-toolbar'
-import NdjinnCanvas from './ndjinn-canvas'
-import MenuMouse from './menu-mouse'
+import NdjinnEditor from './ndjinn-editor.js'
+import { NdjinnConfig } from './config/ndjinn-config.js'
+import NdjinnToolbar from './ndjinn-toolbar.js'
+import NdjinnCanvas from './ndjinn-canvas.js'
+import MenuMouse from './menu-mouse.js'
 
 export default {
-	NdjinnEditor,
-	NdjinnConfig,
-	NdjinnToolbar,
-	NdjinnCanvas,
-	MenuMouse,
+  NdjinnEditor,
+  NdjinnConfig,
+  NdjinnToolbar,
+  NdjinnCanvas,
+  MenuMouse,
 }

@@ -1,7 +1,7 @@
 import { firstValueFrom } from 'rxjs'
 import { describe, expect, test } from 'vitest'
-import { create } from '../src/Node'
-import { num, rgb } from './node-fixtures'
+import { create } from '../src/Node.js'
+import { num, rgb } from './node-fixtures.js'
 
 describe('Node', () => {
   describe('create()', () => {

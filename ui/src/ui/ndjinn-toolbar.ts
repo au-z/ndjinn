@@ -1,7 +1,7 @@
 import { define, html } from 'hybrids'
-import store from '../store/store'
+import store from '../store/store.js'
 import '@auzmartist/cam-el/grid'
-import { serializeNodeGraph } from '../store/localStorage'
+import { serializeNodeGraph } from '../store/localStorage.js'
 
 import styles from './ndjinn-toolbar.css?inline'
 

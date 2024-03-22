@@ -1,14 +1,14 @@
 import { Draggable } from '@auzmartist/cam-el'
-import { create, Node, NodeOptions, Op, Port, PortOptions } from '@ndjinn/core'
-import { Component, define as defineHybrids, Descriptor, dispatch, html, RenderFunction } from 'hybrids'
-import store, { NdjinnState, redux } from '../../store/store'
-import { kebab } from '../../utils'
 import { getset } from '@auzmartist/hybrids-helpers'
-import { Field, FieldModes, NodeTemplate } from './models'
+import { create, Node, NodeOptions, Op, Port } from '@ndjinn/core'
+import { Component, define as defineHybrids, dispatch, html, RenderFunction } from 'hybrids'
+import store, { redux, State } from '../../store/store.js'
+import { kebab } from '../../utils.js'
+import { Field, FieldModes } from './models.js'
 import styles from './node-base.css?inline'
 import './node-ports.js'
-import { render } from './node-renderer'
-import { TEMPLATE_BASIC_FIELDS } from './templates'
+import { render } from './node-renderer.js'
+import { TEMPLATE_BASIC_FIELDS } from './templates.js'
 
 const emit = <E extends HTMLElement, V>(
   host: E,
@@ -64,7 +64,7 @@ export function NodeComponent<E extends HTMLElement & { name: string; icon?: str
 
   const component: Component<E> = {
     tag,
-    selected: redux(store, ({ id }, state: NdjinnState) => state.selected.includes(id)),
+    selected: redux(store, ({ id }, state: State) => state.selected.includes(id)),
     // state restoration
     incoming: getset([]),
 
@@ -186,76 +186,85 @@ function renderNode<E extends NodeElement>(fn: RenderFunction<E>, options?: { sh
 	options)
 }
 
-/**
- * @deprecated Use Ndjinn.component()
- */
-export function NodeUI<T extends NodeTemplate>(
-  fn: Op,
-  defaults: any[],
-  variants: Record<string, { fn: Op; out?: PortOptions[] }> = {},
-  template: T
-): NodeElement {
-  function connectNode(host, node: Node, invalidate) {
-    host.setAttribute('id', node.id)
-    host.id = node.id
-    host.run = node.run
-    host.set = (...args) => {
-      // @ts-ignore
-      node.set(...args)
-      emit(host, 'save')
-    }
+// /**
+//  * @deprecated Use Ndjinn.component()
+//  */
+// export function NodeUI<T extends NodeTemplate>(
+//   fn: Op,
+//   defaults: any[],
+//   variants: Record<string, { fn: Op; out?: PortOptions[] }> = {},
+//   template: T
+// ): NodeElement {
+//   function connectNode(host, node: Node, invalidate) {
+//     host.setAttribute('id', node.id)
+//     host.id = node.id
+//     host.run = node.run
+//     host.set = (...args) => {
+//       // @ts-ignore
+//       node.set(...args)
+//       emit(host, 'save')
+//     }
 
-    node.subscribe(() => invalidate())
-    emit(host, 'created', { node })
-  }
+//   node.subscribe(() => invalidate())
+//   emit(host, 'created', { node })
+// }
 
-  return {
-    selected: redux(store, ({ id }, state: NdjinnState) => state.selected.includes(id)),
-    // state restoration
-    incoming: getset([]),
+//   return {
+//     selected: redux(store, ({ id }, state: NdjinnState) => state.selected.includes(id)),
+//     // state restoration
+//     incoming: getset([]),
 
-    node: {
-      ...getset({}),
-      connect: (host, key, invalidate) => {
-        let node = create(fn, defaults, {
-          in: template.in,
-          out: template.out,
-        })
-        const persistedId = host.getAttribute('id')
-        if (persistedId) node.id = persistedId
+// export function NodeComponent<T extends NodeTemplate>(
+//   fn: Op,
+//   defaults: any[],
+//   options?: NodeComponentOptions,
+//   { debug }: { debug?: boolean } = {}
+// ) {
+//   const nodeFnName = kebab(fn.name).toLowerCase()
+//   const tag = options?.component?.tag || (nodeFnName && `node-${nodeFnName}`)
 
-        connectNode(host, node, invalidate)
-        try {
-          // connectDraggable(host)
-        } catch (ex) {
-          // swallow issues with unsupported browser touch API
-        }
+//   let customTemplate = !!options?.component?.render
+//   const inputFields = options?.in?.filter((i) => i.field)
 
-        host[key] = node
-      },
-    },
-    inputs: <any>computed((node: Node) => {
-      if (!node?.meta?.in) return []
-      return [...node.meta.in].map((i: any) => ({
-        ...i,
-        mode: !!node.connections[i] ? 'OPAQUE' : 'EDIT',
-      }))
-    }),
-    outputs: <any>computed((node: Node) => [...node.outputs]),
-    fields: ({ inputs }) => inputs.filter((i) => i.field),
+//   const component: Component<NodeElementUI> = {
+//     tag,
+//     config: redux(store, (_, state: State) => state.config.node),
+//     selected: redux(store, ({ id }, state: State) => state.selected.includes(id)),
 
-    // Custom Properties
-    ...template,
-  } as any
-}
+//     // state restoration
+//     incoming: getset([]),
 
-// function connectDraggable(host) {
-//   Draggable({ absolutePositioning: true })(host)
-//   io.draggableInit(host)
-//   host.draggableStart = (host, e) => {
-//     emit(host, 'select', { id: host.id, add: e.shiftKey })
-//     io.draggableStart(host, e)
-//   }
-//   host.draggableDrag = io.draggableDrag
-//   host.draggableEnd = io.draggableEnd
+//     node: {
+//       ...getset({}),
+//       connect: (host, key, invalidate) => {
+//         let node = create(fn, defaults, {
+//           in: template.in,
+//           out: template.out,
+//         })
+//         const persistedId = host.getAttribute('id')
+//         if (persistedId) node.id = persistedId
+
+//         connectNode(host, node, invalidate)
+//         try {
+//           // connectDraggable(host)
+//         } catch (ex) {
+//           // swallow issues with unsupported browser touch API
+//         }
+
+//         host[key] = node
+//       },
+//     },
+//     inputs: <any>computed((node: Node) => {
+//       if (!node?.meta?.in) return []
+//       return [...node.meta.in].map((i: any) => ({
+//         ...i,
+//         mode: !!node.connections[i] ? 'OPAQUE' : 'EDIT',
+//       }))
+//     }),
+//     outputs: <any>computed((node: Node) => [...node.outputs]),
+//     fields: ({ inputs }) => inputs.filter((i) => i.field),
+
+//     // Custom Properties
+//     ...template,
+//   } as any
 // }

@@ -1,8 +1,8 @@
 import { define, html } from 'hybrids'
-import { useMouse } from '../hooks'
-import { CATALOG } from '../node'
-import { NodeElement, NodeElementUI } from '../node/base/models'
-import { deserializeNodeGraph, persist, serializeNodeGraph } from '../store/localStorage'
+import { useMouse } from '../hooks.js'
+import { CATALOG } from '../node/index.js'
+import { NodeElement, NodeElementUI } from '../node/base/models.js'
+import { deserializeNodeGraph, persist, serializeNodeGraph } from '../store/localStorage.js'
 import store, {
   connectNode,
   createNode,
@@ -15,10 +15,10 @@ import store, {
   selectNode,
   setDatatypes,
   State,
-} from '../store/store'
-import { debounce } from '../utils'
-import { getset } from '../utils/hybrids'
-import { useNdjinnConfig } from './config/ndjinn-config'
+} from '../store/store.js'
+import { debounce } from '../utils.js'
+import { getset } from '../utils/hybrids.js'
+import { useNdjinnConfig } from './config/ndjinn-config.js'
 import styles from './ndjinn-editor.css?inline'
 const { save, load } = persist(store, 'ndjinn-project', serializeNodeGraph, deserializeNodeGraph)
 

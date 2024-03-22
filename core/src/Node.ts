@@ -1,7 +1,7 @@
 import { BehaviorSubject, Subject, Subscription } from 'rxjs'
 import { v4 as uuid } from 'uuid'
-import { Op, Piper, NodeOptions, Port } from './models'
-import { Arr, setEffect } from './utils'
+import { Op, Piper, NodeOptions, Port } from './models.js'
+import { Arr, setEffect } from './utils.js'
 
 class OutputPort<T> extends BehaviorSubject<T> {
   constructor(_value: T) {
@@ -136,6 +136,15 @@ export function create(fn: Op, defaults: any[], options: NodeOptions = {}): Node
 
     subscriptions.forEach((fn) => fn(_node))
 
+    return _node
+  }
+
+  function setOp(opSignature: string = '') {
+    const variant = options.variants[opSignature]
+    if (variant) {
+      fn = variant.fn
+      meta.out = variant.out
+    }
     return _node
   }
 

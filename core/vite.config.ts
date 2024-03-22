@@ -8,5 +8,7 @@ export default defineConfig({
 			entry: path.resolve(__dirname, './src/index.ts'),
 			name: 'core',
 		},
+		minify: false,
+		sourcemap: true
 	},
 })

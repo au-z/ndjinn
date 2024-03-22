@@ -1,9 +1,9 @@
-import { html, parent, define, dispatch } from 'hybrids'
-import NdjinnEditor from './ndjinn-editor'
 import { Draggable } from '@auzmartist/cam-el'
 import '@auzmartist/cam-el/icon'
+import { define, dispatch, html, parent } from 'hybrids'
+import { getset } from '../utils/hybrids.js'
 import styles from './menu-mouse.css?inline'
-import { getset } from '../utils/hybrids'
+import NdjinnEditor from './ndjinn-editor.js'
 
 function onclick(tag, host, e) {
   dispatch(host, 'select', { detail: tag, bubbles: true })

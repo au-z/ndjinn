@@ -1,8 +1,8 @@
 import { children, define, html } from 'hybrids'
 import styles from './ndjinn-canvas.css?inline'
-import { drawGraph, drawBox } from './canvas-draw'
-import Hotkeys from './factories/Hotkeys'
-import store, { selectNodes } from '../store/store'
+import { drawGraph, drawBox } from './canvas-draw.js'
+import Hotkeys from './factories/Hotkeys.js'
+import store, { selectNodes } from '../store/store.js'
 import { getset } from '@auzmartist/hybrids-helpers'
 
 const BINDINGS = {
