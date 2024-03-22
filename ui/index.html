@@ -1,98 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<script type="module" src="/src/index.ts"></script>
-	<title>Node Editor</title>
-	<style>
-		body {
-			margin: 0;
-			color: #888;
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <script type="module" src="/src/index.ts"></script>
+    <title>Node Editor</title>
+    <style>
+      body {
+        background: #161923;
+        margin: 0;
+        color: #888;
 
-			--cam-font: Consolas, sans-serif;
-			--ndjinn-editor-bg: hsl(206, 7%, 19%);
-			--ndjinn-input-bg: hsl(210, 7%, 24%);
+        --cam-font: Consolas, sans-serif;
+        --ndjinn-editor-bg: hsl(206, 7%, 19%);
+        --ndjinn-input-bg: hsl(210, 7%, 24%);
 
-			--ndjinn-node-bg: hsl(203, 6%, 26%);
-			--ndjinn-node-color: #aaa;
-			--ndjinn-node-accent: #f3cd95;
-			--ndjinn-font: 'Fira Code', monospace;
+        --ndjinn-node-bg: hsl(203, 6%, 26%);
+        --ndjinn-node-color: #aaa;
+        --ndjinn-node-accent: #f3cd95;
+        --ndjinn-font: 'Fira Code', monospace;
 
-			/* --ndjinn-debug-node-opacity: 0.4; */
-		}
-	</style>
-</head>
-<body>
-	<ndjinn-editor>
-		<ndjinn-config>
-			<any>
-				<str></str>
-				<num color="0x839296">
-					<bit></bit>
-					<uint8 color="0x839296"></uint8>
-					<deg></deg>
-					<percent min="0" max="1" step="0.01"></percent>
-				</num>
-				<array>
-					<vec color="0xcdefd1">
-						<vec2 color="0xabe4b2"></vec2>
-						<vec3 color="0x69c77e"></vec3>
-						<vec4 color="0x329948"></vec4>
-					</vec>
-					<mat>
-						<mat2 color="0xe4c4bb"></mat2>
-						<mat3 color="0xe4a594"></mat3>
-						<mat4 color="0xe7896e"></mat4>
-					</mat>
-				</array>
-				<obj>
-					<color>
-						<rgb color="0x9ac2fa"></rgb>
-						<rgba color="0x9ac2fa"></rgba>
-						<hsl color="0x9ac2fa"></hsl>
-						<hsla color="0x9ac2fa"></hsla>
-					</color>
-				</obj>
-			</any>
-		</ndjinn-config>
-	</ndjinn-editor>
+        /* --ndjinn-debug-node-opacity: 0.4; */
+      }
+    </style>
+  </head>
+  <body>
+    <ndjinn-editor>
+      <ndjinn-config>
+        <any>
+          <str></str>
+          <num color="0x839296">
+            <bit></bit>
+            <uint8 color="0x839296"></uint8>
+            <deg></deg>
+            <percent min="0" max="1" step="0.01"></percent>
+          </num>
+          <array>
+            <vec color="0xcdefd1">
+              <vec2 color="0xabe4b2"></vec2>
+              <vec3 color="0x69c77e"></vec3>
+              <vec4 color="0x329948"></vec4>
+            </vec>
+            <mat>
+              <mat2 color="0xe4c4bb"></mat2>
+              <mat3 color="0xe4a594"></mat3>
+              <mat4 color="0xe7896e"></mat4>
+            </mat>
+          </array>
+          <obj>
+            <color>
+              <rgb color="0x9ac2fa"></rgb>
+              <rgba color="0x9ac2fa"></rgba>
+              <hsl color="0x9ac2fa"></hsl>
+              <hsla color="0x9ac2fa"></hsla>
+            </color>
+          </obj>
+        </any>
+      </ndjinn-config>
+    </ndjinn-editor>
 
-	<script type="module">
-		import {hsl_rgb} from '/src/index.ts'
-
-		window.__ndjinn_config__ = {
-			transforms: {
-				vec: {
-					rgb: ([r, g, b]) => ({r: r % 256, g: g % 256, b: b % 256}),
-					rgba: ([r, g, b, a]) => ({r: r % 256, g: g % 256, b: b % 256, a: a % 1}),
-				},
-				hsla: {
-					rgba: ({h, s, l, a}) => ({...hsl_rgb({h: h / 360, s, l}), a})
-				}
-				// vec2: {
-				// 	vec3: ([x, y]) => [x, y, 0],
-				// 	vec4: ([x, y]) => [x, y, 0, 0],
-				// },
-			},
-			nodes: {
-				RGBA: [(r, g, b, a) => ({r, g, b, a}), [0, 0, 0, 1], {
-					in: [
-						{type: 'uint8', name: 'r', field: true},
-						{type: 'uint8', name: 'g', field: true},
-						{type: 'uint8', name: 'b', field: true},
-						{type: 'percent', name: 'a', field: true},
-					],
-					out: [
-						{type: 'rgba', name: 'rgba'},
-					],
-				}]
-			}
-		}
-	</script>
-</body>
-	</html>
+    <script>
+      window.__ndjinn_config__ = {
+        transforms: {
+          vec: {
+            rgb: ([r, g, b]) => ({ r: r % 256, g: g % 256, b: b % 256 }),
+            rgba: ([r, g, b, a]) => ({ r: r % 256, g: g % 256, b: b % 256, a: a % 1 }),
+          },
+          // vec2: {
+          // 	vec3: ([x, y]) => [x, y, 0],
+          // 	vec4: ([x, y]) => [x, y, 0, 0],
+          // },
+        },
+        nodes: {
+          RGBA: [
+            (r, g, b, a) => ({ r, g, b, a }),
+            [0, 0, 0, 1],
+            {
+              in: [
+                { type: 'uint8', name: 'r', field: true },
+                { type: 'uint8', name: 'g', field: true },
+                { type: 'uint8', name: 'b', field: true },
+                { type: 'percent', name: 'a', field: true },
+              ],
+              out: [{ type: 'rgba', name: 'rgba' }],
+            },
+          ],
+        },
+      }
+    </script>
+  </body>
+</html>

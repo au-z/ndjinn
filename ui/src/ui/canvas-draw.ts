@@ -1,98 +1,90 @@
 import { Node } from '@ndjinn/core'
-import { NodeElement } from "../node/base/node-base"
-import {NodePort} from "../node/base/node-port"
+import { NodeElement } from '../node/base/node-base.js'
+import { NodePort } from '../node/base/node-port.js'
+import { fill, stroke } from '../utils/canvas.js'
 
-export function drawBox({ctx}, x1, y1, x2, y2) {
-	if(x1 == null || x2 == null || y1 == null || y2 == null) return
-	ctx.beginPath()
-	ctx.strokeStyle = '#89abff'
-	ctx.rect(x1, y1, x2 - x1, y2 - y1)
-	ctx.fillStyle = '#89abff22'
-	ctx.fillRect(x1, y1, x2 - x1, y2 - y1)
-	ctx.stroke()
+const BOX_STYLE = {
+  strokeStyle: '#89abff',
+  fillStyle: '#89abff22',
+}
+const DEBUG_STYLE = {
+  strokeStyle: 'white',
 }
 
-export function drawGraph({debug, nodeElements, ctx, nodes}) {
-	nodes.forEach((n) => {
-		let el = nodeElements.find((el) => el.id === n.id)
-		el && drawNode(ctx, n, el, debug)
-	})
+const PORT_STYLE = {
+  strokeStyle: '#8c909b',
+  lineWidth: 2,
+}
+
+export function drawBox({ ctx }, x1, y1, x2, y2) {
+  if (x1 == null || x2 == null || y1 == null || y2 == null) return
+  stroke((ctx) => {
+    ctx.rect(x1, y1, x2 - x1, y2 - y1)
+    ctx.fillRect(x1, y1, x2 - x1, y2 - y1)
+  }, BOX_STYLE)(ctx)
+}
+
+export function drawGraph({ debug, nodeElements, ctx, nodes }) {
+  nodes.forEach((n) => {
+    let el = nodeElements.find((el) => el.id === n.id)
+    el && drawNode(ctx, n, el, debug)
+  })
 }
 
 const PORT_DRAW_RAD = 12
-const portMap = new Map<string, {x: number, y: number}>()
+const portMap = new Map<string, { x: number; y: number }>()
 
 function drawNode(ctx, node: Node, el: NodeElement, debug = false) {
-	const rect = el.shadowRoot ? 
-		el.shadowRoot.querySelector('.node')?.getBoundingClientRect()
-		: el.getBoundingClientRect()
-	if(!rect) {
-		console.log(el)
-	}
-	const {left, top, width, height} = rect;
-	const selected = el.selected
+  const rect = el.shadowRoot
+    ? el.shadowRoot.querySelector('.node')?.getBoundingClientRect()
+    : el.getBoundingClientRect()
+  if (!rect) {
+    console.log(el)
+  }
+  const { left, top, width, height } = rect
+  const selected = el.selected
 
-	if(debug) {
-		ctx.beginPath()
-		ctx.strokeStyle = 'white'
-		ctx.rect(left, top, width, height)
-		ctx.stroke()
-	}
+  debug && stroke((ctx) => ctx.rect(left, top, width, height), DEBUG_STYLE)(ctx)
 
-	if(!el.shadowRoot) return
-	const portRegions: HTMLElement[] = Array.from(el.shadowRoot.querySelectorAll('node-ports'))
-	portRegions.forEach((region) => {
-		region.shadowRoot?.querySelectorAll('node-port')
-			?.forEach((p: NodePort) => drawPort(ctx, p, {debug, selected, nodeId: node.id}))
-	})
+  if (!el.shadowRoot) return
+  const portRegions: HTMLElement[] = Array.from(el.shadowRoot.querySelectorAll('node-ports'))
+  portRegions.forEach((region) => {
+    region.shadowRoot
+      ?.querySelectorAll('node-port')
+      ?.forEach((p: NodePort) => drawPort(ctx, p, { debug, selected, nodeId: node.id }))
+  })
 }
 
-function drawPort(ctx, portEl: NodePort, {debug, selected, nodeId}) {
-	const {left, top, width, height} = portEl.getBoundingClientRect()
-	const pos = {
-		x: (left + width),
-		y: (top + height / 2),
-	}
-	
-	portMap.set(`${nodeId}:${portEl.dataset.id}`, pos)
-	
-	if(debug) {
-		ctx.beginPath()
-		ctx.strokeStyle = 'white'
-		ctx.arc(pos.x, pos.y, PORT_DRAW_RAD, 0, Math.PI * 2)
-		ctx.stroke()
-	}
-	
-	const easeControls = (from, to) => [
-		[from.x + 0.5 * (to.x - from.x), from.y],
-		[from.x + 0.5 * (to.x - from.x), to.y],
-	]
+function drawPort(ctx, portEl: NodePort, { debug, selected, nodeId }) {
+  const { left, top, width, height } = portEl.getBoundingClientRect()
+  const pos = {
+    x: left + width,
+    y: top + height / 2,
+  }
 
-	if(portEl.input && portEl.connected) {
-		const to = portMap.get(`${portEl.edge?.id}:${portEl.edge?.port}`)
-		if(!to) return // OK: portMap entry may not exist in this render frame yet
+  portMap.set(`${nodeId}:${portEl.dataset.id}`, pos)
 
-		const ctrls = easeControls(pos, to)
-		ctx.beginPath()
-		ctx.lineWidth = 2
-		// ctx.strokeStyle = selected ? linearGradient(ctx, pos, to, '#8c909b', '#f3cd95') : '#8c909b'
-		ctx.strokeStyle = '#8c909b'
-		ctx.moveTo(pos.x, pos.y)
-		ctx.bezierCurveTo(...ctrls[0], ...ctrls[1], to.x, to.y)
-		ctx.stroke()
+  debug && stroke((ctx) => ctx.arc(pos.x, pos.y, PORT_DRAW_RAD, 0, Math.PI * 2), DEBUG_STYLE)(ctx)
 
-		if(debug) {
-			ctx.beginPath()
-			ctx.arc(pos.x, pos.y, 4, 0, 2 * Math.PI)
-			ctx.arc(to.x, to.y, 4, 0, 2 * Math.PI)
-			ctx.fill()
-		}
-	}
-}
+  const easeControls = (from, to): [number, number][] => [
+    [from.x + 0.5 * (to.x - from.x), from.y],
+    [from.x + 0.5 * (to.x - from.x), to.y],
+  ]
 
-function linearGradient(ctx, from, to, cFrom, cTo) {
-	const grad = ctx.createLinearGradient(from.x, from.y, to.x, to.y)
-	grad.addColorStop("0", cTo)
-	grad.addColorStop("1.0", cFrom)
-	return grad
+  if (portEl.input && portEl.connected) {
+    const to = portMap.get(`${portEl.edge?.id}:${portEl.edge?.port}`)
+    if (!to) return // OK: portMap entry may not exist in this render frame yet
+
+    const ctrls = easeControls(pos, to)
+    stroke((ctx) => {
+      ctx.moveTo(pos.x, pos.y)
+      ctx.bezierCurveTo(...ctrls[0], ...ctrls[1], to.x, to.y)
+    }, PORT_STYLE)(ctx)
+
+    debug &&
+      fill((ctx) => {
+        ctx.arc(pos.x, pos.y, 4, 0, 2 * Math.PI)
+        ctx.arc(to.x, to.y, 4, 0, 2 * Math.PI)
+      }, {})(ctx)
+  }
 }

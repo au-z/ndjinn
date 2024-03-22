@@ -1,18 +1,17 @@
-import { Port, PortOptions } from "@ndjinn/core";
-import { RenderFunction } from "hybrids";
-import {Node} from '@ndjinn/core';
+import { PortOptions } from '@ndjinn/core'
+import { RenderFunction } from 'hybrids'
 
-// TODO: maybe don't use
-export enum FieldMode {
-	OPAQUE = 'OPAQUE',
-	EDIT = 'EDIT',
-	SOURCE = 'SOURCE',
-}
+export const FieldModes = {
+  OPAQUE: 'OPAQUE',
+  EDIT: 'EDIT',
+  SOURCE: 'SOURCE',
+} as const
+export type FieldMode = keyof typeof FieldModes
 
 export interface Field {
-	name: string,
-	inputType?: string,
-	mode?: FieldMode,
+  name: string
+  inputType?: string
+  mode?: FieldMode
 }
 
 export interface NodeTemplate {
@@ -51,5 +50,5 @@ export interface NodeElementUI extends NodeElement {
 }
 
 export interface NodeComponent extends HTMLElement {
-	in: PortOptions[],
+  in: PortOptions[]
 }
